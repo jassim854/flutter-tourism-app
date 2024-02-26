@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
 
 extension SpaceExtension on num {
   height() {
@@ -70,29 +71,17 @@ extension NavigationExtensions on BuildContext {
     return Navigator.of(this).maybePop(result);
   }
 
-  void navigateTo(
-    Widget screen,
-  ) {
-    Navigator.of(this).push(
-      MaterialPageRoute(
-        builder: (context) => screen,
-      ),
-    );
+  void navigateNamed(String routeName, {Object? arguments}) {
+    Navigator.of(this).pushNamed(routeName, arguments: arguments);
   }
 
-  void navigatepushReplacement(Widget screen) {
-    Navigator.of(this).pushReplacement(MaterialPageRoute(
-      builder: (context) => screen,
-    ));
+  void navigatepushReplacementNamed(String routeName, {Object? arguments}) {
+    Navigator.of(this).pushReplacementNamed(routeName, arguments: arguments);
   }
 
-  void navigateToRemovedUntil(Widget screen) {
-    Navigator.of(this).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => screen,
-      ),
-      (route) => route.isFirst,
-    );
+  void navigateToRemovedUntilNamed(String routeName, {Object? arguments}) {
+    Navigator.of(this).pushNamedAndRemoveUntil(routeName, (route) => false,
+        arguments: arguments);
   }
 }
 
@@ -141,3 +130,13 @@ extension HMSextension on int {
       "${Duration(seconds: this).inHours.remainder(60).toString()}:${Duration(seconds: this).inMinutes.remainder(60).toString().padLeft(2, '0')}:${Duration(seconds: this).inSeconds.remainder(60).toString().padLeft(2, '0')}";
 }
 
+Timer? timer;
+void delayedFunction({
+  required VoidCallback fn,
+}) async {
+  if (timer != null) {
+    timer!.cancel();
+  }
+
+  timer = Timer(const Duration(milliseconds: 750), fn);
+}

@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 
-
-
 class BaseHelper {
   static showSnackBar(context, msg,
       {Duration? duration, Color? backgroundColor, Color? textColor}) {
@@ -13,7 +11,7 @@ class BaseHelper {
         content: Text(
           msg,
           style: AppTypography.title14XS
-              .copyWith(color: textColor ?? AppColor.textPrimaryColor),
+              .copyWith(color: textColor ?? AppColor.textBlackColor),
         ),
         backgroundColor: backgroundColor ?? Colors.white,
         margin: const EdgeInsets.all(5),
@@ -28,22 +26,19 @@ class BaseHelper {
             : null));
   }
 
-  // static CircularProgressIndicator loadingWidget(
-  //     {double? value,
-  //     double? strokeWidth,
-  //     Color? valueColor,
-  //     Color? backgroundColor}) {
-  //   return CircularProgressIndicator.adaptive(
-  //     value: value,
-  //     strokeWidth:
-  //         strokeWidth ?? const CircularProgressIndicator.adaptive().strokeWidth,
-  //     backgroundColor: Platform.isIOS
-  //         ? null
-  //         : backgroundColor ?? AppColor.textInvertSubtitle,
-  //     valueColor:
-  //         AlwaysStoppedAnimation(valueColor ?? AppColor.linkTeritaryCOlor),
-  //   );
-  // }
-
-
+  static CircularProgressIndicator loadingWidget(
+      {double? value,
+      double? strokeWidth,
+      Color? valueColor,
+      Color? backgroundColor}) {
+    return CircularProgressIndicator.adaptive(
+      value: value,
+      strokeWidth:
+          strokeWidth ?? const CircularProgressIndicator.adaptive().strokeWidth,
+      backgroundColor:
+          Platform.isIOS ? null : backgroundColor ?? AppColor.textWhiteColor,
+      valueColor: AlwaysStoppedAnimation(
+          valueColor ?? AppColor.surfaceBrandPrimaryColor),
+    );
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tourism_app/utils/app_colors.dart';
+
 
 class ContainerBarWidget extends StatelessWidget {
   final Color color;
