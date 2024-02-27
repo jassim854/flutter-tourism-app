@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tourism_app/model/country_model.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/helper/basehelper.dart';
+import 'package:flutter_tourism_app/model/network_model/country_model.dart';
+import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
@@ -27,27 +31,13 @@ class SelectCountryView extends ConsumerStatefulWidget {
 class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
   late TextEditingController _searchController;
 
-  List<CountryModel> countryModelData = [
-    CountryModel(
-        countryName: "Afghanistan",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/af-flag.gif"),
-    CountryModel(
-        countryName: "Albania",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/al-flag.gif"),
-    CountryModel(
-        countryName: "Algeria",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/ag-flag.gif"),
-    CountryModel(
-        countryName: "Andorra",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/an-flag.gif"),
-    CountryModel(
-        countryName: "Angola",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/ao-flag.gif"),
-  ];
+  
   @override
   void initState() {
     _searchController = TextEditingController();
-
+WidgetsBinding.instance.addPostFrameCallback((_) { 
+  callApi();
+});
     // TODO: implement initState
     super.initState();
   }
@@ -59,13 +49,29 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
     // TODO: implement dispose
     super.dispose();
   }
+callApi()async{
+    ref.read(isNoDataProvider.notifier).state=false;
+  ref.read(isLoadingProvider.notifier).state=true;
+ await ref.read(apiServiceProvider).getAllcountriesRequest(context).then((value) {
+if (value!=null) {
+  
+  ref.read(countryListDataProvider.notifier).addData(value);
+    ref.read(isLoadingProvider.notifier).state=false;
+}
+else{
+    ref.read(isNoDataProvider.notifier).state=true;
+    ref.read(isLoadingProvider.notifier).state=false;
+}
 
+ });
+}
   @override
   Widget build(BuildContext context) {
+List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
     String selectedCountry = ref.watch(selectedCountryProvider);
     List<CountryModel> searchedCountries =
-        ref.watch(searchedCountryProvider(countryModelData));
+        ref.watch(searchedCountryProvider(countryListData));
     return Scaffold(
       appBar: AppBarWidget(
           leadingWidth: 0,
@@ -105,21 +111,21 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                   delayedFunction(fn: () {
                     if (value == "") {
                       ref
-                          .read(searchedCountryProvider(countryModelData)
+                          .read(searchedCountryProvider(countryListData)
                               .notifier)
-                          .addData(countryModelData);
+                          .addData(countryListData);
                     } else {
                       ref
-                          .read(searchedCountryProvider(countryModelData)
+                          .read(searchedCountryProvider(countryListData)
                               .notifier)
-                          .filterData(value.toLowerCase().trim(),countryModelData);
+                          .filterData(value.toLowerCase().trim(),countryListData);
                     }
                   });
                 },
                 onIconTap: () {
                   ref
-                      .read(searchedCountryProvider(countryModelData).notifier)
-                      .addData(countryModelData);
+                      .read(searchedCountryProvider(countryListData).notifier)
+                      .addData(countryListData);
 
                   ref.read(showCloseIconProvider.notifier).state = false;
                   _searchController.clear();
@@ -144,7 +150,7 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
               //     : Container()
             ],
           )),
-      body: Card(
+      body:  Card(
         color: AppColor.surfaceBackgroundColor,
         surfaceTintColor: AppColor.surfaceBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
@@ -170,7 +176,8 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                 ),
               ),
               const Divider(),
-              Expanded(
+             ref.watch(isLoadingProvider)?const Center(child:CupertinoActivityIndicator(radius: 30,)
+             ,) : Expanded(
                 child: ListView.separated(
                   itemCount: searchedCountries.length,
                   itemBuilder: (_, index) {
@@ -186,9 +193,7 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                           SizedBox(
                             height: 30,
                             width: 30,
-                            child: cacheNetworkWidget(context,
-                                imageUrl:
-                                    searchedCountries[index].countryFlagUrl),
+                            child: SvgPicture.network(searchedCountries[index].countryFlagUrl)
                           ),
                           Text(
                             searchedCountries[index].countryName,
@@ -215,17 +220,17 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
     );
   }
 }
-/*Scaffold(
-      appBar: AppBar(
-        title: Text("Phone Number"),
-        backgroundColor: AppColor.surfaceBrandPrimaryColor,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PhoneNumberFieldWidget(
-            controller: phoneNumberController,
-          )
-        ],
-      ),
-    ); */
+// Scaffold(
+//       appBar: AppBar(
+//         title: Text("Phone Number"),
+//         backgroundColor: AppColor.surfaceBrandPrimaryColor,
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           PhoneNumberFieldWidget(
+//             controller: phoneNumberController,
+//           )
+//         ],
+//       ),
+//     ); 

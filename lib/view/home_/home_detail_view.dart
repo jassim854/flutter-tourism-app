@@ -1,22 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tourism_app/model/dummy_model.dart';
+import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
+import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
+import 'package:flutter_tourism_app/view/home_/book_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
+import 'package:flutter_tourism_app/widgets/textfield_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class HomeDetailView extends ConsumerStatefulWidget {
-  final DummyModel data;
+  final TourGuidModel data;
   static const routeName = "/detailView";
   const HomeDetailView({required this.data, super.key});
 
@@ -26,11 +29,10 @@ class HomeDetailView extends ConsumerStatefulWidget {
 
 class _DetailViewState extends ConsumerState<HomeDetailView> {
   late ScrollController _scrollController;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _additionalInfoController = TextEditingController();
+
   @override
   void initState() {
+
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset > 155) {
@@ -64,7 +66,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
         controller: _scrollController,
         slivers: [
           SliverAppBarWidget(
-            backGroundImg: widget.data.downloadUrl,
+            backGroundImg: widget.data.images![1],
             value: false,
           ),
           SliverToBoxAdapter(
@@ -79,7 +81,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.data.author,
+                            widget.data.name.toString(),
                             style: AppTypography.label16MD,
                           ),
                           Row(
@@ -96,83 +98,49 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                       ),
                       CustomElevatedButton(
                         onPressed: () {
-                          showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return CupertinoAlertDialog(
-                                title: Text(
-                                  'Enter Details',
-                                  style: AppTypography.title18LG,
-                                ),
-                                content: SizedBox(
-                                  height: 250,
-                                  // width: 400,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      20.height(),
-                                      const CupertinoTextField(
-                                        // controller: _emailController,
-                                        placeholder: 'name',
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                      ),
-                                      8.height(),
-                                      CupertinoTextField(
-                                        controller: _emailController,
-                                        placeholder: 'Email',
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                      ),
-                                      8.height(),
-                                      CupertinoTextField(
-                                        controller: _phoneController,
-                                        placeholder: 'Phone Number',
-                                        keyboardType: TextInputType.phone,
-                                      ),
-                                      8.height(),
-                                      CupertinoTextField(
-                                        controller: _additionalInfoController,
-                                        placeholder: 'Additional Information',
-                                        keyboardType: TextInputType.multiline,
-                                        maxLines: 3,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  CupertinoDialogAction(
-                                    textStyle: AppTypography.label16MD
-                                        .copyWith(color: AppColor.redColor),
-                                    onPressed: () {
-                                      context.popPage();
-                                    },
-                                    child: const Text(
-                                      'Cancel',
-                                    ),
-                                  ),
-                                  CupertinoDialogAction(
-                                    textStyle: AppTypography.label16MD.copyWith(
-                                        color: AppColor.textPrimaryColor),
-                                    child: const Text(
-                                      'Submit',
-                                    ),
-                                    onPressed: () {
-                                      // You can handle the submission here
-                                      String email = _emailController.text;
-                                      String phone = _phoneController.text;
-                                      String additionalInfo =
-                                          _additionalInfoController.text;
+                          context.navigateNamed(BookView.routeName);
+                          // showCupertinoDialog(
+                          //   context: context,
+                          //   builder: (context) {
+                          //     return CupertinoAlertDialog(
+                          //       title: Text(
+                          //         'Enter Details',
+                          //         style: AppTypography.title18LG,
+                          //       ),
+                          //       content: SizedBox(
+                          //         height: 250,
+                          //         // width: 400,
+                          //         child: 
+                          //       ),
+                          //       actions: [
+                          //         CupertinoDialogAction(
+                          //           textStyle: AppTypography.label16MD
+                          //               .copyWith(color: AppColor.redColor),
+                          //           onPressed: () {
+                          //             context.popPage();
+                          //           },
+                          //           child: const Text(
+                          //             'Cancel',
+                          //           ),
+                          //         ),
+                          //         CupertinoDialogAction(
+                          //           textStyle: AppTypography.label16MD.copyWith(
+                          //               color: AppColor.textPrimaryColor),
+                          //           child: const Text(
+                          //             'Submit',
+                          //           ),
+                          //           onPressed: () {
+                          //             // You can handle the submission here
+                                     
 
-                                      Navigator.of(context).pop();
-                                      selectDateSheetWidget(context);
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          //             Navigator.of(context).pop();
+                          //             selectDateSheetWidget(context);
+                          //           },
+                          //         ),
+                          //       ],
+                          //     );
+                          //   },
+                          // );
                         },
                         title: 'Book',
                       )
@@ -248,160 +216,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
     );
   }
 
-  Future<dynamic> selectDateSheetWidget(BuildContext context) {
-    return showModalBottomSheet(
-      backgroundColor: AppColor.surfaceBackgroundBaseColor,
-      useSafeArea: true,
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return Column(
-          children: [
-            40.height(),
-            const Image(image: AssetImage(AppAssets.boxIcon)),
-            Text(
-              "Select Date",
-              style: AppTypography.title40_4XL
-                  .copyWith(fontWeight: FontWeight.w400),
-            ),
-            const Spacer(),
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              color: AppColor.surfaceBackgroundColor,
-              surfaceTintColor: AppColor.surfaceBackgroundColor,
-              child: Theme(
-                data: ThemeData().copyWith(
-                  colorScheme: const ColorScheme.light(primary: Colors.red),
-                ),
-                child: CalendarDatePicker(
-                  // initialCalendarMode: DatePickerMode.year,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2050),
-                  onDateChanged: (value) {},
-                ),
-              ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                        SelectTimeSheetWidget(context);
-                      },
-                      title: 'Continue',
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  Future<dynamic> SelectTimeSheetWidget(BuildContext context) {
-    return showModalBottomSheet(
-      backgroundColor: AppColor.surfaceBackgroundBaseColor,
-      useSafeArea: true,
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            40.height(),
-            const Image(image: AssetImage(AppAssets.boxIcon)),
-            Text(
-              "Select time",
-              style: AppTypography.title40_4XL
-                  .copyWith(fontWeight: FontWeight.w400),
-            ),
-            const Spacer(),
-            SizedBox(
-              height: 200,
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
-                // initialEntryMode: TimePickerEntryMode.input,
-                onDateTimeChanged: (DateTime value) {},
-              ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                        confirmBookingSheetWidget(context);
-                      },
-                      title: 'Continue',
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  Future<dynamic> confirmBookingSheetWidget(BuildContext context) {
-    return showModalBottomSheet(
-      backgroundColor: AppColor.surfaceBackgroundBaseColor,
-      useSafeArea: true,
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return Column(children: [
-          40.height(),
-          const Image(image: AssetImage(AppAssets.boxIcon)),
-          Text(
-            "Confirm Booking",
-            style:
-                AppTypography.title40_4XL.copyWith(fontWeight: FontWeight.w400),
-          ),
-          100.height(),
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: Column(
-              children: [
-                const ConfirmBookRowWidget(title: 'Date', subtitle: ''),
-                20.height(),
-                const ConfirmBookRowWidget(title: "Time", subtitle: ""),
-                20.height(),
-                const ConfirmBookRowWidget(
-                  title: "Name",
-                  subtitle: "",
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          Padding(
-              padding: const EdgeInsets.only(bottom: 40, left: 20, right: 20),
-              child: Row(children: [
-                Expanded(
-                    child: CustomElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    // context.navigateToRemovedUntilNamed(BookingView.routeName);
-                    controller.jumpToTab(1);
-                  },
-                  title: "Confirm",
-                ))
-              ]))
-        ]);
-      },
-    );
-  }
-
+  
 //   void _showCalendarBottomSheet(BuildContext context, DateTime _selectedDate) {
 //     showModalBottomSheet(
 //       context: context,
@@ -495,7 +310,7 @@ class ConfirmBookRowWidget extends StatelessWidget {
             ),
             1.height(),
             Text(
-              "222",
+              subtitle,
               style: AppTypography.paragraph16LG,
             )
           ],

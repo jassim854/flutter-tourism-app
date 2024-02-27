@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tourism_app/model/country_model.dart';
+import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 
 final showCloseIconProvider = StateProvider.autoDispose<bool>((ref) {
   return false;
@@ -33,6 +33,21 @@ class SearchedCountry extends StateNotifier<List<CountryModel>> {
           (element) => element.countryName.toLowerCase().trim().contains(value))
     ];
   }
+}
+final countryListDataProvider = StateNotifierProvider
+    <CountryListData, List<CountryModel>>(
+        (ref,) {
+  return CountryListData();
+});
+
+class CountryListData extends StateNotifier<List<CountryModel>> {
+  CountryListData():super([]);
+
+  void addData(List<CountryModel> data) {
+    state = data;
+  }
+
+
 }
 // class SelectCountry extends ChangeNotifier {
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
+import 'package:flutter_tourism_app/utils/validators.dart';
 
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -80,6 +81,8 @@ class PhoneNumberFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InternationalPhoneNumberInput(
+      autoValidateMode: AutovalidateMode.onUserInteraction,
+ 
       spaceBetweenSelectorAndTextField: 23,
       searchBoxDecoration: InputDecoration(
         hintText: "Search Country",

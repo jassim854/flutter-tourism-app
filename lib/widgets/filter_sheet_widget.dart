@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tourism_app/model/country_model.dart';
+import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
@@ -9,7 +9,9 @@ import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 
 class FilterSheetWidget extends ConsumerStatefulWidget {
-  const FilterSheetWidget({super.key});
+
+  final void Function() onDone;
+  const FilterSheetWidget(this.onDone, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -18,23 +20,7 @@ class FilterSheetWidget extends ConsumerStatefulWidget {
 
 class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
   late TextEditingController _searchController;
-  List<CountryModel> countryModelData = [
-    CountryModel(
-        countryName: "Afghanistan",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/af-flag.gif"),
-    CountryModel(
-        countryName: "Albania",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/al-flag.gif"),
-    CountryModel(
-        countryName: "Algeria",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/ag-flag.gif"),
-    CountryModel(
-        countryName: "Andorra",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/an-flag.gif"),
-    CountryModel(
-        countryName: "Angola",
-        countryFlagUrl: "https://www.worldometers.info/img/flags/ao-flag.gif"),
-  ];
+
   @override
   void initState() {
     _searchController = TextEditingController();
@@ -52,10 +38,11 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
   String selectedFilter = '';
   @override
   Widget build(BuildContext context) {
+    List<CountryModel>countryListData=ref.watch(countryListDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
     String selectedCountry = ref.watch(selectedCountryProvider);
     List<CountryModel> searchedCountries =
-        ref.watch(searchedCountryProvider(countryModelData));
+        ref.watch(searchedCountryProvider(countryListData));
     return Column(
       children: [
         Padding(
@@ -89,6 +76,7 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
                 onTap: () {
                   context.popPage();
                   ref.read(showCloseIconProvider.notifier).state = false;
+                  widget.onDone();
                   // widget.onDone(selectedFilter);
                 },
                 child: Text("Done",
@@ -114,19 +102,19 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
               delayedFunction(fn: () {
                 if (value == "") {
                   ref
-                      .read(searchedCountryProvider(countryModelData).notifier)
-                      .addData(countryModelData);
+                      .read(searchedCountryProvider(countryListData).notifier)
+                      .addData(countryListData);
                 } else {
                   ref
-                      .read(searchedCountryProvider(countryModelData).notifier)
-                      .filterData(value.toLowerCase().trim(),countryModelData);
+                      .read(searchedCountryProvider(countryListData).notifier)
+                      .filterData(value.toLowerCase().trim(),countryListData);
                 }
               });
             },
             onIconTap: () {
               ref
-                  .read(searchedCountryProvider(countryModelData).notifier)
-                  .addData(countryModelData);
+                  .read(searchedCountryProvider(countryListData).notifier)
+                  .addData(countryListData);
 
               ref.read(showCloseIconProvider.notifier).state = false;
               _searchController.clear();

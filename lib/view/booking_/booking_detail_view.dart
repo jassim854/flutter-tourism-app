@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/provider/book_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
@@ -8,8 +9,9 @@ import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 
 class BookingDetailView extends ConsumerStatefulWidget {
+  final int index;
   static const routeName = "/detailBookingView";
-  const BookingDetailView({super.key});
+  const BookingDetailView(this.index, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -39,13 +41,15 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                       padding: EdgeInsets.only(top: 20, bottom: 20),
                       child: DescriptionWidget(),
                     ),
-                    const ConfirmBookRowWidget(title: 'Date', subtitle: ''),
+                     ConfirmBookRowWidget(title: 'Date', subtitle: bookedData[widget.index]['date'].toString()),
                     20.height(),
-                    const ConfirmBookRowWidget(title: "Time", subtitle: ""),
+                     ConfirmBookRowWidget(title: "From Time", subtitle: bookedData[widget.index]['fromTime'].toString()),
+                          20.height(),
+                     ConfirmBookRowWidget(title: "To Time", subtitle: bookedData[widget.index]['toTime'].toString()),
                     20.height(),
-                    const ConfirmBookRowWidget(
+                     ConfirmBookRowWidget(
                       title: "Name",
-                      subtitle: "",
+                      subtitle: bookedData[widget.index]['name'].toString(),
                     ),
                   ],
                 ),

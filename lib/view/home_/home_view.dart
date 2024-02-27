@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_tourism_app/model/dummy_model.dart';
+import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/home_list_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
@@ -89,18 +90,27 @@ class _HomeViewState extends ConsumerState<HomeView> {
     ref.read(isNoDataProvider.notifier).state = false;
 
     if (isScroll == false) {
-      ref.read(dummyListDataProvider).clear();
+      ref.read(countryWiseTourGuideDataProvider).clear();
 
       pageNumber = 1;
     }
 
-    await ref.read(apiServiceProvider).getDummyList(context,
-        data: {"page": pageNumber.toString(), "limit": "10"}).then((value) {
+    await ref.read(apiServiceProvider).getCountryWiseTourGuideRequest(context,
+        payload:
+        
+         {
+          "country":ref.read(selectedCountryProvider)
+          
+          // "page": pageNumber.toString(), "limit": "10"
+          
+          }
+        
+        ).then((value) {
       if (value != null && value.isNotEmpty) {
         ref.read(nextPageProvider.notifier).state = true;
 
         ref.read(isLoadMoreProvider.notifier).state = false;
-        ref.read(dummyListDataProvider.notifier).addData(value);
+        ref.read(countryWiseTourGuideDataProvider.notifier).addData(value);
 
         ref.read(isLoadingProvider.notifier).state =
             isScroll == true ? false : false;
@@ -122,7 +132,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    int length = ref.watch(dummyListDataProvider).length;
+    int length = ref.watch(countryWiseTourGuideDataProvider).length;
     bool closeIcon = ref.watch(showCloseIconProvider);
     String selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
@@ -171,7 +181,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     builder: (_) {
                       return PopScope(
                         canPop: false,
-                        child: FilterSheetWidget(),
+                        child: FilterSheetWidget(() {
+                          callApiFn(isScroll: false);
+                        }),
                       );
                     },
                   );
@@ -245,23 +257,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                   context.navigateNamed(
                                       HomeDetailView.routeName,
                                       arguments: ref
-                                          .read(dummyListDataProvider)[index]);
+                                          .read(countryWiseTourGuideDataProvider)[index]);
                                 },
                                 child: CardWidget(
                                   name: ref
-                                      .watch(dummyListDataProvider)[index]
-                                      .author,
+                                      .watch(countryWiseTourGuideDataProvider)[index]
+                                      .name.toString(),
                                   id: ref
-                                      .watch(dummyListDataProvider)[index]
-                                      .id,
+                                      .watch(countryWiseTourGuideDataProvider)[index]
+                                      .id.toString(),
                                   url: ref
-                                      .watch(dummyListDataProvider)[index]
-                                      .downloadUrl,
+                                      .watch(countryWiseTourGuideDataProvider)[index]
+                                      .images![1].toString(),
                                 ),
                               ),
                               if (ref.watch(isLoadMoreProvider) &&
                                   index ==
-                                      ref.watch(dummyListDataProvider).length -
+                                      ref.watch(countryWiseTourGuideDataProvider).length -
                                           1)
                                 const Padding(
                                   padding: EdgeInsets.only(top: 5, bottom: 40),
@@ -271,7 +283,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 ),
                               if (ref.watch(nextPageProvider) == false &&
                                   index ==
-                                      ref.watch(dummyListDataProvider).length -
+                                      ref.watch(countryWiseTourGuideDataProvider).length -
                                           1)
                                 Padding(
                                   padding:
@@ -362,7 +374,9 @@ class CardWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16)),
               height: 200,
               child:
-                  cacheNetworkWidget(context, imageUrl: url, fit: BoxFit.cover),
+                  ClipRRect(
+                       borderRadius: BorderRadius.circular(16),
+                    child: cacheNetworkWidget(context, imageUrl: url, fit: BoxFit.cover)),
             ),
             8.height(),
             Text(

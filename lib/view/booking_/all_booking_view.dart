@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/provider/book_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
@@ -22,7 +23,7 @@ class _AllBookingViewState extends ConsumerState<AllBookingView> {
           itemBuilder: (_, index) {
             return GestureDetector(
               onTap: () {
-                context.navigateNamed(BookingDetailView.routeName);
+               Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingDetailView(index), ));
               },
               child: Text(
                 "Booking 1024",
@@ -33,7 +34,7 @@ class _AllBookingViewState extends ConsumerState<AllBookingView> {
           separatorBuilder: (context, index) {
             return const Divider();
           },
-          itemCount: 10),
+          itemCount: bookedData.length),
     );
   }
 }
