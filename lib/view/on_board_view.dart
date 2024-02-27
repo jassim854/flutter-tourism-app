@@ -58,6 +58,7 @@ class _OnBoardViewState extends ConsumerState<OnBoardView> {
       backgroundColor: AppColor.surfaceBackgroundColor,
       body: SafeArea(
         child: PageView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           itemCount: 4,
           itemBuilder: (context, index) {
@@ -109,10 +110,16 @@ class _OnBoardViewState extends ConsumerState<OnBoardView> {
                         style: AppTypography.title18LG,
                       ),
                       if (index < 3)
-                        Text(
-                          "Skip",
-                          style: AppTypography.title18LG
-                              .copyWith(decoration: TextDecoration.underline),
+                        GestureDetector(
+                          onTap: () {
+                            context.navigateToRemovedUntilNamed(
+                                SelectCountryView.routeName);
+                          },
+                          child: Text(
+                            "Skip",
+                            style: AppTypography.title18LG
+                                .copyWith(decoration: TextDecoration.underline),
+                          ),
                         )
                       // CustomElevatedButton(
                       //   onPressed: () {

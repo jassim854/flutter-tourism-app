@@ -14,22 +14,23 @@ final selectedCountryProvider = StateProvider.autoDispose<String>((ref) {
   return "";
 });
 
-final searchedCountryProvider =
-    StateNotifierProvider.family.autoDispose <SearchedCountry,List<CountryModel>,List<CountryModel>>((ref,data) {
+final searchedCountryProvider = StateNotifierProvider.family
+    .autoDispose<SearchedCountry, List<CountryModel>, List<CountryModel>>(
+        (ref, data) {
   return SearchedCountry(data);
 });
 
 class SearchedCountry extends StateNotifier<List<CountryModel>> {
   SearchedCountry(super.state);
-    
 
   void addData(List<CountryModel> data) {
     state = data;
   }
 
-  void filterData(String value) {
+  void filterData(String value, List<CountryModel> data) {
     state = [
-      ...state.where((element) => element.countryName.toLowerCase().trim().contains(value))
+      ...data.where(
+          (element) => element.countryName.toLowerCase().trim().contains(value))
     ];
   }
 }

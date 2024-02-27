@@ -27,14 +27,22 @@ class SelectCountryView extends ConsumerStatefulWidget {
 class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
   late TextEditingController _searchController;
 
-
-  List<CountryModel> countryModelData=[
-    CountryModel(countryName: "Afghanistan", countryFlagUrl: "https://www.worldometers.info/img/flags/af-flag.gif"),
-        CountryModel(countryName:  "Albania", countryFlagUrl: "https://www.worldometers.info/img/flags/al-flag.gif"),
-            CountryModel(countryName:  "Algeria", countryFlagUrl: "https://www.worldometers.info/img/flags/ag-flag.gif"),
-                CountryModel(countryName:   "Andorra", countryFlagUrl: "https://www.worldometers.info/img/flags/an-flag.gif"),
-                    CountryModel(countryName:  "Angola", countryFlagUrl: "https://www.worldometers.info/img/flags/ao-flag.gif"),
-
+  List<CountryModel> countryModelData = [
+    CountryModel(
+        countryName: "Afghanistan",
+        countryFlagUrl: "https://www.worldometers.info/img/flags/af-flag.gif"),
+    CountryModel(
+        countryName: "Albania",
+        countryFlagUrl: "https://www.worldometers.info/img/flags/al-flag.gif"),
+    CountryModel(
+        countryName: "Algeria",
+        countryFlagUrl: "https://www.worldometers.info/img/flags/ag-flag.gif"),
+    CountryModel(
+        countryName: "Andorra",
+        countryFlagUrl: "https://www.worldometers.info/img/flags/an-flag.gif"),
+    CountryModel(
+        countryName: "Angola",
+        countryFlagUrl: "https://www.worldometers.info/img/flags/ao-flag.gif"),
   ];
   @override
   void initState() {
@@ -97,12 +105,14 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                   delayedFunction(fn: () {
                     if (value == "") {
                       ref
-                          .read(searchedCountryProvider(countryModelData).notifier)
+                          .read(searchedCountryProvider(countryModelData)
+                              .notifier)
                           .addData(countryModelData);
                     } else {
                       ref
-                          .read(searchedCountryProvider(countryModelData).notifier)
-                          .filterData(value.toLowerCase().trim());
+                          .read(searchedCountryProvider(countryModelData)
+                              .notifier)
+                          .filterData(value.toLowerCase().trim(),countryModelData);
                     }
                   });
                 },
@@ -165,8 +175,10 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                   itemCount: searchedCountries.length,
                   itemBuilder: (_, index) {
                     return ListTile(
-                      selected:
-                          searchedCountries[index].countryName == selectedCountry ? true : false,
+                      selected: searchedCountries[index].countryName ==
+                              selectedCountry
+                          ? true
+                          : false,
                       selectedTileColor: AppColor.surfaceBrandPrimaryColor,
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,7 +187,8 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                             height: 30,
                             width: 30,
                             child: cacheNetworkWidget(context,
-                                imageUrl: searchedCountries[index].countryFlagUrl),
+                                imageUrl:
+                                    searchedCountries[index].countryFlagUrl),
                           ),
                           Text(
                             searchedCountries[index].countryName,

@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/model/dummy_model.dart';
 
+final dropdownvalueProvider = StateProvider.autoDispose<String>((ref) {
+  return "Country";
+});
 final isLoadMoreProvider = StateProvider.autoDispose<bool>((ref) {
   return false;
 });
@@ -24,9 +27,8 @@ final dummyListDataProvider =
 
 class DummyListData extends StateNotifier<List<DummyModel>> {
   DummyListData() : super([]);
-  
+
   void addData(List<DummyModel> data) {
-    
     state.addAll(data);
   }
 }

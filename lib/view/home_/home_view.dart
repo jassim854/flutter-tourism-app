@@ -19,7 +19,10 @@ import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_tourism_app/widgets/filter_sheet_widget.dart';
 import 'package:shimmer/shimmer.dart';
+
+GlobalKey dropdownKey = GlobalKey();
 
 class HomeView extends ConsumerStatefulWidget {
   static const routeName = "/homeView";
@@ -121,7 +124,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     int length = ref.watch(dummyListDataProvider).length;
     bool closeIcon = ref.watch(showCloseIconProvider);
-
+    String selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
         appBar: AppBarWidget(
           title: "Ambassadors",
@@ -141,9 +144,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   } else {
                     ref.read(showCloseIconProvider.notifier).state = true;
                   }
-                  delayedFunction(
-                      // timer: timer,
-                      fn: () {
+                  delayedFunction(fn: () {
                     print(value);
                   });
                 },
@@ -153,17 +154,43 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 },
                 searchController: _searchController),
             actions: [
-              Container(
-                height: 40,
-                width: 40,
-                padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.only(right: 20, left: 4),
-                decoration: BoxDecoration(
-                    color: AppColor.surfaceBrandPrimaryColor,
-                    shape: BoxShape.circle),
-                child: SvgPicture.asset(
-                  AppAssets.filterIcon,
-                  color: AppColor.surfaceBackgroundColor,
+              InkWell(
+                onTap: () async {
+                  context.hideKeypad();
+                  await showModalBottomSheet(
+                    useSafeArea: true,
+                    enableDrag: false,
+                    isDismissible: false,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16))),
+                    backgroundColor: AppColor.surfaceBackgroundBaseColor,
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (_) {
+                      return PopScope(
+                        canPop: false,
+                        child: FilterSheetWidget(),
+                      );
+                    },
+                  );
+                  // dynamic state = dropdownKey.currentState;
+                  // state.showButtonMenu();
+                  // dropdownKey.currentState?.widget
+                },
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(right: 20, left: 4),
+                  decoration: BoxDecoration(
+                      color: AppColor.surfaceBrandPrimaryColor,
+                      shape: BoxShape.circle),
+                  child: SvgPicture.asset(
+                    AppAssets.filterIcon,
+                    color: AppColor.surfaceBackgroundColor,
+                  ),
                 ),
               )
               // _searchController.text.isNotEmpty
@@ -185,45 +212,81 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ],
           ),
         ),
-        body: ref.watch(isLoadingProvider)
-            ? const ListShimmer()
-            : ListView.builder(
-                controller: _scrollController,
-                itemCount: length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: (){
-                                  context.navigateNamed(HomeDetailView.routeName, arguments: ref.read(dummyListDataProvider)[index]);
-                        },
-                        child: CardWidget(
-                          name: ref.watch(dummyListDataProvider)[index].author,
-                          id: ref.watch(dummyListDataProvider)[index].id,
-                          url:
-                              ref.watch(dummyListDataProvider)[index].downloadUrl,
-                        ),
-                      ),
-                      if (ref.watch(isLoadMoreProvider) &&
-                          index == ref.watch(dummyListDataProvider).length - 1)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 5, bottom: 40),
-                          child: CupertinoActivityIndicator(
-                            radius: 18,
-                          ),
-                        ),
-                      if (ref.watch(nextPageProvider) == false &&
-                          index == ref.watch(dummyListDataProvider).length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5, bottom: 40),
-                          child: Text(
-                            "no Data",
-                            style: AppTypography.label18LG,
-                          ),
-                        )
-                    ],
-                  );
-                }));
+        body: Column(
+          children: [
+            ColoredBox(
+              color: AppColor.surfaceBackgroundColor,
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      left: 20, right: 20, top: 10, bottom: 10),
+                  height: 45,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                          width: 3.5,
+                          color: AppColor.surfaceBrandPrimaryColor)),
+                  child: Text(
+                    "$selectedCountry",
+                    style: AppTypography.label18LG,
+                  )),
+            ),
+            ref.watch(isLoadingProvider)
+                ? const Expanded(child: ListShimmer())
+                : Expanded(
+                    child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.navigateNamed(
+                                      HomeDetailView.routeName,
+                                      arguments: ref
+                                          .read(dummyListDataProvider)[index]);
+                                },
+                                child: CardWidget(
+                                  name: ref
+                                      .watch(dummyListDataProvider)[index]
+                                      .author,
+                                  id: ref
+                                      .watch(dummyListDataProvider)[index]
+                                      .id,
+                                  url: ref
+                                      .watch(dummyListDataProvider)[index]
+                                      .downloadUrl,
+                                ),
+                              ),
+                              if (ref.watch(isLoadMoreProvider) &&
+                                  index ==
+                                      ref.watch(dummyListDataProvider).length -
+                                          1)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 5, bottom: 40),
+                                  child: CupertinoActivityIndicator(
+                                    radius: 18,
+                                  ),
+                                ),
+                              if (ref.watch(nextPageProvider) == false &&
+                                  index ==
+                                      ref.watch(dummyListDataProvider).length -
+                                          1)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 40),
+                                  child: Text(
+                                    "no Data",
+                                    style: AppTypography.label18LG,
+                                  ),
+                                )
+                            ],
+                          );
+                        }),
+                  ),
+          ],
+        ));
   }
 }
 
@@ -350,62 +413,58 @@ class RattingWiget extends StatelessWidget {
   }
 }
 
-class DropDownContainer extends ConsumerStatefulWidget {
-  const DropDownContainer({super.key});
+// class DropDownContainer extends ConsumerWidget {
+//   DropDownContainer({super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _DropDownContainerState();
-}
+//   // List of items in our dropdown menu
 
-class _DropDownContainerState extends ConsumerState<DropDownContainer> {
-  String dropdownvalue = '';
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     String currentValue = ref.watch(dropdownvalueProvider);
+//     return Container(
+//       height: 45,
+//       alignment: Alignment.center,
+//       decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(24),
+//           border:
+//               Border.all(width: 3.5, color: AppColor.surfaceBrandPrimaryColor)),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Text(
+//             currentValue,
+//             style: AppTypography.label18LG,
+//           ),
+//           PopupMenuButton(
+//             // isExpanded: true,
+//             key: dropdownKey,
+//             initialValue: currentValue,
 
-  // List of items in our dropdown menu
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 45,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          border:
-              Border.all(width: 3.5, color: AppColor.surfaceBrandPrimaryColor)),
-      child: DropdownButton(
-        hint: const Text("Country"),
-        underline: const SizedBox.shrink(),
-        // Initial Value
-        value: dropdownvalue.isEmpty ? null : dropdownvalue,
-        elevation: 0,
-        // borderRadius: BorderRadius.circular(30),
-        padding: const EdgeInsets.only(left: 0),
-        // alignment: AlignmentDirectional.bottomStart,
-        dropdownColor: AppColor.surfaceBackgroundColor,
-        // Down Arrow Icon
-        icon: const Icon(Icons.keyboard_arrow_down),
+//             // Initial Value
 
-        // Array list of items
-        items: items.map((String items) {
-          return DropdownMenuItem(
-            value: items,
-            child: Text(items),
-          );
-        }).toList(),
-        // After selecting the desired option,it will
-        // change button value to selected value
-        onChanged: (String? newValue) {
-          setState(() {
-            dropdownvalue = newValue!;
-          });
-        },
-      ),
-    );
-  }
-}
+//             onSelected: (value) {
+//               ref.read(dropdownvalueProvider.notifier).state = value;
+//             },
+//             // borderRadius: BorderRadius.circular(30),
+
+//             // alignment: AlignmentDirectional.bottomStart,
+//             color: AppColor.surfaceBackgroundColor,
+//             surfaceTintColor: AppColor.surfaceBackgroundColor,
+//             // Down Arrow Icon
+//             icon: const Icon(Icons.keyboard_arrow_down),
+
+//             // Array list of items
+//             itemBuilder: (context) => items.map((String items) {
+//               return PopupMenuItem(
+//                 value: items,
+//                 child: Text(items),
+//               );
+//             }).toList(),
+//             // After selecting the desired option,it will
+//             // change button value to selected value
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+

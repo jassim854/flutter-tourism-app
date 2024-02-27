@@ -30,7 +30,7 @@ class _AppBottomNavigationBarState
     return [
       const HomeView(),
       const BookingView(),
-      Container(),
+      const SupportView(),
     ];
   }
 
@@ -59,66 +59,66 @@ class _AppBottomNavigationBarState
       PersistentBottomNavBarItem(
         // iconSize: 90,
 
-        onPressed: (BuildContext? _) {
-          return showCupertinoDialog(
-            context: context,
-            builder: (_) {
-              return CupertinoAlertDialog(
-                title: Text(
-                  'Support',
-                  style: AppTypography.title18LG,
-                ),
-                content: SizedBox(
-                  height: 150,
-                  // width: 400,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      40.height(),
-                      CupertinoTextField(
-                        controller: _emailController,
-                        placeholder: 'Email',
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      8.height(),
-                      CupertinoTextField(
-                        controller: _phoneController,
-                        placeholder: 'Phone Number',
-                        keyboardType: TextInputType.phone,
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text(
-                      'Cancel',
-                    ),
-                    textStyle: AppTypography.label16MD
-                        .copyWith(color: AppColor.redColor),
-                    onPressed: () {
-                      _.popPage();
-                    },
-                  ),
-                  CupertinoDialogAction(
-                    textStyle: AppTypography.label16MD
-                        .copyWith(color: AppColor.textPrimaryColor),
-                    child: const Text(
-                      'Submit',
-                    ),
-                    onPressed: () {
-                      // You can handle the submission here
-                      String email = _emailController.text;
-                      String phone = _phoneController.text;
+        // onPressed: (BuildContext? _) {
+        //   // return showCupertinoDialog(
+        //   //   context: context,
+        //   //   builder: (_) {
+        //   //     return CupertinoAlertDialog(
+        //   //       title: Text(
+        //   //         'Support',
+        //   //         style: AppTypography.title18LG,
+        //   //       ),
+        //   //       content: SizedBox(
+        //   //         height: 150,
+        //   //         // width: 400,
+        //   //         child: Column(
+        //   //           crossAxisAlignment: CrossAxisAlignment.stretch,
+        //   //           children: [
+        //   //             40.height(),
+        //   //             CupertinoTextField(
+        //   //               controller: _emailController,
+        //   //               placeholder: 'Email',
+        //   //               keyboardType: TextInputType.emailAddress,
+        //   //             ),
+        //   //             8.height(),
+        //   //             CupertinoTextField(
+        //   //               controller: _phoneController,
+        //   //               placeholder: 'Phone Number',
+        //   //               keyboardType: TextInputType.phone,
+        //   //             ),
+        //   //           ],
+        //   //         ),
+        //   //       ),
+        //   //       actions: [
+        //   //         CupertinoDialogAction(
+        //   //           child: const Text(
+        //   //             'Cancel',
+        //   //           ),
+        //   //           textStyle: AppTypography.label16MD
+        //   //               .copyWith(color: AppColor.redColor),
+        //   //           onPressed: () {
+        //   //             _.popPage();
+        //   //           },
+        //   //         ),
+        //   //         CupertinoDialogAction(
+        //   //           textStyle: AppTypography.label16MD
+        //   //               .copyWith(color: AppColor.textPrimaryColor),
+        //   //           child: const Text(
+        //   //             'Submit',
+        //   //           ),
+        //   //           onPressed: () {
+        //   //             // You can handle the submission here
+        //   //             String email = _emailController.text;
+        //   //             String phone = _phoneController.text;
 
-                      _.popPage();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
+        //   //             _.popPage();
+        //   //           },
+        //   //         ),
+        //   //       ],
+        //   //     );
+        //   //   },
+        //   // );
+        // },
         icon: const Icon(CupertinoIcons.settings),
         title: ("Support"),
         textStyle: AppTypography.label12XSM,

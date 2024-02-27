@@ -23,6 +23,7 @@ class AppColor {
 
   /// button
   static Color buttonPrimaryColor = const Color(0xff83A6F3);
+  static Color buttonDisableColor = const Color(0xff80898F);
   static Color buttonSecondaryColor = const Color(0xff5A7DCE);
   static Color buttonTertiaryColor = const Color(0xffE6EDFD);
   static Color buttonLabelColor = Colors.white;
