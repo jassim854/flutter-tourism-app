@@ -95,17 +95,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
       pageNumber = 1;
     }
 
-    await ref.read(apiServiceProvider).getCountryWiseTourGuideRequest(context,
-        payload:
-        
-         {
-          "country":ref.read(selectedCountryProvider)
-          
-          // "page": pageNumber.toString(), "limit": "10"
-          
-          }
-        
-        ).then((value) {
+    await ref
+        .read(apiServiceProvider)
+        .getCountryWiseTourGuideRequest(context, payload: {
+      "country": ref.read(selectedCountryProvider)
+
+      // "page": pageNumber.toString(), "limit": "10"
+    }).then((value) {
       if (value != null && value.isNotEmpty) {
         ref.read(nextPageProvider.notifier).state = true;
 
@@ -239,7 +235,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           width: 3.5,
                           color: AppColor.surfaceBrandPrimaryColor)),
                   child: Text(
-                    "$selectedCountry",
+                    selectedCountry,
                     style: AppTypography.label18LG,
                   )),
             ),
@@ -257,23 +253,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                   context.navigateNamed(
                                       HomeDetailView.routeName,
                                       arguments: ref
-                                          .read(countryWiseTourGuideDataProvider)[index]);
+                                          .read(countryWiseTourGuideDataProvider)[
+                                              index]
+                                          .id
+                                          .toString());
                                 },
                                 child: CardWidget(
                                   name: ref
-                                      .watch(countryWiseTourGuideDataProvider)[index]
-                                      .name.toString(),
-                                  id: ref
-                                      .watch(countryWiseTourGuideDataProvider)[index]
-                                      .id.toString(),
+                                      .watch(countryWiseTourGuideDataProvider)[
+                                          index]
+                                      .name
+                                      .toString(),
+                                  status: ref
+                                          .watch(countryWiseTourGuideDataProvider)[
+                                              index]
+                                          .status ??
+                                      false,
                                   url: ref
-                                      .watch(countryWiseTourGuideDataProvider)[index]
-                                      .images![1].toString(),
+                                      .watch(countryWiseTourGuideDataProvider)[
+                                          index]
+                                      .images![1]
+                                      .toString(),
                                 ),
                               ),
                               if (ref.watch(isLoadMoreProvider) &&
                                   index ==
-                                      ref.watch(countryWiseTourGuideDataProvider).length -
+                                      ref
+                                              .watch(
+                                                  countryWiseTourGuideDataProvider)
+                                              .length -
                                           1)
                                 const Padding(
                                   padding: EdgeInsets.only(top: 5, bottom: 40),
@@ -283,7 +291,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 ),
                               if (ref.watch(nextPageProvider) == false &&
                                   index ==
-                                      ref.watch(countryWiseTourGuideDataProvider).length -
+                                      ref
+                                              .watch(
+                                                  countryWiseTourGuideDataProvider)
+                                              .length -
                                           1)
                                 Padding(
                                   padding:
@@ -332,11 +343,11 @@ class ListShimmer extends StatelessWidget {
                     style: AppTypography.label18LG,
                   ),
                   8.height(),
-                  const RattingWiget(),
-                  8.height(),
+                  // const RattingWiget(),
+                  // 8.height(),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined),
+                      Icon(Icons.person),
                       8.width(),
                       Text(
                         "Name Space",
@@ -351,9 +362,10 @@ class ListShimmer extends StatelessWidget {
 }
 
 class CardWidget extends StatelessWidget {
-  final String name, id, url;
+  final String name, url;
+  final bool status;
   const CardWidget(
-      {super.key, required this.name, required this.id, required this.url});
+      {super.key, required this.name, required this.status, required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -373,10 +385,10 @@ class CardWidget extends StatelessWidget {
                       width: 2.5, color: AppColor.surfaceBrandPrimaryColor),
                   borderRadius: BorderRadius.circular(16)),
               height: 200,
-              child:
-                  ClipRRect(
-                       borderRadius: BorderRadius.circular(16),
-                    child: cacheNetworkWidget(context, imageUrl: url, fit: BoxFit.cover)),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: cacheNetworkWidget(context,
+                      imageUrl: url, fit: BoxFit.cover)),
             ),
             8.height(),
             Text(
@@ -384,14 +396,16 @@ class CardWidget extends StatelessWidget {
               style: AppTypography.label18LG,
             ),
             8.height(),
-            const RattingWiget(),
-            8.height(),
+            // const RattingWiget(),
+            // 8.height(),
             Row(
               children: [
-                const Icon(Icons.location_on_outlined),
+                Icon(Icons.person),
                 8.width(),
+                // const Icon(Icons.location_on_outlined),
+                // 8.width(),
                 Text(
-                  id,
+                  status ? "Available" : "Not Available",
                   style: AppTypography.paragraph16LG,
                 )
               ],

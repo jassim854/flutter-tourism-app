@@ -1,27 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
+import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
+import 'package:flutter_tourism_app/provider/home_detail_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
-import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
-import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
+
 import 'package:flutter_tourism_app/view/home_/book_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
-import 'package:flutter_tourism_app/widgets/textfield_widget.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class HomeDetailView extends ConsumerStatefulWidget {
-  final TourGuidModel data;
+  final String id;
   static const routeName = "/detailView";
-  const HomeDetailView({required this.data, super.key});
+  const HomeDetailView({required this.id, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _DetailViewState();
@@ -32,7 +33,6 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
 
   @override
   void initState() {
-
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset > 155) {
@@ -43,6 +43,25 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
       });
     // TODO: implement initState
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      callApi();
+    });
+  }
+
+  callApi() async {
+    ref.read(isLoadingProvider.notifier).state = true;
+    ref.read(isNoDataProvider.notifier).state = false;
+    await ref.read(apiServiceProvider).getATourGuideRequest(context,
+        payload: {"id": widget.id}).then((value) {
+      if (value != null) {
+        ref.read(aTourGuideProvider.notifier).addData(value);
+        ref.read(isLoadingProvider.notifier).state = false;
+      } else {
+        ref.read(isNoDataProvider.notifier).state = true;
+        ref.read(isLoadingProvider.notifier).state = false;
+      }
+    });
   }
 
   List<String> dummyNames = [
@@ -59,164 +78,173 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
   ];
   @override
   Widget build(BuildContext context) {
+    List<ATourGuideModel> data = ref.watch(aTourGuideProvider);
+    bool isLoading = ref.watch(isLoadingProvider);
     return Scaffold(
       // extendBodyBehindAppBar: true,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scrollController,
-        slivers: [
-          SliverAppBarWidget(
-            backGroundImg: widget.data.images![1],
-            value: false,
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.data.name.toString(),
-                            style: AppTypography.label16MD,
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on_outlined),
-                              Text(
-                                "Uk",
-                                style: AppTypography.paragraph14MD,
-                              )
-                            ],
-                          ),
-                          const RattingWiget(),
-                        ],
-                      ),
-                      CustomElevatedButton(
-                        onPressed: () {
-                          context.navigateNamed(BookView.routeName);
-                          // showCupertinoDialog(
-                          //   context: context,
-                          //   builder: (context) {
-                          //     return CupertinoAlertDialog(
-                          //       title: Text(
-                          //         'Enter Details',
-                          //         style: AppTypography.title18LG,
-                          //       ),
-                          //       content: SizedBox(
-                          //         height: 250,
-                          //         // width: 400,
-                          //         child: 
-                          //       ),
-                          //       actions: [
-                          //         CupertinoDialogAction(
-                          //           textStyle: AppTypography.label16MD
-                          //               .copyWith(color: AppColor.redColor),
-                          //           onPressed: () {
-                          //             context.popPage();
-                          //           },
-                          //           child: const Text(
-                          //             'Cancel',
-                          //           ),
-                          //         ),
-                          //         CupertinoDialogAction(
-                          //           textStyle: AppTypography.label16MD.copyWith(
-                          //               color: AppColor.textPrimaryColor),
-                          //           child: const Text(
-                          //             'Submit',
-                          //           ),
-                          //           onPressed: () {
-                          //             // You can handle the submission here
-                                     
-
-                          //             Navigator.of(context).pop();
-                          //             selectDateSheetWidget(context);
-                          //           },
-                          //         ),
-                          //       ],
-                          //     );
-                          //   },
-                          // );
-                        },
-                        title: 'Book',
-                      )
-                    ],
-                  )
-                ],
+      body: isLoading
+          ? Center(
+              child: CupertinoActivityIndicator(
+                radius: 35,
               ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Description",
-                    style: AppTypography.label18LG,
-                  ),
-                  8.height(),
-                  Text(
-                    "Противно на всеобщото вярване, Lorem Ipsum не е просто случаен текст. Неговите корени са в класическата Латинска литература от 45г.пр.Хр., което прави преди повече от 2000 години. Richard McClintock, професор по Латински от колежа Hampden-Sydney College във Вирджиния, изучавайки една от най-неясните латински думи  в един от пасажите на Lorem Ipsum, и търсейки цитати на думата в класическата литература, открива точния източник. Lorem Ipsum е намерен в секции 1.10.32 и 1.10.33 от de Finibus Bonorum et Malorum райностите на Доброто и Злото) от Цицерон, написан през 45г.пр.Хр. Тази книга е трактат по теория на етиката, много популярна през Ренесанса. Първият ред на Lorem Ipsum идва от ред, намерен в секция 1.10.32.",
-                    style: AppTypography.paragraph14MD,
-                  )
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.only(top: 20, left: 16),
-              child: Text(
-                "More From UK",
-                style: AppTypography.title18LG,
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
-              height: 110,
-              child: ListView.builder(
-                itemCount: dummyNames.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
+            )
+          : CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              controller: _scrollController,
+              slivers: [
+                SliverAppBarWidget(
+                  backGroundImg: data[0].images.first,
+                  value: false,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 20),
                     child: Column(
                       children: [
-                        CircleAvatar(
-                          onBackgroundImageError: (exception, stackTrace) {},
-                          radius: 25,
-                          backgroundImage: cachedNetworkImageProvider(
-                              imageUrl: "https://picsum.photos/150"),
-                        ),
-                        10.height(),
-                        Text(
-                          dummyNames[index],
-                          style: AppTypography.paragraph18XL,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data[0].name,
+                                  style: AppTypography.label16MD,
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on_outlined),
+                                    Text(
+                                      data[0].location,
+                                      style: AppTypography.paragraph14MD,
+                                    )
+                                  ],
+                                ),
+                                const RattingWiget(),
+                              ],
+                            ),
+                            CustomElevatedButton(
+                              onPressed: () {
+                                context.navigateNamed(BookView.routeName,
+                                    arguments: widget.id);
+                                // showCupertinoDialog(
+                                //   context: context,
+                                //   builder: (context) {
+                                //     return CupertinoAlertDialog(
+                                //       title: Text(
+                                //         'Enter Details',
+                                //         style: AppTypography.title18LG,
+                                //       ),
+                                //       content: SizedBox(
+                                //         height: 250,
+                                //         // width: 400,
+                                //         child:
+                                //       ),
+                                //       actions: [
+                                //         CupertinoDialogAction(
+                                //           textStyle: AppTypography.label16MD
+                                //               .copyWith(color: AppColor.redColor),
+                                //           onPressed: () {
+                                //             context.popPage();
+                                //           },
+                                //           child: const Text(
+                                //             'Cancel',
+                                //           ),
+                                //         ),
+                                //         CupertinoDialogAction(
+                                //           textStyle: AppTypography.label16MD.copyWith(
+                                //               color: AppColor.textPrimaryColor),
+                                //           child: const Text(
+                                //             'Submit',
+                                //           ),
+                                //           onPressed: () {
+                                //             // You can handle the submission here
+
+                                //             Navigator.of(context).pop();
+                                //             selectDateSheetWidget(context);
+                                //           },
+                                //         ),
+                                //       ],
+                                //     );
+                                //   },
+                                // );
+                              },
+                              title: 'Book Now',
+                            )
+                          ],
                         )
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Description",
+                          style: AppTypography.label18LG,
+                        ),
+                        8.height(),
+                        Text(
+                          data[0].description,
+                          style: AppTypography.paragraph14MD,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20, left: 16),
+                    child: Text(
+                      "More From ${data[0].location}",
+                      style: AppTypography.title18LG,
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
+                    height: 110,
+                    child: ListView.builder(
+                      itemCount: dummyNames.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                onBackgroundImageError:
+                                    (exception, stackTrace) {},
+                                radius: 25,
+                                backgroundImage: cachedNetworkImageProvider(
+                                    imageUrl: "https://picsum.photos/150"),
+                              ),
+                              10.height(),
+                              Text(
+                                dummyNames[index],
+                                style: AppTypography.paragraph18XL,
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 
-  
 //   void _showCalendarBottomSheet(BuildContext context, DateTime _selectedDate) {
 //     showModalBottomSheet(
 //       context: context,

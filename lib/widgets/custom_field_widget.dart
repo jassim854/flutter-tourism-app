@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/validators.dart';
-
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:intl_phone_field/country_picker_dialog.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class CustomSearchTextFieldWidget extends StatelessWidget {
   CustomSearchTextFieldWidget(
@@ -74,48 +74,125 @@ class CustomSearchTextFieldWidget extends StatelessWidget {
   }
 }
 
-class PhoneNumberFieldWidget extends StatelessWidget {
+class PhoneNumberFieldWidget extends StatefulWidget {
   final TextEditingController controller;
   const PhoneNumberFieldWidget({super.key, required this.controller});
+
+  @override
+  State<PhoneNumberFieldWidget> createState() => _PhoneNumberFieldWidgetState();
+}
+
+class _PhoneNumberFieldWidgetState extends State<PhoneNumberFieldWidget> {
   // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return InternationalPhoneNumberInput(
-      autoValidateMode: AutovalidateMode.onUserInteraction,
- 
-      spaceBetweenSelectorAndTextField: 23,
-      searchBoxDecoration: InputDecoration(
-        hintText: "Search Country",
-        icon: const Padding(
-            padding: EdgeInsets.only(left: 10), child: Icon(Icons.search)),
-        hintStyle: AppTypography.paragraph16LG
-            .copyWith(color: AppColor.textBlackColor),
+    return IntlPhoneField(
+      initialCountryCode: "AE",
+
+      pickerDialogStyle: PickerDialogStyle(
+        searchFieldPadding: EdgeInsets.all(10),
+        backgroundColor: AppColor.surfaceBackgroundColor,
+        searchFieldInputDecoration: InputDecoration(
+          filled: true,
+          fillColor: AppColor.surfaceBackgroundColor,
+          hintText: "Search Country",
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color:
+                    AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                width: 0.5,
+                color:
+                    AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+                color:
+                    AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          prefixIcon: const Padding(
+              padding: EdgeInsets.only(left: 10), child: Icon(Icons.search)),
+          hintStyle: AppTypography.paragraph16LG
+              .copyWith(color: AppColor.textBlackColor),
+        ),
       ),
-      selectorConfig: const SelectorConfig(
-          leadingPadding: 20,
-          useBottomSheetSafeArea: true,
-          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-          setSelectorButtonAsPrefixIcon: false),
-      inputDecoration: InputDecoration(
-        hintText: "Phone Number",
-        hintStyle: AppTypography.paragraph16LG
-            .copyWith(color: AppColor.textBlackColor),
-        alignLabelWithHint: true,
-        border: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColor.surfaceBrandSecondaryColor)),
+      dropdownDecoration: BoxDecoration(
+        color: AppColor.surfaceBackgroundColor,
+      ),
+      onChanged: (value) {
+        widget.controller.text = "${value.countryCode}${value.number}";
+      },
+      // initialValue: PhoneNumber(dialCode: "971", isoCode: "AE"),
+
+      // dropdownDecoration: InputDecoration(
+      //   filled: true,
+      //   fillColor: AppColor.surfaceBackgroundColor,
+      //   hintText: "Search Country",
+      //   contentPadding:
+      //       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+      //   enabledBorder: OutlineInputBorder(
+      //     borderSide: BorderSide(
+      //         color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+      //     borderRadius: BorderRadius.circular(8),
+      //   ),
+      //   focusedBorder: OutlineInputBorder(
+      //     borderSide: BorderSide(
+      //         width: 0.5,
+      //         color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+      //     borderRadius: BorderRadius.circular(8),
+      //   ),
+      //   border: OutlineInputBorder(
+      //     borderSide: BorderSide(
+      //         color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+      //     borderRadius: BorderRadius.circular(8),
+      //   ),
+      //   prefixIcon: const Padding(
+      //       padding: EdgeInsets.only(left: 10), child: Icon(Icons.search)),
+      //   hintStyle: AppTypography.paragraph16LG
+      //       .copyWith(color: AppColor.textBlackColor),
+      // ),
+
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: AppColor.surfaceBackgroundColor,
+        hintText: "Enter Phone Number",
+        hintStyle: AppTypography.label18LG.copyWith(
+            color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.9)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColor.surfaceBrandSecondaryColor)),
+          borderSide: BorderSide(
+              color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(
+            color: AppColor.redColor,
+            width: 2.0,
+          ),
+        ),
         focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 2, color: AppColor.surfaceBrandPrimaryColor)),
-        labelStyle: AppTypography.paragraph14MD
-            .copyWith(color: AppColor.buttonLabelColor),
+          borderSide: BorderSide(
+              width: 0.5,
+              color: AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
       cursorColor: AppColor.surfaceBrandPrimaryColor,
-      textStyle: AppTypography.label16MD,
-      autofillHints: ["Pk", "ch", "in"],
-      onFieldSubmitted: (value) {},
-      onInputChanged: (PhoneNumber value) {},
+      style: AppTypography.label16MD,
     );
   }
 }

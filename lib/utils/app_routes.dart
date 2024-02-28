@@ -27,9 +27,9 @@ class AppRoutes {
             builder: ((context) => const SelectCountryView()));
       case HomeDetailView.routeName:
         return MaterialPageRoute(builder: ((context) {
-          TourGuidModel data = setting.arguments as TourGuidModel;
+          String id = setting.arguments as String;
           return HomeDetailView(
-            data: data,
+            id: id,
           );
         }));
       case BookingView.routeName:
@@ -37,12 +37,10 @@ class AppRoutes {
       // case BookingDetailView.routeName:
       //   return MaterialPageRoute(
       //       builder: ((context) => const BookingDetailView()));
-   case BookView.routeName:
+      case BookView.routeName:
         return MaterialPageRoute(builder: ((context) {
- 
-          return BookView(
-      
-          );
+                String id = setting.arguments as String;
+          return BookView(id);
         }));
       default:
         return MaterialPageRoute(

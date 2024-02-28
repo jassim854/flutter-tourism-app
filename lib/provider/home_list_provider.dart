@@ -22,7 +22,7 @@ final dropdownvalueProvider = StateProvider.autoDispose<String>((ref) {
 // }
 
 final countryWiseTourGuideDataProvider =
-    StateNotifierProvider.autoDispose<CountryWiseTourGuideData, List<TourGuidModel>>((
+    StateNotifierProvider<CountryWiseTourGuideData, List<TourGuidModel>>((
   ref,
 ) {
   return CountryWiseTourGuideData();

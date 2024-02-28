@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/helper/basehelper.dart';
+import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/book_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -17,8 +20,9 @@ import 'package:flutter_tourism_app/widgets/textfield_widget.dart';
 import 'package:intl/intl.dart';
 
 class BookView extends ConsumerStatefulWidget {
+  final String id;
   static const routeName = "/bookView";
-  const BookView({super.key});
+  const BookView(this.id, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BookViewState();
@@ -41,6 +45,18 @@ class _BookViewState extends ConsumerState<BookView> {
     super.initState();
   }
 
+  Future<String> bookCall(Map<String, dynamic> data) async {
+    await ref
+        .read(apiServiceProvider)
+        .postBookRequest(context, payload: data)
+        .then((value) {
+      if (value != null) {
+        return value.toString();
+      }
+    });
+    return "";
+  }
+
   DateTime currentDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
@@ -51,7 +67,7 @@ class _BookViewState extends ConsumerState<BookView> {
     return Scaffold(
       appBar: const AppBarWidget(
         leadingWidth: 40,
-        title: "Book",
+        title: "Book Now",
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -63,13 +79,13 @@ class _BookViewState extends ConsumerState<BookView> {
               children: [
                 Center(
                     child: Text(
-                  "Book Yourself",
+                  "Book Ambassdor",
                   style: AppTypography.title24XL,
                 )),
                 20.height(),
                 TextFieldWidget(
                     validator: (p0) => Validators.validateField(p0),
-                    hintText: "Enter Name",
+                    hintText: "Enter Full Name",
                     textEditingController: _nameontroller,
                     textInputType: TextInputType.name),
                 16.height(),
@@ -94,7 +110,8 @@ class _BookViewState extends ConsumerState<BookView> {
                       selectDateSheetWidget(context);
                     },
                     child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.only(
+                            top: 18, bottom: 18, left: 16, right: 16),
                         decoration: BoxDecoration(
                           color: AppColor.surfaceBackgroundColor,
                           border: Border.all(
@@ -116,7 +133,10 @@ class _BookViewState extends ConsumerState<BookView> {
                                   ])
                             : Text(
                                 "Select Date",
-                                style: AppTypography.label16MD,
+                                style: AppTypography.label16MD.copyWith(
+                                    color: AppColor
+                                        .surfaceBackgroundBaseDarkColor
+                                        .withOpacity(0.9)),
                               ))),
                 16.height(),
                 Row(
@@ -164,7 +184,7 @@ class _BookViewState extends ConsumerState<BookView> {
                               ref
                                   .read(selectedFromTimeProvider.notifier)
                                   .updateDate(selectedFromTime!
-                                      .add(Duration(hours: 4)));
+                                      .add(const Duration(hours: 4)));
                             } else {
                               ref
                                   .read(selectedFromTimeProvider.notifier)
@@ -174,7 +194,8 @@ class _BookViewState extends ConsumerState<BookView> {
                         });
                       },
                       child: Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.only(
+                              top: 18, bottom: 18, left: 16, right: 16),
                           decoration: BoxDecoration(
                             color: AppColor.surfaceBackgroundColor,
                             border: Border.all(
@@ -184,12 +205,17 @@ class _BookViewState extends ConsumerState<BookView> {
                           ),
                           child: selectedFromTime != null
                               ? Text(
-                                  DateFormat("hh:mm").format(selectedFromTime),
-                                  style: AppTypography.label18LG,
-                                )
-                              : Text(
-                                  "Select From Time",
-                                  style: AppTypography.label18LG,
+                                  DateFormat("hh:mm aa")
+                                      .format(selectedFromTime),
+                                  style: AppTypography.label18LG)
+                              : FittedBox(
+                                  child: Text(
+                                    "Select From Time",
+                                    style: AppTypography.label18LG.copyWith(
+                                        color: AppColor
+                                            .surfaceBackgroundBaseDarkColor
+                                            .withOpacity(0.9)),
+                                  ),
                                 )),
                     )),
                     8.width(),
@@ -200,7 +226,8 @@ class _BookViewState extends ConsumerState<BookView> {
                             null) {
                           selectTimeSheetWidget(context,
                               initialTime: selectedToTime ??
-                                  selectedFromTime!.add(Duration(hours: 4)),
+                                  selectedFromTime!
+                                      .add(const Duration(hours: 4)),
                               onDateTimeChanged: (value) {
                             ref
                                 .read(selectedToTimeProvider.notifier)
@@ -219,7 +246,7 @@ class _BookViewState extends ConsumerState<BookView> {
                                   .isBefore(ref
                                       .read(selectedFromTimeProvider.notifier)
                                       .state!
-                                      .add(Duration(hours: 4)))) {
+                                      .add(const Duration(hours: 4)))) {
                                 BaseHelper.showSnackBar(context,
                                     "Time can not be less than 4 hours of the Selected Time");
                                 ref
@@ -231,7 +258,7 @@ class _BookViewState extends ConsumerState<BookView> {
                                   .isAfter(ref
                                       .read(selectedFromTimeProvider.notifier)
                                       .state!
-                                      .add(Duration(hours: 8)))) {
+                                      .add(const Duration(hours: 8)))) {
                                 BaseHelper.showSnackBar(context,
                                     "Time can not be gretater than 8 hours of the Selected Time");
                                 ref
@@ -248,12 +275,12 @@ class _BookViewState extends ConsumerState<BookView> {
                                     .updateDate(ref
                                         .read(selectedFromTimeProvider.notifier)
                                         .state!
-                                        .add(Duration(hours: 4)));
+                                        .add(const Duration(hours: 4)));
                               } else {
                                 ref
                                     .read(selectedToTimeProvider.notifier)
-                                    .updateDate(
-                                        DateTime.now().add(Duration(hours: 4)));
+                                    .updateDate(DateTime.now()
+                                        .add(const Duration(hours: 4)));
                               }
                             }
                           });
@@ -263,7 +290,8 @@ class _BookViewState extends ConsumerState<BookView> {
                         }
                       },
                       child: Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.only(
+                              top: 18, bottom: 18, left: 16, right: 16),
                           decoration: BoxDecoration(
                             color: AppColor.surfaceBackgroundColor,
                             border: Border.all(
@@ -278,30 +306,51 @@ class _BookViewState extends ConsumerState<BookView> {
                                 )
                               : Text(
                                   "Select To Time",
-                                  style: AppTypography.label18LG,
+                                  style: AppTypography.label18LG.copyWith(
+                                      color: AppColor
+                                          .surfaceBackgroundBaseDarkColor
+                                          .withOpacity(0.9)),
                                 )),
                     )),
                   ],
                 ),
                 30.height(),
-                CustomElevatedButton(onPressed: () {
-                      if (selectedFromTime==null) {
+                CustomElevatedButton(
+                  onPressed: () async {
+                    if (selectedFromTime == null) {
                       BaseHelper.showSnackBar(context, "Select from time");
                     }
-                        if (selectedToTime==null) {
+                    if (selectedToTime == null) {
                       BaseHelper.showSnackBar(context, "Select to time");
                     }
-                        if (selectedDate==null) {
+                    if (selectedDate == null) {
                       BaseHelper.showSnackBar(context, "Select Date");
                     }
-                  if (formKey.currentState!.validate()) {
-                confirmBookingSheetWidget(context);
-                  } else {
-                
-                    return;
-                  }
-                },
-                title: "Book now",
+                    if (formKey.currentState!.validate()) {
+                      Map<String, dynamic> payload = {
+                        "user_email":
+                            _emailController.text.trim().toLowerCase(),
+                        "username": _nameontroller.text.trimRight().trimLeft(),
+                        "user_phone_number": _phoneController.text,
+                        "tour_guide_id": widget.id,
+                        "date": selectedDate!.toUtc(),
+                        "start_time": selectedFromTime!.toUtc(),
+                        "end_time": selectedToTime!.toUtc(),
+                      };
+                      await bookCall(payload).then((value) {
+                        if (value.toLowerCase().contains("booked")) {
+                          confirmBookingSheetWidget(context,
+                              selectedDate: selectedDate,
+                              selectedFromTime: selectedFromTime,
+                              selectedToTime: selectedToTime,
+                              name: _nameontroller.text.trimRight().trimLeft());
+                        } else {}
+                      });
+                    } else {
+                      return;
+                    }
+                  },
+                  title: "Book now",
                 )
               ],
             ),
@@ -358,9 +407,8 @@ class _BookViewState extends ConsumerState<BookView> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: () {
-                                context.popPage();
+                        context.popPage();
                         if (ref.read(selectedDateProvider) == null) {
-                  
                           ref
                               .read(selectedDateProvider.notifier)
                               .updateDate(DateTime.now());
@@ -430,14 +478,21 @@ class _BookViewState extends ConsumerState<BookView> {
     );
   }
 
-  Future<dynamic> confirmBookingSheetWidget(BuildContext context) {
-    bookedData.add({
-      "date": DateFormat("MMM/dd/yyyy").format(ref.watch(selectedDateProvider)!),
-      "fromTime": DateFormat("hh:mm").format(ref.watch(selectedFromTimeProvider)!),
-      "toTime": DateFormat("hh:mm").format(ref.watch(selectedToTimeProvider)!),
-      "name":_nameontroller.text
-      
-    });
+  Future<dynamic> confirmBookingSheetWidget(
+    BuildContext context, {
+    required DateTime selectedDate,
+    required DateTime selectedFromTime,
+    required DateTime selectedToTime,
+    required String name,
+  }) {
+    // bookedData.add({
+    //   "date":
+    //       DateFormat("MMM/dd/yyyy").format(ref.watch(selectedDateProvider)!),
+    //   "fromTime":
+    //       DateFormat("hh:mm").format(ref.watch(selectedFromTimeProvider)!),
+    //   "toTime": DateFormat("hh:mm").format(ref.watch(selectedToTimeProvider)!),
+    //   "name": _nameontroller.text
+    // });
     return showModalBottomSheet(
       backgroundColor: AppColor.surfaceBackgroundBaseColor,
       useSafeArea: true,
@@ -457,17 +512,20 @@ class _BookViewState extends ConsumerState<BookView> {
             padding: const EdgeInsets.only(left: 20),
             child: Column(
               children: [
-                 ConfirmBookRowWidget(title: 'Date', subtitle: DateFormat("MMM/dd/yyyy").format(ref.watch(selectedDateProvider)!)),
+                ConfirmBookRowWidget(
+                    title: 'Date',
+                    subtitle: DateFormat("MMM/dd/yyyy").format(selectedDate)),
                 20.height(),
-                 ConfirmBookRowWidget(title: "From Time", subtitle: DateFormat("hh:mm").format(ref.watch(selectedFromTimeProvider)!)),
-                                 20.height(),
-                 ConfirmBookRowWidget(title: "To Time", subtitle: DateFormat("hh:mm").format(ref.watch(selectedToTimeProvider)!)),
+                ConfirmBookRowWidget(
+                    title: "From Time",
+                    subtitle: DateFormat("hh:mm a").format(selectedFromTime)),
                 20.height(),
-                 ConfirmBookRowWidget(
-                  title: "Name",
-                  subtitle: _nameontroller.text.toString()
-                ),
-                  20.height(),
+                ConfirmBookRowWidget(
+                    title: "To Time",
+                    subtitle: DateFormat("hh:mm a").format(selectedToTime)),
+                20.height(),
+                ConfirmBookRowWidget(title: "Name", subtitle: name),
+                20.height(),
                 //  ConfirmBookRowWidget(
                 //   title: "Email",
                 //   subtitle: _emailController.text.toString()
