@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -164,8 +165,7 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
                               SizedBox(
                                 height: 30,
                                 width: 30,
-                                child: cacheNetworkWidget(context,
-                                    imageUrl: searchedCountries[index]
+                                child: SvgPicture.network( searchedCountries[index]
                                         .countryFlagUrl),
                               ),
                               Text(

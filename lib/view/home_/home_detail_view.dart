@@ -76,6 +76,18 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
     'William Thomas',
     'Amanda Garcia',
   ];
+    List<String> dummyImages = [
+"https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg",
+"https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVyc29ufGVufDB8fDB8fHww",
+"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqjhFHlDHQi2QahdbwAe2RzFlw3894RkzCgDueYWxpmw&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRImhGqnK1GlnIeKEMt0M-t9JqsjVbdoZNLWXW-Xp64M6eN4oVzB43YFImf9A&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREVbsZiiOitWNNhWRiSlCS4sNuQO_YEFqs2w&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzNF2YIDP9cVqoLBNf4Pr7kJ82bWmA1Ups2g&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE4g-3ZH_1TjfN-zOuCRru2LrfrGtPbwaCsQ&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJRFPeLuX1CzCS21KZB6BpL0zSeVxKHwg1Mw&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToOoJnrndFqTIcvygz9DmXfGbhxfTCxss17g&s"
+  ];
   @override
   Widget build(BuildContext context) {
     List<ATourGuideModel> data = ref.watch(aTourGuideProvider);
@@ -93,7 +105,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
               controller: _scrollController,
               slivers: [
                 SliverAppBarWidget(
-                  backGroundImg: data[0].images.first,
+                  backGroundImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s",
                   value: false,
                 ),
                 SliverToBoxAdapter(
@@ -114,14 +126,14 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(Icons.location_on_outlined),
+                                    const Icon(Icons.location_on_outlined),5 .width(),
                                     Text(
                                       data[0].location,
                                       style: AppTypography.paragraph14MD,
                                     )
                                   ],
                                 ),
-                                const RattingWiget(),
+                                // const RattingWiget(),
                               ],
                             ),
                             CustomElevatedButton(
@@ -226,7 +238,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                                     (exception, stackTrace) {},
                                 radius: 25,
                                 backgroundImage: cachedNetworkImageProvider(
-                                    imageUrl: "https://picsum.photos/150"),
+                                    imageUrl: dummyImages[index]),
                               ),
                               10.height(),
                               Text(

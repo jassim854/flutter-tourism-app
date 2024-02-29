@@ -56,14 +56,16 @@ class NetworkHelper {
       data: payLoad,
     );
   }
-    Future<Response> getUserBookingApi() async {
+    Future<Response> getUserBookingApi( {required Map<String,dynamic> payLoad}) async {
     return await dio.get(
       NetworkEndPoints.getUserBookingEndPoint,
+      data: payLoad
     );
   }
-     Future<Response> getBookingDetailApi() async {
+     Future<Response> getBookingDetailApi ({required Map<String,dynamic> payLoad}) async {
     return await dio.get(
       NetworkEndPoints.getBookingDetailEndPoint,
+      data: payLoad
     );
   }
 }

@@ -90,6 +90,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   scale: 1.2,
                   child: SvgPicture.asset(
                     AppAssets.backArrowIcon,
+                    color: AppColor.surfaceBrandDarkColor,
                   ),
                 ),
               )

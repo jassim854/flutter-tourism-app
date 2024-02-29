@@ -3,6 +3,9 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/booking_provider.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_routes.dart';
@@ -12,6 +15,7 @@ import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
 import 'package:flutter_tourism_app/view/support_view.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 PersistentTabController controller = PersistentTabController();
 
@@ -47,6 +51,27 @@ class _AppBottomNavigationBarState
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
+        onSelectedTabPressWhenNoScreensPushed: ()async{
+             SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? value = preferences.getString("email");
+    if (value != null) {
+      ref.read(isLoadingProvider.notifier).state = true;
+
+      await ref.read(apiServiceProvider).getUserBookedRequest(context,
+          payload: {"user_email": value}).then((val) {
+        if (val != null) {
+          ref.read(userAllBookedListProvider.notifier).addValue(val);
+          ref.read(isLoadingProvider.notifier).state = false;
+
+ref.read(userConfirmBookedListProvider.notifier).addValue(val);
+ref.read(userCancelledBookedListProvider.notifier).addValue(val);
+ref.read(userPendingBookedListProvider.notifier).addValue(val);
+        } else {
+          ref.read(isLoadingProvider.notifier).state = false;
+        }
+      });
+    }
+        },
         routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: BookingView.routeName,
             onGenerateRoute: AppRoutes.generateRoute),

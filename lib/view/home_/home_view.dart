@@ -133,6 +133,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     String selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
         appBar: AppBarWidget(
+
           title: "Ambassadors",
           bottomBarWidget: AppBar(
             surfaceTintColor: AppColor.surfaceBackgroundColor,
@@ -382,13 +383,13 @@ class CardWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   color: AppColor.surfaceBackgroundBaseDarkColor,
                   border: Border.all(
-                      width: 2.5, color: AppColor.surfaceBrandPrimaryColor),
+                      width: 0.1, color: AppColor.surfaceBrandPrimaryColor),
                   borderRadius: BorderRadius.circular(16)),
               height: 200,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: cacheNetworkWidget(context,
-                      imageUrl: url, fit: BoxFit.cover)),
+                      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s", fit: BoxFit.cover)),
             ),
             8.height(),
             Text(

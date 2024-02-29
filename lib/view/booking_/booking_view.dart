@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/booking_provider.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/booking_/all_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/cancelled_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/completd_booking_view.dart';
+import 'package:flutter_tourism_app/view/booking_/pending_booking_view.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookingView extends ConsumerStatefulWidget {
   static const routeName = "/bookingView";
@@ -21,10 +26,33 @@ class _BookingViewState extends ConsumerState<BookingView>
   late TabController _tabController;
   @override
   void initState() {
-    _tabController = TabController(vsync: this, length: 3, initialIndex: 0);
-    // TODO: implement initState
-    super.initState();
+    _tabController = TabController(vsync: this, length: 4, initialIndex: 0);
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+      // callBooking();
+    });
   }
+    callBooking() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? value = preferences.getString("email");
+    if (value != null) {
+      ref.read(isLoadingProvider.notifier).state = true;
+
+      await ref.read(apiServiceProvider).getUserBookedRequest(context,
+          payload: {"user_email": value}).then((val) {
+        if (val != null) {
+          ref.read(userAllBookedListProvider.notifier).addValue(val);
+          ref.read(isLoadingProvider.notifier).state = false;
+
+ref.read(userConfirmBookedListProvider.notifier).addValue(val);
+ref.read(userCancelledBookedListProvider.notifier).addValue(val);
+ref.read(userPendingBookedListProvider.notifier).addValue(val);
+        } else {
+          ref.read(isLoadingProvider.notifier).state = false;
+        }
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,26 +93,35 @@ class _BookingViewState extends ConsumerState<BookingView>
                           style: AppTypography.label14SM
                               .copyWith(color: AppColor.textBlackColor),
                         ),
+                          Text(
+                          "Pending",
+                          style: AppTypography.label14SM
+                              .copyWith(color: AppColor.textBlackColor),
+                        ),
                         Text(
                           "Completed",
                           style: AppTypography.label14SM
                               .copyWith(color: AppColor.textBlackColor),
                         ),
-                        Row(
-                          children: [
-                            10.width(),
-                            Container(
-                              width: 2,
-                              height: 20,
-                              color: AppColor.surfaceBackgroundBaseDarkColor,
-                            ),
-                            10.width(),
-                            Text(
-                              "Cancelled",
-                              style: AppTypography.label14SM
-                                  .copyWith(color: AppColor.textBlackColor),
-                            ),
-                          ],
+
+                        FittedBox(
+                          child: Row(
+                            children: [
+                              10.width(),
+                              Container(
+                                width: 2,
+                                height: 20,
+                                color: AppColor.surfaceBackgroundBaseDarkColor,
+                              ),
+                              10.width(),
+                              Text(
+                                "Cancelled",
+                                style: AppTypography.label14SM
+                                    .copyWith(color: AppColor.textBlackColor),
+                              ),
+                         10.width()
+                            ],
+                          ),
                         )
                       ])),
             ],
@@ -99,8 +136,11 @@ class _BookingViewState extends ConsumerState<BookingView>
               controller: _tabController,
               children: const [
                 AllBookingView(),
+                   PendingBookingView(),
                 CompletedBookingView(),
-                CancelledBookingView()
+                CancelledBookingView(),
+             
+
               ],
             ),
           ),

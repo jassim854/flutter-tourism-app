@@ -8,6 +8,8 @@ import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart'
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
+import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
+import 'package:flutter_tourism_app/model/network_model/user_detail_booking_model.dart';
 import 'package:flutter_tourism_app/network/nerwork_helper.dart';
 
 final apiServiceProvider = Provider<ApiServices>((ref) {
@@ -117,8 +119,53 @@ class ApiServices {
         return response.data;
       }
     } on DioException catch (e) {
+      if (e.response?.statusCode==400) {
+           BaseHelper.showSnackBar(context, "Tour guide is already booked for this time slot on this day.");
+      }else{
+         BaseHelper.showSnackBar(context, e.message);
+      }
+   
+    }
+    return null;
+  }
+
+
+  Future<List<UserBookedModel>?> getUserBookedRequest(context,
+      {required Map<String, dynamic> payload}) async {
+    try {
+      NetworkHelper networkHelper = NetworkHelper();
+      Response<dynamic> response =
+          await networkHelper.getUserBookingApi(payLoad: payload);
+      if (response.statusCode == 200) {
+        return await compute(_convertUserBookeResponseList, response);
+      }
+    } on DioException catch (e) {
       BaseHelper.showSnackBar(context, e.message);
     }
     return null;
   }
+  List<UserBookedModel> _convertUserBookeResponseList(
+      Response<dynamic> response) {
+    return List.from(response.data.map((e) => UserBookedModel.fromJson(e)));
+  }
+  Future<UserDetailBookedModel?> getUserDetailBookedRequest(context,
+      {required Map<String, dynamic> payload}) async {
+    try {
+      NetworkHelper networkHelper = NetworkHelper();
+      Response<dynamic> response =
+          await networkHelper.getBookingDetailApi(payLoad: payload);
+      if (response.statusCode == 200) {
+            return UserDetailBookedModel.fromJson(response.data);
+        // return await compute(_convertUserDetailBookeResponse, response);
+      }
+    } on DioException catch (e) {
+      BaseHelper.showSnackBar(context, e.message);
+    }
+    return null;
+  }
+  UserDetailBookedModel _convertUserDetailBookeResponse(
+      Response<dynamic> response) {
+    return UserDetailBookedModel.fromJson(response.data);
+  }
+
 }

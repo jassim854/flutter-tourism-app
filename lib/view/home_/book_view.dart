@@ -12,13 +12,14 @@ import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/utils/validators.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
+import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 import 'package:flutter_tourism_app/widgets/textfield_widget.dart';
 import 'package:intl/intl.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class BookView extends ConsumerStatefulWidget {
   final String id;
   static const routeName = "/bookView";
@@ -46,15 +47,17 @@ class _BookViewState extends ConsumerState<BookView> {
   }
 
   Future<String> bookCall(Map<String, dynamic> data) async {
+    String val="";
     await ref
         .read(apiServiceProvider)
         .postBookRequest(context, payload: data)
         .then((value) {
       if (value != null) {
-        return value.toString();
+    val=value;
+    return val;
       }
     });
-    return "";
+    return val;
   }
 
   DateTime currentDate = DateTime.now();
@@ -124,20 +127,30 @@ class _BookViewState extends ConsumerState<BookView> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
+                                                      Row(children: [
+                                                                    Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                                5.width(),
                                     Text('Selected Date:',
                                         style: AppTypography.label18LG),
+                                                      ],),
                                     Text(
                                         DateFormat('MM/dd/yyyy')
                                             .format(selectedDate),
                                         style: AppTypography.label18LG),
                                   ])
-                            : Text(
-                                "Select Date",
-                                style: AppTypography.label16MD.copyWith(
-                                    color: AppColor
-                                        .surfaceBackgroundBaseDarkColor
-                                        .withOpacity(0.9)),
-                              ))),
+                            : Row(
+                              children: [
+                                                                Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                                5.width(),
+                                Text(
+                                    "Select Date",
+                                    style: AppTypography.label16MD.copyWith(
+                                        color: AppColor
+                                            .surfaceBackgroundBaseDarkColor
+                                            .withOpacity(0.9)),
+                                  ),
+                              ],
+                            ))),
                 16.height(),
                 Row(
                   children: [
@@ -203,20 +216,26 @@ class _BookViewState extends ConsumerState<BookView> {
                                     .withOpacity(0.5)),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: selectedFromTime != null
-                              ? Text(
-                                  DateFormat("hh:mm aa")
-                                      .format(selectedFromTime),
-                                  style: AppTypography.label18LG)
-                              : FittedBox(
-                                  child: Text(
-                                    "Select From Time",
-                                    style: AppTypography.label18LG.copyWith(
-                                        color: AppColor
-                                            .surfaceBackgroundBaseDarkColor
-                                            .withOpacity(0.9)),
-                                  ),
-                                )),
+                          child: Row(
+                            children: [
+                                                              Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                              5.width(),
+                              selectedFromTime != null
+                                  ? Text(
+                                      DateFormat("hh:mm aa")
+                                          .format(selectedFromTime),
+                                      style: AppTypography.label18LG)
+                                  : FittedBox(
+                                      child: Text(
+                                        "Select From Time",
+                                        style: AppTypography.label18LG.copyWith(
+                                            color: AppColor
+                                                .surfaceBackgroundBaseDarkColor
+                                                .withOpacity(0.9)),
+                                      ),
+                                    ),
+                            ],
+                          )),
                     )),
                     8.width(),
                     Expanded(
@@ -299,18 +318,26 @@ class _BookViewState extends ConsumerState<BookView> {
                                     .withOpacity(0.5)),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: selectedToTime != null
-                              ? Text(
-                                  DateFormat("hh:mm").format(selectedToTime),
-                                  style: AppTypography.label18LG,
-                                )
-                              : Text(
-                                  "Select To Time",
-                                  style: AppTypography.label18LG.copyWith(
-                                      color: AppColor
-                                          .surfaceBackgroundBaseDarkColor
-                                          .withOpacity(0.9)),
-                                )),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                              5.width(),
+                              selectedToTime != null
+                                  ? Text(
+                                      DateFormat("hh:mm aa").format(selectedToTime),
+                                      style: AppTypography.label18LG,
+                                    )
+                                  : FittedBox(
+                                    child: Text(
+                                        "Select To Time",
+                                        style: AppTypography.label18LG.copyWith(
+                                            color: AppColor
+                                                .surfaceBackgroundBaseDarkColor
+                                                .withOpacity(0.9)),
+                                      ),
+                                  ),
+                            ],
+                          )),
                     )),
                   ],
                 ),
@@ -333,18 +360,20 @@ class _BookViewState extends ConsumerState<BookView> {
                         "username": _nameontroller.text.trimRight().trimLeft(),
                         "user_phone_number": _phoneController.text,
                         "tour_guide_id": widget.id,
-                        "date": selectedDate!.toUtc(),
-                        "start_time": selectedFromTime!.toUtc(),
-                        "end_time": selectedToTime!.toUtc(),
+                        "date": DateFormat("yyyy-MM-dd").format(selectedDate!),
+                        "start_time": DateFormat("H:m:s").format(selectedFromTime!),
+                        "end_time": DateFormat("H:m:s").format(selectedToTime!),
                       };
-                      await bookCall(payload).then((value) {
+                      await bookCall(payload).then((value) async{
                         if (value.toLowerCase().contains("booked")) {
+                          SharedPreferences pre=await SharedPreferences.getInstance();
+pre.setString("email",  _emailController.text.trim().toLowerCase(),);
                           confirmBookingSheetWidget(context,
                               selectedDate: selectedDate,
                               selectedFromTime: selectedFromTime,
                               selectedToTime: selectedToTime,
                               name: _nameontroller.text.trimRight().trimLeft());
-                        } else {}
+                        } 
                       });
                     } else {
                       return;
@@ -542,7 +571,7 @@ class _BookViewState extends ConsumerState<BookView> {
                   onPressed: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                     // context.navigateToRemovedUntilNamed(BookingView.routeName);
-                    controller.jumpToTab(1);
+                    context.navigateNamed(BookingView.routeName);
                   },
                   title: "Confirm",
                 ))

@@ -11,6 +11,7 @@ import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/widgets/container_bar_widget.dart';
 import 'package:flutter_tourism_app/widgets/country_picker_sheet_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardView extends ConsumerStatefulWidget {
   static const routeName = "/onBoardView";
@@ -22,12 +23,17 @@ class OnBoardView extends ConsumerStatefulWidget {
 
 class _OnBoardViewState extends ConsumerState<OnBoardView> {
   late PageController _pageController;
+
+  late SharedPreferences preferences;
   @override
   void initState() {
     _pageController = PageController();
-
+initilize();
     // TODO: implement initState
     super.initState();
+  }
+  initilize() async{
+    preferences=await SharedPreferences.getInstance();
   }
 
   @override
@@ -112,6 +118,7 @@ class _OnBoardViewState extends ConsumerState<OnBoardView> {
                       if (index < 3)
                         GestureDetector(
                           onTap: () {
+preferences.setBool("isFirstTime", false);
                             context.navigateToRemovedUntilNamed(
                                 SelectCountryView.routeName);
                           },
@@ -176,6 +183,7 @@ class _OnBoardViewState extends ConsumerState<OnBoardView> {
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.easeOutBack);
                             } else {
+                              preferences.setBool("isFirstTime", false);
                               context.navigateToRemovedUntilNamed(
                                   SelectCountryView.routeName);
                               // countryPickerSheetWidget(
