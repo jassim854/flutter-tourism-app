@@ -13,6 +13,7 @@ import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/utils/validators.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
+import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 import 'package:flutter_tourism_app/widgets/textfield_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class BookView extends ConsumerStatefulWidget {
   final String id;
   static const routeName = "/bookView";
@@ -44,20 +46,6 @@ class _BookViewState extends ConsumerState<BookView> {
     formKey = GlobalKey<FormState>();
     // TODO: implement initState
     super.initState();
-  }
-
-  Future<String> bookCall(Map<String, dynamic> data) async {
-    String val="";
-    await ref
-        .read(apiServiceProvider)
-        .postBookRequest(context, payload: data)
-        .then((value) {
-      if (value != null) {
-    val=value;
-    return val;
-      }
-    });
-    return val;
   }
 
   DateTime currentDate = DateTime.now();
@@ -127,30 +115,40 @@ class _BookViewState extends ConsumerState<BookView> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                                      Row(children: [
-                                                                    Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
-                                5.width(),
-                                    Text('Selected Date:',
-                                        style: AppTypography.label18LG),
-                                                      ],),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today,
+                                          color: AppColor
+                                              .surfaceBackgroundBaseDarkColor,
+                                        ),
+                                        5.width(),
+                                        Text('Selected Date:',
+                                            style: AppTypography.label18LG),
+                                      ],
+                                    ),
                                     Text(
                                         DateFormat('MM/dd/yyyy')
                                             .format(selectedDate),
                                         style: AppTypography.label18LG),
                                   ])
                             : Row(
-                              children: [
-                                                                Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
-                                5.width(),
-                                Text(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    color:
+                                        AppColor.surfaceBackgroundBaseDarkColor,
+                                  ),
+                                  5.width(),
+                                  Text(
                                     "Select Date",
                                     style: AppTypography.label16MD.copyWith(
                                         color: AppColor
                                             .surfaceBackgroundBaseDarkColor
                                             .withOpacity(0.9)),
                                   ),
-                              ],
-                            ))),
+                                ],
+                              ))),
                 16.height(),
                 Row(
                   children: [
@@ -218,20 +216,25 @@ class _BookViewState extends ConsumerState<BookView> {
                           ),
                           child: Row(
                             children: [
-                                                              Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                              Icon(
+                                Icons.calendar_today,
+                                color: AppColor.surfaceBackgroundBaseDarkColor,
+                              ),
                               5.width(),
                               selectedFromTime != null
                                   ? Text(
                                       DateFormat("hh:mm aa")
                                           .format(selectedFromTime),
                                       style: AppTypography.label18LG)
-                                  : FittedBox(
-                                      child: Text(
-                                        "Select From Time",
-                                        style: AppTypography.label18LG.copyWith(
-                                            color: AppColor
-                                                .surfaceBackgroundBaseDarkColor
-                                                .withOpacity(0.9)),
+                                  : Flexible(
+                                      child: FittedBox(
+                                        child: Text(
+                                          "Select From Time",
+                                          style: AppTypography.label18LG.copyWith(
+                                              color: AppColor
+                                                  .surfaceBackgroundBaseDarkColor
+                                                  .withOpacity(0.9)),
+                                        ),
                                       ),
                                     ),
                             ],
@@ -320,22 +323,28 @@ class _BookViewState extends ConsumerState<BookView> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.calendar_today,color: AppColor.surfaceBackgroundBaseDarkColor,),
+                              Icon(
+                                Icons.calendar_today,
+                                color: AppColor.surfaceBackgroundBaseDarkColor,
+                              ),
                               5.width(),
                               selectedToTime != null
                                   ? Text(
-                                      DateFormat("hh:mm aa").format(selectedToTime),
+                                      DateFormat("hh:mm aa")
+                                          .format(selectedToTime),
                                       style: AppTypography.label18LG,
                                     )
-                                  : FittedBox(
-                                    child: Text(
-                                        "Select To Time",
-                                        style: AppTypography.label18LG.copyWith(
-                                            color: AppColor
-                                                .surfaceBackgroundBaseDarkColor
-                                                .withOpacity(0.9)),
+                                  : Flexible(
+                                      child: FittedBox(
+                                        child: Text(
+                                          "Select To Time",
+                                          style: AppTypography.label18LG.copyWith(
+                                              color: AppColor
+                                                  .surfaceBackgroundBaseDarkColor
+                                                  .withOpacity(0.9)),
+                                        ),
                                       ),
-                                  ),
+                                    ),
                             ],
                           )),
                     )),
@@ -361,20 +370,92 @@ class _BookViewState extends ConsumerState<BookView> {
                         "user_phone_number": _phoneController.text,
                         "tour_guide_id": widget.id,
                         "date": DateFormat("yyyy-MM-dd").format(selectedDate!),
-                        "start_time": DateFormat("H:m:s").format(selectedFromTime!),
+                        "start_time":
+                            DateFormat("H:m:s").format(selectedFromTime!),
                         "end_time": DateFormat("H:m:s").format(selectedToTime!),
+                        "book_car": false
                       };
-                      await bookCall(payload).then((value) async{
-                        if (value.toLowerCase().contains("booked")) {
-                          SharedPreferences pre=await SharedPreferences.getInstance();
-pre.setString("email",  _emailController.text.trim().toLowerCase(),);
-                          confirmBookingSheetWidget(context,
-                              selectedDate: selectedDate,
-                              selectedFromTime: selectedFromTime,
-                              selectedToTime: selectedToTime,
-                              name: _nameontroller.text.trimRight().trimLeft());
-                        } 
-                      });
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            title: Text(
+                              'Book Your Car',
+                              style: AppTypography.title18LG,
+                            ),
+                            content: Text(
+                              "Click on Get a car button to get details of car",
+                              style: AppTypography.paragraph16LG,
+                            ),
+                            actions: [
+                              CupertinoDialogAction(
+                                textStyle: AppTypography.label16MD
+                                    .copyWith(color: AppColor.redColor),
+                                onPressed: () async {
+                                  await ref
+                                      .read(apiServiceProvider)
+                                      .postBookRequest(context,
+                                          payload: payload)
+                                      .then((value) async {
+                                    if (value
+                                            ?.toLowerCase()
+                                            .contains("booked") ??
+                                        false) {
+                                      SharedPreferences pre =
+                                          await SharedPreferences.getInstance();
+                                      pre.setString(
+                                        "email",
+                                        _emailController.text
+                                            .trim()
+                                            .toLowerCase(),
+                                      );
+                                      context.popPage();
+                                      confirmBookingSheetWidget(context,
+                                          selectedDate: selectedDate,
+                                          selectedFromTime: selectedFromTime,
+                                          selectedToTime: selectedToTime,
+                                          name: _nameontroller.text
+                                              .trimRight()
+                                              .trimLeft());
+                                    } else {
+                                      context.popPage();
+                                    }
+                                  });
+                                  // context.popPage();
+                                },
+                                child: const Text(
+                                  'Book Without Car',
+                                ),
+                              ),
+                              CupertinoDialogAction(
+                                textStyle: AppTypography.label16MD
+                                    .copyWith(color: AppColor.textPrimaryColor),
+                                child: const Text(
+                                  'Get a car',
+                                ),
+                                onPressed: () {
+                                  // You can handle the submission here
+
+                                  context.navigatepushReplacementNamed(
+                                      CarView.routeName,
+                                      arguments: payload);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+//                       await bookCall(payload).then((value) async{
+//                         if (value.toLowerCase().contains("booked")) {
+//                           SharedPreferences pre=await SharedPreferences.getInstance();
+// pre.setString("email",  _emailController.text.trim().toLowerCase(),);
+//                           confirmBookingSheetWidget(context,
+//                               selectedDate: selectedDate,
+//                               selectedFromTime: selectedFromTime,
+//                               selectedToTime: selectedToTime,
+//                               name: _nameontroller.text.trimRight().trimLeft());
+//                         }
+//                       });
                     } else {
                       return;
                     }
@@ -569,9 +650,8 @@ pre.setString("email",  _emailController.text.trim().toLowerCase(),);
                 Expanded(
                     child: CustomElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
                     // context.navigateToRemovedUntilNamed(BookingView.routeName);
-                    context.navigateNamed(BookingView.routeName);
+                    context.navigateToRemovedUntilNamed(BookingView.routeName);
                   },
                   title: "Confirm",
                 ))

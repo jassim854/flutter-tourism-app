@@ -18,7 +18,7 @@ import 'package:flutter_tourism_app/view/splash_view.dart';
 class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings setting) {
     switch (setting.name) {
-       case SplashView.routeName:
+      case SplashView.routeName:
         return MaterialPageRoute(builder: ((context) => const SplashView()));
       case OnBoardView.routeName:
         return MaterialPageRoute(builder: ((context) => const OnBoardView()));
@@ -44,10 +44,10 @@ class AppRoutes {
       //       builder: ((context) => const BookingDetailView()));
       case BookView.routeName:
         return MaterialPageRoute(builder: ((context) {
-                String id = setting.arguments as String;
+          String id = setting.arguments as String;
           return BookView(id);
         }));
-          case CarView.routeName:
+      case CarView.routeName:
         return MaterialPageRoute(builder: ((context) => const CarView()));
       default:
         return MaterialPageRoute(

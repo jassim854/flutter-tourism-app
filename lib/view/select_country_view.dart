@@ -32,13 +32,12 @@ class SelectCountryView extends ConsumerStatefulWidget {
 class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
   late TextEditingController _searchController;
 
-  
   @override
   void initState() {
     _searchController = TextEditingController();
-WidgetsBinding.instance.addPostFrameCallback((_) { 
-  callApi();
-});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      callApi();
+    });
     // TODO: implement initState
     super.initState();
   }
@@ -50,25 +49,27 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
     // TODO: implement dispose
     super.dispose();
   }
-callApi()async{
-    ref.read(isNoDataProvider.notifier).state=false;
-  ref.read(isLoadingProvider.notifier).state=true;
- await ref.read(apiServiceProvider).getAllcountriesRequest(context).then((value) {
-if (value!=null) {
-  
-  ref.read(countryListDataProvider.notifier).addData(value);
-    ref.read(isLoadingProvider.notifier).state=false;
-}
-else{
-    ref.read(isNoDataProvider.notifier).state=true;
-    ref.read(isLoadingProvider.notifier).state=false;
-}
 
- });
-}
+  callApi() async {
+    ref.read(isNoDataProvider.notifier).state = false;
+    ref.read(isLoadingProvider.notifier).state = true;
+    await ref
+        .read(apiServiceProvider)
+        .getAllcountriesRequest(context)
+        .then((value) {
+      if (value != null) {
+        ref.read(countryListDataProvider.notifier).addData(value);
+        ref.read(isLoadingProvider.notifier).state = false;
+      } else {
+        ref.read(isNoDataProvider.notifier).state = true;
+        ref.read(isLoadingProvider.notifier).state = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
+    List<CountryModel> countryListData = ref.watch(countryListDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
     String selectedCountry = ref.watch(selectedCountryProvider);
     List<CountryModel> searchedCountries =
@@ -85,7 +86,7 @@ List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
                 child: CustomElevatedButton(
                     onPressed: () {
                       context.navigatepushReplacementNamed(
-                          CarView.routeName);
+                          AppBottomNavigationBar.routeName);
                     },
                     title: "Done  ",
                     childPadding: const EdgeInsets.only(left: 22, right: 14)),
@@ -112,14 +113,15 @@ List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
                   delayedFunction(fn: () {
                     if (value == "") {
                       ref
-                          .read(searchedCountryProvider(countryListData)
-                              .notifier)
+                          .read(
+                              searchedCountryProvider(countryListData).notifier)
                           .addData(countryListData);
                     } else {
                       ref
-                          .read(searchedCountryProvider(countryListData)
-                              .notifier)
-                          .filterData(value.toLowerCase().trim(),countryListData);
+                          .read(
+                              searchedCountryProvider(countryListData).notifier)
+                          .filterData(
+                              value.toLowerCase().trim(), countryListData);
                     }
                   });
                 },
@@ -151,7 +153,7 @@ List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
               //     : Container()
             ],
           )),
-      body:  Card(
+      body: Card(
         color: AppColor.surfaceBackgroundColor,
         surfaceTintColor: AppColor.surfaceBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
@@ -177,43 +179,50 @@ List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
                 ),
               ),
               const Divider(),
-             ref.watch(isLoadingProvider)?const Center(child:CupertinoActivityIndicator(radius: 30,)
-             ,) : Expanded(
-                child: ListView.separated(
-                  itemCount: searchedCountries.length,
-                  itemBuilder: (_, index) {
-                    return ListTile(
-                      selected: searchedCountries[index].countryName ==
-                              selectedCountry
-                          ? true
-                          : false,
-                      selectedTileColor: AppColor.surfaceBrandPrimaryColor,
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: SvgPicture.network(searchedCountries[index].countryFlagUrl)
-                          ),
-                          Text(
-                            searchedCountries[index].countryName,
-                            style: AppTypography.label18LG,
-                          )
-                        ],
+              ref.watch(isLoadingProvider)
+                  ? const Center(
+                      child: CupertinoActivityIndicator(
+                        radius: 30,
                       ),
-                      onTap: () {
-                        ref.read(selectedCountryProvider.notifier).state =
-                            searchedCountries[index].countryName;
-                        // _.navigatepushReplacementNamed(AppBottomBar.routeName);
-                      },
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const Divider();
-                  },
-                ),
-              )
+                    )
+                  : Expanded(
+                      child: ListView.separated(
+                        itemCount: searchedCountries.length,
+                        itemBuilder: (_, index) {
+                          return ListTile(
+                            selected: searchedCountries[index].countryName ==
+                                    selectedCountry
+                                ? true
+                                : false,
+                            selectedTileColor:
+                                AppColor.surfaceBrandPrimaryColor,
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: SvgPicture.network(
+                                        searchedCountries[index]
+                                            .countryFlagUrl)),
+                                Text(
+                                  searchedCountries[index].countryName,
+                                  style: AppTypography.label18LG,
+                                )
+                              ],
+                            ),
+                            onTap: () {
+                              ref.read(selectedCountryProvider.notifier).state =
+                                  searchedCountries[index].countryName;
+                              // _.navigatepushReplacementNamed(AppBottomBar.routeName);
+                            },
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider();
+                        },
+                      ),
+                    )
             ],
           ),
         ),
