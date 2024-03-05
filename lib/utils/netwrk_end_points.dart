@@ -8,6 +8,7 @@ class NetworkEndPoints {
            static const String postBookingEndPoint = 'create-booking';
            static const String getUserBookingEndPoint = 'get-user-bookings';
             static const String getBookingDetailEndPoint = 'get-booking-details';
+               static const String getCarListEndPoint = 'get-country-cars';
       
 }
 

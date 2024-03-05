@@ -7,33 +7,28 @@ import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_routes.dart';
 import 'package:flutter_tourism_app/utils/theme.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
+import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/on_board_view.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_tourism_app/view/select_country_view.dart';
+import 'package:flutter_tourism_app/view/splash_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async{
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-   String firstRouteName="";
- SharedPreferences preferences;  preferences=await SharedPreferences.getInstance();
-  bool? value=  preferences.getBool("isFirstTime");
-  if (value==false) {
-    firstRouteName=  SelectCountryView.routeName;
-  }else{
-firstRouteName=OnBoardView.routeName;
-  }
+ 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((value) => runApp(DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) =>  ProviderScope(child: MyApp(firstRouteName: firstRouteName,)))));
+      builder: (context) =>  ProviderScope(child: MyApp()))));
 }
 
 class MyApp extends StatelessWidget {
-  final String firstRouteName;
-  const MyApp({super.key, required this.firstRouteName});
+
+  const MyApp({super.key,e});
 
   // This widget is the root of your application.
   @override
@@ -60,7 +55,7 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-      initialRoute: firstRouteName,
+      initialRoute: SplashView.routeName,
       onGenerateRoute: AppRoutes.generateRoute,
       theme: appThemes(),
     );

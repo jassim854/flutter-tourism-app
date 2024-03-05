@@ -13,6 +13,7 @@ import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
+import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
@@ -84,7 +85,7 @@ List<CountryModel> countryListData=  ref.watch(countryListDataProvider);
                 child: CustomElevatedButton(
                     onPressed: () {
                       context.navigatepushReplacementNamed(
-                          AppBottomNavigationBar.routeName);
+                          CarView.routeName);
                     },
                     title: "Done  ",
                     childPadding: const EdgeInsets.only(left: 22, right: 14)),

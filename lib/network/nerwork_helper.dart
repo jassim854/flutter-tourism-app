@@ -68,4 +68,10 @@ class NetworkHelper {
       data: payLoad
     );
   }
+    Future<Response> getCarListApi ({required Map<String,dynamic> payLoad}) async {
+    return await dio.get(
+      NetworkEndPoints.getCarListEndPoint,
+      data: payLoad
+    );
+  }
 }

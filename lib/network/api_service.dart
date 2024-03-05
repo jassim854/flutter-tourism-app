@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/helper/basehelper.dart';
 import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart';
+import 'package:flutter_tourism_app/model/network_model/car_model.dart';
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
@@ -167,5 +168,22 @@ class ApiServices {
       Response<dynamic> response) {
     return UserDetailBookedModel.fromJson(response.data);
   }
-
+  Future<List<CarModel>?> getCarListdRequest(context,
+      {required Map<String, dynamic> payload}) async {
+    try {
+      NetworkHelper networkHelper = NetworkHelper();
+      Response<dynamic> response =
+          await networkHelper.getCarListApi(payLoad: payload);
+      if (response.statusCode == 200) {
+        return await compute(_convertCarListResponseList, response);
+      }
+    } on DioException catch (e) {
+      BaseHelper.showSnackBar(context, e.message);
+    }
+    return null;
+  }
+  List<CarModel> _convertCarListResponseList(
+      Response<dynamic> response) {
+    return List.from(response.data.map((e) => CarModel.fromJson(e)));
+  }
 }

@@ -8,6 +8,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/launch_image" />
+            android:src="android/app/src/main/res/drawable/transparent.png" />
     </item>
 </layer-list>
