@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
+import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/home_list_provider.dart';
@@ -128,7 +129,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    int length = ref.watch(countryWiseTourGuideDataProvider).length;
+    List<TourGuidModel> data = ref.watch(countryWiseTourGuideDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
     String selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
@@ -245,7 +246,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 : Expanded(
                     child: ListView.builder(
                         controller: _scrollController,
-                        itemCount: length,
+                        itemCount: data.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
@@ -260,21 +261,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                           .toString());
                                 },
                                 child: CardWidget(
-                                  name: ref
-                                      .watch(countryWiseTourGuideDataProvider)[
+                                  name: data[
                                           index]
                                       .name
                                       .toString(),
-                                  status: ref
-                                          .watch(countryWiseTourGuideDataProvider)[
+                                  status: data[
                                               index]
                                           .status ??
                                       false,
-                                  url: ref
-                                      .watch(countryWiseTourGuideDataProvider)[
-                                          index]
-                                      .images![1]
-                                      .toString(),
+                                  url: ""
+                                     
                                 ),
                               ),
                               if (ref.watch(isLoadMoreProvider) &&

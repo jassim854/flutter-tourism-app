@@ -48,7 +48,10 @@ class AppRoutes {
           return BookView(id);
         }));
       case CarView.routeName:
-        return MaterialPageRoute(builder: ((context) => const CarView()));
+        return MaterialPageRoute(builder: ((context) {
+          Map<String,dynamic>data=setting.arguments as Map<String,dynamic>;
+          return  CarView(data);
+        }));
       default:
         return MaterialPageRoute(
           builder: (context) {

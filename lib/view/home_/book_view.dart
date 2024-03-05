@@ -409,7 +409,7 @@ class _BookViewState extends ConsumerState<BookView> {
                                             .trim()
                                             .toLowerCase(),
                                       );
-                                      context.popPage();
+                                    
                                       confirmBookingSheetWidget(context,
                                           selectedDate: selectedDate,
                                           selectedFromTime: selectedFromTime,
@@ -588,6 +588,8 @@ class _BookViewState extends ConsumerState<BookView> {
     );
   }
 
+
+}
   Future<dynamic> confirmBookingSheetWidget(
     BuildContext context, {
     required DateTime selectedDate,
@@ -607,8 +609,10 @@ class _BookViewState extends ConsumerState<BookView> {
       backgroundColor: AppColor.surfaceBackgroundBaseColor,
       useSafeArea: true,
       isScrollControlled: true,
+      isDismissible: false,
+    
       context: context,
-      builder: (context) {
+      builder: (_) {
         return Column(children: [
           40.height(),
           const Image(image: AssetImage(AppAssets.boxIcon)),
@@ -651,7 +655,11 @@ class _BookViewState extends ConsumerState<BookView> {
                     child: CustomElevatedButton(
                   onPressed: () {
                     // context.navigateToRemovedUntilNamed(BookingView.routeName);
-                    context.navigateToRemovedUntilNamed(BookingView.routeName);
+
+           context.popPage();
+               context.popPage();
+                      context.popPage();
+           controller.jumpToTab(1);
                   },
                   title: "Confirm",
                 ))
@@ -660,4 +668,3 @@ class _BookViewState extends ConsumerState<BookView> {
       },
     );
   }
-}

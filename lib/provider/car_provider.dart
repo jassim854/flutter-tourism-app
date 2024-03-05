@@ -16,3 +16,11 @@ class CarListData extends StateNotifier< List<CarModel>> {
 
   }
 }
+
+final selectedCarProvider = StateProvider.autoDispose<CarModel?>((ref) {
+  return null;
+});
+
+final totalAmountProvider = StateProvider.autoDispose<double>((ref) {
+  return 0.0;
+});
