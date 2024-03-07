@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
+import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
+import 'package:flutter_tourism_app/view/booking_/booking_detail_view.dart';
+import 'package:intl/intl.dart';
 
 class CancelledBookingView extends ConsumerStatefulWidget {
   const CancelledBookingView({super.key});
@@ -20,12 +24,18 @@ class _CancelledBookingViewState extends ConsumerState<CancelledBookingView> {
      List<UserBookedModel> data=ref.watch(userCancelledBookedListProvider);
     return ColoredBox(
       color: AppColor.surfaceBackgroundColor,
-      child: ListView.separated(
+      child: ref.watch(isLoadingProvider)==true? CupertinoActivityIndicator(radius: 30,) :data.isEmpty?Center(child: Text("No Bookings avilable"),) : ListView.separated(
           padding: const EdgeInsets.all(20),
           itemBuilder: (context, index) {
-            return Text(
-              "Booking ${data[index].id}",
-              style: AppTypography.label16MD,
+            return GestureDetector(
+                  onTap: () {
+               Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingDetailView(data[index].booking!.id.toString()), ));
+              },
+              child: Text(
+                    "Booking with ${data[index].tourGuide?.name}"
+,                    // on ${DateFormat("MM/dd/yyyy").format(data[index].booking!.date!)}",
+                style: AppTypography.label16MD,
+              ),
             );
           },
           separatorBuilder: (context, index) {

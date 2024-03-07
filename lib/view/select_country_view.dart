@@ -19,6 +19,7 @@ import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class SelectCountryView extends ConsumerStatefulWidget {
   static const routeName = "/selectCountryView";
@@ -71,7 +72,7 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
   Widget build(BuildContext context) {
     List<CountryModel> countryListData = ref.watch(countryListDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
-    String selectedCountry = ref.watch(selectedCountryProvider);
+    CountryModel? selectedCountry = ref.watch(selectedCountryProvider);
     List<CountryModel> searchedCountries =
         ref.watch(searchedCountryProvider(countryListData));
     return Scaffold(
@@ -80,15 +81,15 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
           centerTitle: true,
           title: "Select Country",
           actions: [
-            if (selectedCountry != "")
+            if (selectedCountry !=null)
               Padding(
                 padding: const EdgeInsets.only(top: 2, right: 12),
                 child: CustomElevatedButton(
                     onPressed: () {
-                      context.navigatepushReplacementNamed(
-                          AppBottomNavigationBar.routeName);
+                      context.navigatepushReplacementNamed(AppBottomNavigationBar.routeName);
+                    // PersistentNavBarNavigator.pushNewScreen(context, screen: AppBottomNavigationBar(),withNavBar: true);
                     },
-                    title: "Done  ",
+                    title: "Done ",
                     childPadding: const EdgeInsets.only(left: 22, right: 14)),
               )
           ],
@@ -168,11 +169,11 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Flag',
+                      'Country',
                       style: AppTypography.title14XS,
                     ),
                     Text(
-                      'Country',
+                      'Flag',
                       style: AppTypography.title14XS,
                     )
                   ],
@@ -191,7 +192,7 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                         itemBuilder: (_, index) {
                           return ListTile(
                             selected: searchedCountries[index].countryName ==
-                                    selectedCountry
+                                    selectedCountry?.countryName
                                 ? true
                                 : false,
                             selectedTileColor:
@@ -199,21 +200,22 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
+                              
+                                Text(
+                                  searchedCountries[index].countryName,
+                                  style: AppTypography.label18LG
+                                ),
+                                  SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: SvgPicture.network(
                                         searchedCountries[index]
                                             .countryFlagUrl)),
-                                Text(
-                                  searchedCountries[index].countryName,
-                                  style: AppTypography.label18LG,
-                                )
                               ],
                             ),
                             onTap: () {
                               ref.read(selectedCountryProvider.notifier).state =
-                                  searchedCountries[index].countryName;
+                                  searchedCountries[index];
                               // _.navigatepushReplacementNamed(AppBottomBar.routeName);
                             },
                           );

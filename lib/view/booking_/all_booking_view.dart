@@ -10,6 +10,7 @@ import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_detail_view.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AllBookingView extends ConsumerStatefulWidget {
@@ -61,15 +62,15 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
     List<UserBookedModel> data=ref.watch(userAllBookedListProvider);
     return ColoredBox(
       color: AppColor.surfaceBackgroundColor,
-      child: ref.watch(isLoadingProvider)==true? CupertinoActivityIndicator(radius: 30,) :ListView.separated(
+      child: ref.watch(isLoadingProvider)==true? CupertinoActivityIndicator(radius: 30,) :data.isEmpty?Center(child: Text("No Bookings avilable"),) :ListView.separated(
           padding: const EdgeInsets.all(20),
           itemBuilder: (_, index) {
             return GestureDetector(
               onTap: () {
-               Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingDetailView(data[index].id.toString()), ));
+               Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingDetailView(data[index].booking!.id.toString()), ));
               },
               child: Text(
-                "Booking with ${data[index].id}",
+                "Booking with ${data[index].tourGuide?.name}",
                 style: AppTypography.label16MD,
               ),
             );

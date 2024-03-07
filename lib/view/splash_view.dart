@@ -46,7 +46,11 @@ firstRouteName=OnBoardView.routeName;
         seconds: 1
         
         ),
-        child: SvgPicture.asset(AppAssets.appLogo),
+        child: Padding(
+   padding: const EdgeInsets.only(
+                  left: 20, right: 20, ),
+          child: SvgPicture.asset(AppAssets.appLogo),
+        ),
         ),
       ),
     );

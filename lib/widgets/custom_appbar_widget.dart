@@ -2,12 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/helper/basehelper.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
+import 'package:flutter_tourism_app/utils/app_routes.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
+import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 // class BottomAppBarSearchWidget extends StatelessWidget
 //   implements PreferredSizeWidget {
@@ -65,6 +69,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool? centerTitle;
   final double? leadingWidth, titleSpacing;
+
+  final void Function()? onTap;
   const AppBarWidget(
       {super.key,
       this.bottomBarWidget,
@@ -72,6 +78,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       this.centerTitle,
       this.toolBarHeight = 90,
       this.leadingWidth,
+      this.onTap,
       this.titleSpacing,
       this.actions});
 
@@ -80,12 +87,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
         surfaceTintColor: AppColor.surfaceBackgroundColor,
         titleSpacing: titleSpacing ?? 0,
-        leadingWidth: leadingWidth ?? 20,
-        leading: Navigator.of(context).canPop()
-            ? GestureDetector(
-                onTap: () {
-                  context.maybePopPage();
-                },
+        leadingWidth: leadingWidth ?? 40,
+        leading: onTap!=null? GestureDetector(
+                onTap: onTap,
                 child: Transform.scale(
                   scale: 1.2,
                   child: SvgPicture.asset(
@@ -93,8 +97,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColor.surfaceBrandDarkColor,
                   ),
                 ),
-              )
-            : const SizedBox.shrink(),
+              ):SizedBox.shrink(),
+          
         backgroundColor: AppColor.surfaceBackgroundColor,
         elevation: 0.0,
         actions: actions,

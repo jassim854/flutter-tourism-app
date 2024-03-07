@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Tourist App',
+      title: 'Cultural Guides by SMCCU',
       builder: EasyLoading.init(
         builder: (context, child) {
           EasyLoading.instance

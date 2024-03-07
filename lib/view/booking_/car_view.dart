@@ -37,7 +37,7 @@ class _CarViewState extends ConsumerState<CarView> {
 callApi()async{
   ref.read(isLoadingProvider.notifier).state=true;
   await ref.read(apiServiceProvider).getCarListdRequest(context,payload: {
-    "country":ref.read(selectedCountryProvider)
+    "country":ref.read(selectedCountryProvider)?.countryName
   }).then((value) {
     if (value!=null) {
    
@@ -49,23 +49,7 @@ callApi()async{
   });
 }
 
-double calculateTotalAmount(double perHourRate, String startTime, String endTime) {
-  // Parse start time and end time
-  List<int> start = startTime.split(':').map(int.parse).toList();
-  List<int> end = endTime.split(':').map(int.parse).toList();
 
-  // Convert hours, minutes, and seconds to seconds
-  int startInSeconds = start[0] * 3600 + start[1] * 60 + start[2];
-  int endInSeconds = end[0] * 3600 + end[1] * 60 + end[2];
-
-  // Calculate total time in seconds
-  int totalTimeInSeconds = endInSeconds - startInSeconds;
-
-  // Calculate total amount
-  double totalAmount = (totalTimeInSeconds / 3600) * perHourRate;
-
-  return totalAmount;
-}
   @override
   Widget build(BuildContext context) {
     List<CarModel>? carData=ref.watch(carListDataProvider);
@@ -73,41 +57,55 @@ double calculateTotalAmount(double perHourRate, String startTime, String endTime
     CarModel? selectedCar=ref.watch(selectedCarProvider);
     return Scaffold(
       backgroundColor: AppColor.surfaceBackgroundColor,
-      appBar: AppBarWidget(title: "Book your Car"),
-body: ref.watch(isLoadingProvider)? Center(child: CupertinoActivityIndicator(radius: 30),): carData?.length==0? Center(child: Text("No car available",style: AppTypography.title24XL,)):Column(
+      appBar:  AppBarWidget(
+        onTap: (){
+          context.maybePopPage();
+        },
+    
+        title: "Book your Car"),
+body: ref.watch(isLoadingProvider)? const Center(child: CupertinoActivityIndicator(radius: 30),): carData?.length==0? Center(child: Text("No car available",style: AppTypography.title24XL,)):Column(
   children: [
 
     Expanded(
       child: ListView.separated(
         shrinkWrap: true,
         itemBuilder: (context, index) {
-        return ListTile(
-          selected: selectedCar!=null,
-          selectedTileColor: selectedCar?.carName==carData?[index].carName?Colors.green.withOpacity(0.5):null,
-          onTap: (){
-            ref.read(selectedCarProvider.notifier).state=carData![index];
-        ref.read(totalAmountProvider.notifier).state=    calculateTotalAmount(double.parse(carData[index].price), widget.data["start_time"], widget.data["end_time"]);
-          },
-          leading: CircleAvatar(
-            child: cacheNetworkWidget(context, imageUrl: carData?[index].imagePath??""),
-          ),
-          trailing: amount!=0? Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-         mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Total Amount"),
-              Text("${amount.toStringAsFixed(0)} ${carData?[index].currency} ")
-            ],
-          ):null,
-          title: Text(carData?[index].carName??"",style: AppTypography.label16MD,),
-          subtitle:  Text("${carData?[index].price} ${carData?[index].currency}",style: AppTypography.label16MD,),
-        );
+          return GestureDetector(
+            onTap: (){
+ref.read(selectedCarProvider.notifier).state=carData[index];
+      
+        
+            },
+            child: CarCardWidget(name: carData![index].carName, totalAmount: amount.toString(), image: carData![index].imagePath, perHourAmount: carData![index].price, currencyIn: carData[index].currency, data: widget.data,  selectedCar: selectedCar,)
+            
+            );
+        // return ListTile(
+        //   selected: selectedCar!=null,
+        //   selectedTileColor: selectedCar?.carName==carData?[index].carName?Colors.green.withOpacity(0.5):null,
+        //   onTap: (){
+        //     ref.read(selectedCarProvider.notifier).state=carData![index];
+        // ref.read(totalAmountProvider.notifier).state=    calculateTotalAmount(double.parse(carData[index].price), widget.data["start_time"], widget.data["end_time"]);
+        //   },
+        //   leading: CircleAvatar(
+        //     child: cacheNetworkWidget(context, imageUrl: carData?[index].imagePath??""),
+        //   ),
+        //   trailing: amount!=0? Column(
+        //     crossAxisAlignment: CrossAxisAlignment.end,
+        //  mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       const Text("Total Amount"),
+        //       Text("${amount.toStringAsFixed(0)} ${carData?[index].currency} ")
+        //     ],
+        //   ):null,
+        //   title: Text(carData?[index].carName??"",style: AppTypography.label16MD,),
+        //   subtitle:  Text("${carData?[index].price} ${carData?[index].currency} per/hour",style: AppTypography.label16MD,),
+        // );
       }, separatorBuilder: (context, index) {
-        return Divider();
+        return const Divider();
       }, itemCount: carData?.length??0),
     ),
 Padding(
-padding: EdgeInsets.all(20),
+padding: const EdgeInsets.all(20),
   child: Row(
     children: [
       Expanded(child: CustomElevatedButton(onPressed: (){
@@ -117,9 +115,14 @@ padding: EdgeInsets.all(20),
   Expanded(child: CustomElevatedButton(onPressed: ()async{
     Map<String,dynamic>newData=widget.data;
     newData.addAll({
-      "book_car":true,
+      "book_car":"True",
       "car_id":selectedCar.id
     });
+        //  confirmBookingSheetWidget(context,
+        //                                   selectedDate: DateFormat("yyyy-MM-dd").parse(newData["date"]),
+        //                                   selectedFromTime: DateFormat("H:m:s").parse(newData["start_time"]),
+        //                                   selectedToTime: DateFormat("H:m:s").parse(newData["end_time"]),
+        //                                   name: widget.data["username"]);
         await ref
                                       .read(apiServiceProvider)
                                       .postBookRequest(context,
@@ -145,8 +148,8 @@ padding: EdgeInsets.all(20),
                                       context.popPage();
                                     }
                                   });
-                                  // context.popPage(
-  }, title:"Get Book" ,))]
+                              
+  }, title:"Confirm Booking" ,))]
     ],
   ),
 )
@@ -154,6 +157,120 @@ padding: EdgeInsets.all(20),
 
   ],
 ),
+    );
+  }
+}
+
+class CarCardWidget extends StatelessWidget {
+  Map<String,dynamic> data;
+  CarModel? selectedCar;
+
+  final String name ,totalAmount,image,perHourAmount,currencyIn;
+   CarCardWidget({super.key,  this.selectedCar, required this.data, required this.name, required this.totalAmount, required this.image, required this.perHourAmount,  required this.currencyIn});
+double calculateTotalAmount(double perHourRate, String startTime, String endTime) {
+  // Parse start time and end time
+  List<int> start = startTime.split(':').map(int.parse).toList();
+  List<int> end = endTime.split(':').map(int.parse).toList();
+
+  // Convert hours, minutes, and seconds to seconds
+  int startInSeconds = start[0] * 3600 + start[1] * 60 + start[2];
+  int endInSeconds = end[0] * 3600 + end[1] * 60 + end[2];
+
+  // Calculate total time in seconds
+  int totalTimeInSeconds = endInSeconds - startInSeconds;
+
+  // Calculate total amount
+  double totalAmount = (totalTimeInSeconds / 3600) * perHourRate;
+
+  return totalAmount;
+}
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(16),
+      color: AppColor.surfaceBackgroundColor,
+      surfaceTintColor: AppColor.surfaceBackgroundColor,
+      child: Stack(
+
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: AppColor.surfaceBackgroundBaseDarkColor,
+                      border: Border.all(
+                          width: 0.1, color: AppColor.surfaceBrandPrimaryColor),
+                      borderRadius: BorderRadius.circular(16)),
+                  height: 200,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: cacheNetworkWidget(context,
+                          imageUrl: image, fit: BoxFit.cover)),
+                ),
+                8.height(),
+              
+                // const RattingWiget(),
+                // 8.height(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          Text(
+                  name,
+                  style: AppTypography.label18LG,
+                ),
+                8.height(),
+                        Row(
+                          children: [
+                            
+                        Text(
+                           currencyIn,
+                              style: AppTypography.label14SM.copyWith(color: AppColor.textBrandSecondaryColor),
+                            ),
+                            8.width(),
+                            // const Icon(Icons.location_on_outlined),
+                            // 8.width(),
+                            Text(
+                          "$perHourAmount per/hour",
+                              style: AppTypography.paragraph16LG,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+          
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end  ,
+                      children: [
+                        Text("TotalAmount",  style: AppTypography.label14SM,),
+                        15.height(),
+                
+                        
+          
+                        Text("${calculateTotalAmount(double.parse(perHourAmount),data["start_time"], data["end_time"]).toStringAsFixed(0)} $currencyIn",  style: AppTypography.paragraph16LG,)
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+       if(selectedCar!=null&&selectedCar?.carName==name)
+        Row(
+          children: [
+            Icon(Icons.check_circle,color: AppColor.surfaceBrandPrimaryColor,),
+          ],
+        )
+        
+        ],
+      ),
     );
   }
 }

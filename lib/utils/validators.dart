@@ -7,7 +7,7 @@ class Validators {
     String? value,
   ) {
     if (value == null || value.isEmpty) {
-      return "required";
+      return "required field";
     }
     return null;
   }
@@ -67,9 +67,9 @@ class Validators {
     RegExp regex = RegExp(pattern as String);
 
     if (value.isEmpty) {
-      return "required";
+      return "required field";
     } else if (!regex.hasMatch(value)) {
-      return "incorrect_email_entered";
+      return "incorrect email entered";
     }
     return null;
   }
@@ -80,7 +80,7 @@ class Validators {
     if (value.isEmpty) {
       return "required";
     } else if (value.length < 8) {
-      return "min_8_char_required";
+      return "min 8 character required";
     }
     return null;
   }

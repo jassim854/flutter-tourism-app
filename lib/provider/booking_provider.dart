@@ -19,7 +19,7 @@ class UserBookedPending extends StateNotifier< List<UserBookedModel>> {
  addValue( List<UserBookedModel> data){
   state.clear();
     for (var element in data) {
-  if (element.bookingStatus=="pending") {
+  if (element.booking?.status=="pending") {
  state.add(element);
   }
 }
@@ -35,7 +35,7 @@ class UserConfirmedBooking extends StateNotifier< List<UserBookedModel>> {
       state.clear();
     for (var element in data) {
       
-  if (element.bookingStatus=="completed") {
+  if (element.booking?.status=="completed") {
  state.add(element);
   }
 }
@@ -51,7 +51,7 @@ class UserCancelledBooking extends StateNotifier< List<UserBookedModel>> {
       state.clear();
     for (var element in data) {
       
-  if (element.bookingStatus=="cancelled") {
+  if (element.booking?.status=="cancelled") {
  state.add(element);
   }
 }
@@ -60,12 +60,12 @@ class UserCancelledBooking extends StateNotifier< List<UserBookedModel>> {
 }
 
 
-final userDetailProvider = StateNotifierProvider<UserDetailBooking,  UserDetailBookedModel?>((ref) {
+final userDetailProvider = StateNotifierProvider.autoDispose <UserDetailBooking,  UserBookedModel?>((ref) {
   return  UserDetailBooking();
 });
-class UserDetailBooking extends StateNotifier< UserDetailBookedModel?> {
+class UserDetailBooking extends StateNotifier< UserBookedModel?> {
   UserDetailBooking(): super(null);
-  addValue( UserDetailBookedModel data){
+  addValue( UserBookedModel data){
 state=data;
 
   }

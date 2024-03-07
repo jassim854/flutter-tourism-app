@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
 import 'package:flutter_tourism_app/model/network_model/user_detail_booking_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/book_provider.dart';
@@ -10,7 +11,9 @@ import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
+import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
+import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:intl/intl.dart';
 
@@ -47,18 +50,21 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    UserDetailBookedModel? data = ref.watch(userDetailProvider);
+    UserBookedModel? data = ref.watch(userDetailProvider);
     return Scaffold(
       appBar: AppBarWidget(
+        onTap: (){
+          context.maybePopPage();
+        },
           titleSpacing: 10,
           leadingWidth: 40,
-          title: "Booking with ${data?.tourGuide.name}"),
+          title: "Booking with ${data?.tourGuide?.name}"),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             4.height(),
-            ref.watch(isLoadingProvider) == true
+            ref.watch(isLoadingProvider) == true||data==null
                 ? Center(
                     child: CupertinoActivityIndicator(
                     radius: 30,
@@ -70,31 +76,110 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          CoverImageWidget(),
+                          CoverImageWidget(imageUrl: data?.tourGuide?.images??"",),
                           Padding(
                             padding: EdgeInsets.only(top: 20, bottom: 20),
                             child: DescriptionWidget(
-                              text: data?.tourGuide.description ?? "",
+                              text: data?.tourGuide?.description ?? "",
                             ),
                           ),
                           ConfirmBookRowWidget(
                               title: 'Date',
                               subtitle: DateFormat("yyyy/MM/dd").format(
-                                  data?.booking.date ?? DateTime.now())),
+                                  data?.booking?.date ?? DateTime.now())),
                           20.height(),
                           ConfirmBookRowWidget(
                             title: "From Time",
-                            subtitle:  DateFormat("h:m aa").format(DateFormat("H:m:s").parse(data?.booking.startTime??""))  ,
+                            subtitle:  DateFormat("h:m a").format(DateFormat("H:m:s").parse(data?.booking?.startTime??""))  ,
                           ),
                           20.height(),
                           ConfirmBookRowWidget(
                               title: "To Time",
-                              subtitle: DateFormat("h:m aa").format(DateFormat("H:m:s").parse(data?.booking.endTime??"")) ),
+                              subtitle: DateFormat("h:m a").format(DateFormat("H:m:s").parse(data?.booking?.endTime??"")) ),
                           20.height(),
                           ConfirmBookRowWidget(
                               title: "Name",
-                              subtitle: data?.user.fullName ?? ""),
+                              subtitle: data.user?.fullName ?? ""),
+                                 if(data.car!=null)...[
+            Container(
+                    margin: const EdgeInsets.only(top: 20, ),
+                    child: Text(
+                      "Booked Car",
+                      style: AppTypography.title18LG,
+                    ),
+                  ),
+                
+                 Card(
+                   
+                       color: AppColor.surfaceBackgroundColor,
+                       surfaceTintColor: AppColor.surfaceBackgroundColor,
+                       child: Stack(
+                 
+                         children: [
+                           Column(
+                             crossAxisAlignment: CrossAxisAlignment.stretch,
+                             children: [
+                               Container(
+                                 decoration: BoxDecoration(
+                                     color: AppColor.surfaceBackgroundBaseDarkColor,
+                                     border: Border.all(
+                                            width: 0.1, color: AppColor.surfaceBrandPrimaryColor),
+                                     borderRadius: BorderRadius.circular(16)),
+                                 height: 200,
+                                 child: ClipRRect(
+                                     borderRadius: BorderRadius.circular(16),
+                                     child: cacheNetworkWidget(context,
+                                            imageUrl: data.car!.imagePath.toString(), fit: BoxFit.cover)),
+                               ),
+                               8.height(),
+                             
+                               // const RattingWiget(),
+                               // 8.height(),
+                               Row(
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                 children: [
+                                   Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                            Text(
+                                 data.car!.carName.toString(),
+                                 style: AppTypography.label18LG,
+                               ),
+                               8.height(),
+                                       Row(
+                                            children: [
+                                              
+                                       Text(
+                                             data.car!.currency.toString(),
+                                                style: AppTypography.label14SM.copyWith(color: AppColor.textBrandSecondaryColor),
+                                              ),
+                                              8.width(),
+                                              // const Icon(Icons.location_on_outlined),
+                                              // 8.width(),
+                                              Text(
+                                            "${data.car!.price}",
+                                                style: AppTypography.paragraph16LG,
+                                              )
+                                            ],
+                                       ),
+                                     ],
+                                   ),
+                                                      
+                               
+                                 ],
+                               )
+                             ],
+                           ),
+                   
+                         
+                         ],
+                       ),
+                     )
+                
+              ]
                         ],
+                        
                       ),
                     ),
                   )
@@ -119,9 +204,9 @@ class DescriptionWidget extends StatelessWidget {
 }
 
 class CoverImageWidget extends StatelessWidget {
-
+final String imageUrl;
   const CoverImageWidget({
-    super.key,
+    super.key, required this.imageUrl,
   });
 
   @override
@@ -140,8 +225,8 @@ class CoverImageWidget extends StatelessWidget {
                 Border.all(width: 4, color: AppColor.surfaceBrandPrimaryColor)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            AppAssets.onBoardImage1,
+          child: cacheNetworkWidget(
+        context,imageUrl:  imageUrl,
             fit: BoxFit.cover,
           ),
         ),

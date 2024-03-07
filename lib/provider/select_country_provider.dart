@@ -10,8 +10,8 @@ final showCloseIconProvider = StateProvider.autoDispose<bool>((ref) {
 //   return SelectCountry();
 // });
 
-final selectedCountryProvider = StateProvider.autoDispose<String>((ref) {
-  return "";
+final selectedCountryProvider = StateProvider.autoDispose<CountryModel?>((ref) {
+  return null;
 });
 
 final searchedCountryProvider = StateNotifierProvider.family

@@ -41,7 +41,7 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
   Widget build(BuildContext context) {
     List<CountryModel>countryListData=ref.watch(countryListDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
-    String selectedCountry = ref.watch(selectedCountryProvider);
+    CountryModel? selectedCountry = ref.watch(selectedCountryProvider);
     List<CountryModel> searchedCountries =
         ref.watch(searchedCountryProvider(countryListData));
     return Column(
@@ -155,9 +155,8 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
                       itemBuilder: (_, index) {
                         return ListTile(
                           selected: searchedCountries[index].countryName ==
-                                  selectedCountry
-                              ? true
-                              : false,
+                                  selectedCountry?.countryName,
+                       
                           selectedTileColor: AppColor.surfaceBrandPrimaryColor,
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,7 +175,7 @@ class _FilterSheetWidgetState extends ConsumerState<FilterSheetWidget> {
                           ),
                           onTap: () {
                             ref.read(selectedCountryProvider.notifier).state =
-                                searchedCountries[index].countryName;
+                                searchedCountries[index];
                             // _.navigatepushReplacementNamed(AppBottomBar.routeName);
                           },
                         );

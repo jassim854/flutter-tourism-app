@@ -13,6 +13,7 @@ import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
+import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/view/support_view.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +33,7 @@ class _AppBottomNavigationBarState
     extends ConsumerState<AppBottomNavigationBar> {
   List<Widget> _buildScreens() {
     return [
+      // const SelectCountryView(),
       const HomeView(),
       const BookingView(),
       const SupportView(),
@@ -40,6 +42,16 @@ class _AppBottomNavigationBarState
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
+      //    PersistentBottomNavBarItem(
+      //   routeAndNavigatorSettings: const RouteAndNavigatorSettings(
+      //       initialRoute: SelectCountryView.routeName,
+      //       onGenerateRoute: AppRoutes.generateRoute),
+      //   icon: const Icon(Icons.home),
+      //   title: ("Home"),
+      //   textStyle: AppTypography.label12XSM,
+      //   activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
+      //   inactiveColorPrimary: CupertinoColors.systemGrey,
+      // ),
       PersistentBottomNavBarItem(
         routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: HomeView.routeName,
@@ -144,7 +156,10 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
         //   //   },
         //   // );
         // },
-        icon: const Icon(CupertinoIcons.settings),
+                routeAndNavigatorSettings: const RouteAndNavigatorSettings(
+            initialRoute: SupportView.routeName,
+            onGenerateRoute: AppRoutes.generateRoute),
+        icon: const Icon(CupertinoIcons.circle_grid_hex_fill),
         title: ("Support"),
         textStyle: AppTypography.label12XSM,
         activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
@@ -153,19 +168,22 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
     ];
   }
 
-  bool isOpen = false;
 
-  TextEditingController _emailController = TextEditingController();
 
-  TextEditingController _phoneController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
+    
       context,
       controller: controller,
+   
+
+    
       // padding: NavBarPadding.all(0),
       screens: _buildScreens(),
+      
       items: _navBarsItems(),
       confineInSafeArea: true,
       backgroundColor:
@@ -173,7 +191,7 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
       handleAndroidBackButtonPress: true, // Default is true.
       resizeToAvoidBottomInset:
           true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: true, // Default is true.
+      stateManagement: false, // Default is true.
       hideNavigationBarWhenKeyboardShows:
           true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
@@ -182,7 +200,7 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
       ),
       popAllScreensOnTapOfSelectedTab: true,
       // popAllScreensOnTapAnyTabs: true,
-      popActionScreens: PopActionScreensType.all,
+  
 
       screenTransitionAnimation: const ScreenTransitionAnimation(
         // Screen transition animation on change of selected tab.

@@ -59,7 +59,7 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
     return Scaffold(
       appBar: AppBarWidget(
         toolBarHeight: 110,
-        title: 'Booings',
+        title: 'Bookings',
         bottomBarWidget: AppBar(
           toolbarHeight: 80,
           backgroundColor: AppColor.surfaceBackgroundColor,
@@ -74,8 +74,8 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
               Container(
                   padding: const EdgeInsets.all(2),
                   margin: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
+                    left: 16,
+                    right: 16,
                   ),
                   decoration: BoxDecoration(
                       color: AppColor.surfaceBackgroundSecondaryColor,
@@ -104,24 +104,21 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
                               .copyWith(color: AppColor.textBlackColor),
                         ),
 
-                        FittedBox(
-                          child: Row(
-                            children: [
-                              10.width(),
-                              Container(
-                                width: 2,
-                                height: 20,
-                                color: AppColor.surfaceBackgroundBaseDarkColor,
-                              ),
-                              10.width(),
-                              Text(
-                                "Cancelled",
-                                style: AppTypography.label14SM
-                                    .copyWith(color: AppColor.textBlackColor),
-                              ),
-                         10.width()
-                            ],
-                          ),
+                        Row(
+                          children: [
+                             5.width(),
+                            Container(
+                              width: 2,
+                              height: 20,
+                              color: AppColor.surfaceBackgroundBaseDarkColor,
+                            ),
+                          5.width(),
+                            Text(
+                              "Cancelled",
+                              style: AppTypography.label14SM
+                                  .copyWith(color: AppColor.textBlackColor),
+                            ),
+                          ],
                         )
                       ])),
             ],

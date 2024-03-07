@@ -28,10 +28,12 @@ class CustomElevatedButton extends StatelessWidget {
         onPressed: onPressed,
         color: btnColor ?? AppColor.buttonPrimaryColor,
         borderRadius: BorderRadius.circular(radius ?? 16),
-        child: child ??
-            Text(
-              title.toString(),
-              style: AppTypography.label18LG.copyWith(color: textColor),
-            ));
+        child: FittedBox(
+          child: child ??
+              Text(
+                title.toString(),
+                style: AppTypography.label18LG.copyWith(color: textColor),
+              ),
+        ));
   }
 }

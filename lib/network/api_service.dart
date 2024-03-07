@@ -77,7 +77,7 @@ class ApiServices {
     return List.from(response.data.map((e) => TourGuidModel.fromJson(e)));
   }
 
-  Future<List<ATourGuideModel>?> getATourGuideRequest(context,
+  Future<ATourGuideModel?> getATourGuideRequest(context,
       {required Map<String, dynamic> payload}) async {
     try {
       NetworkHelper networkHelper = NetworkHelper();
@@ -92,21 +92,21 @@ class ApiServices {
     return null;
   }
 
-  List<ATourGuideModel> _convertATourGuideResponseList(
+  ATourGuideModel _convertATourGuideResponseList(
       Response<dynamic> response) {
-    List<Map<String, dynamic>> newData = [];
+    Map<String, dynamic> newData = {};
 
-    newData.add({
+    newData.addAll({
       "id": response.data[0]["id"],
       "name": response.data[0]["name"],
       "description": response.data[0]["description"],
       "location": response.data[0]["location"],
       "status": response.data[0]["status"],
-      "images": List<String>.from(response.data[0]["images"].map((x) => x)),
-      "similarTourGuides": List<dynamic>.from(
-          response.data[1]["similar_tour_guides"].map((x) => x)),
+      "images": response.data[0]["images"],
+      "similar_tour_guides":
+          response.data[1]["similar_tour_guides"],
     });
-    return List.from(newData.map((e) => ATourGuideModel.fromJson(e)));
+    return  ATourGuideModel.fromJson(newData);
     // return List.from(response.data.map((e) => ATourGuideModel.fromJson(e[0])));
   }
 
@@ -149,14 +149,14 @@ class ApiServices {
       Response<dynamic> response) {
     return List.from(response.data.map((e) => UserBookedModel.fromJson(e)));
   }
-  Future<UserDetailBookedModel?> getUserDetailBookedRequest(context,
+  Future<UserBookedModel?> getUserDetailBookedRequest(context,
       {required Map<String, dynamic> payload}) async {
     try {
       NetworkHelper networkHelper = NetworkHelper();
       Response<dynamic> response =
           await networkHelper.getBookingDetailApi(payLoad: payload);
       if (response.statusCode == 200) {
-            return UserDetailBookedModel.fromJson(response.data);
+            return UserBookedModel.fromJson(response.data);
         // return await compute(_convertUserDetailBookeResponse, response);
       }
     } on DioException catch (e) {
@@ -164,9 +164,9 @@ class ApiServices {
     }
     return null;
   }
-  UserDetailBookedModel _convertUserDetailBookeResponse(
+  UserBookedModel _convertUserDetailBookeResponse(
       Response<dynamic> response) {
-    return UserDetailBookedModel.fromJson(response.data);
+    return UserBookedModel.fromJson(response.data);
   }
   Future<List<CarModel>?> getCarListdRequest(context,
       {required Map<String, dynamic> payload}) async {

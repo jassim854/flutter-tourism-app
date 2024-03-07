@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
@@ -17,11 +18,13 @@ import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
+import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_tourism_app/widgets/filter_sheet_widget.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shimmer/shimmer.dart';
 
 GlobalKey dropdownKey = GlobalKey();
@@ -54,10 +57,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ref.read(nextPageProvider.notifier).state == true &&
             _scrollController.position.extentAfter < 300 &&
             _scrollController.position.extentAfter != 0.0) {
-          ref.read(isLoadMoreProvider.notifier).state = true;
+          // ref.read(isLoadMoreProvider.notifier).state = true;
 
           pageNumber += 1;
-          callApiFn(isScroll: true);
+          // callApiFn(isScroll: true);
         }
       },
     );
@@ -90,7 +93,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         isScroll == true ? false : true;
     ref.read(isNoDataProvider.notifier).state = false;
 
-    if (isScroll == false) {
+    if (isScroll == false) {      
       ref.read(countryWiseTourGuideDataProvider).clear();
 
       pageNumber = 1;
@@ -99,7 +102,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     await ref
         .read(apiServiceProvider)
         .getCountryWiseTourGuideRequest(context, payload: {
-      "country": ref.read(selectedCountryProvider)
+      "country": ref.read(selectedCountryProvider)?.countryName
 
       // "page": pageNumber.toString(), "limit": "10"
     }).then((value) {
@@ -131,10 +134,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     List<TourGuidModel> data = ref.watch(countryWiseTourGuideDataProvider);
     bool closeIcon = ref.watch(showCloseIconProvider);
-    String selectedCountry = ref.watch(selectedCountryProvider);
+    CountryModel? selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
         appBar: AppBarWidget(
-
+          onTap: (){
+               PersistentNavBarNavigator.pushNewScreen(context, screen: SelectCountryView(),withNavBar: false );
+          },
+       
           title: "Ambassadors",
           bottomBarWidget: AppBar(
             surfaceTintColor: AppColor.surfaceBackgroundColor,
@@ -195,11 +201,15 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.only(right: 20, left: 4),
                   decoration: BoxDecoration(
-                      color: AppColor.surfaceBrandPrimaryColor,
+                    border: Border.all(
+                      width: 3.5,
+                           color: AppColor.surfaceBrandPrimaryColor,
+                    ),
+                 
                       shape: BoxShape.circle),
-                  child: SvgPicture.asset(
-                    AppAssets.filterIcon,
-                    color: AppColor.surfaceBackgroundColor,
+                  child: SvgPicture.network(
+              selectedCountry?.countryFlagUrl??"",
+                  
                   ),
                 ),
               )
@@ -224,23 +234,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
         ),
         body: Column(
           children: [
-            ColoredBox(
-              color: AppColor.surfaceBackgroundColor,
-              child: Container(
-                  margin: const EdgeInsets.only(
-                      left: 20, right: 20, top: 10, bottom: 10),
-                  height: 45,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                          width: 3.5,
-                          color: AppColor.surfaceBrandPrimaryColor)),
-                  child: Text(
-                    selectedCountry,
-                    style: AppTypography.label18LG,
-                  )),
-            ),
+            // ColoredBox(
+            //   color: AppColor.surfaceBackgroundColor,
+            //   child: Container(
+            //       margin: const EdgeInsets.only(
+            //           left: 20, right: 20, top: 10, bottom: 10),
+            //       height: 45,
+            //       alignment: Alignment.center,
+            //       decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(24),
+            //           border: Border.all(
+            //               width: 3.5,
+            //               color: AppColor.surfaceBrandPrimaryColor)),
+            //       child: Text(
+            //         selectedCountry?.countryName??"",
+            //         style: AppTypography.label18LG,
+            //       )),
+            // ),
             ref.watch(isLoadingProvider)
                 ? const Expanded(child: ListShimmer())
                 : Expanded(
@@ -269,8 +279,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                               index]
                                           .status ??
                                       false,
-                                  url: ""
-                                     
+                                  url:  data[
+                                          index]
+                                      .images
+                                      .toString()
                                 ),
                               ),
                               if (ref.watch(isLoadMoreProvider) &&
@@ -385,7 +397,7 @@ class CardWidget extends StatelessWidget {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: cacheNetworkWidget(context,
-                      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s", fit: BoxFit.cover)),
+                      imageUrl: url, fit: BoxFit.cover)),
             ),
             8.height(),
             Text(

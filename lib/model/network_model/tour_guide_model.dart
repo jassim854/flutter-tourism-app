@@ -4,7 +4,7 @@ class TourGuidModel {
     final String? description;
     final String? location;
     final bool? status;
-    final List<String>? images;
+    final String? images;
 
     TourGuidModel({
         this.id,
@@ -21,15 +21,15 @@ class TourGuidModel {
         description: json["description"],
         location: json["location"],
         status: json["status"],
-        images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
+        images: json["images"] == null ? "" : json["images"]!,
     );
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "location": location,
-        "status": status,
-        "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-    };
+    // Map<String, dynamic> toJson() => {
+    //     "id": id,
+    //     "name": name,
+    //     "description": description,
+    //     "location": location,
+    //     "status": status,
+    //     "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
+    // };
 }

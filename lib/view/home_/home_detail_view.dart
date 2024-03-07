@@ -33,6 +33,9 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
 
   @override
   void initState() {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+      callApi();
+    });
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset > 155) {
@@ -44,9 +47,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
     // TODO: implement initState
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      callApi();
-    });
+
   }
 
   callApi() async {
@@ -90,11 +91,12 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
   ];
   @override
   Widget build(BuildContext context) {
-    List<ATourGuideModel> data = ref.watch(aTourGuideProvider);
-    bool isLoading = ref.watch(isLoadingProvider);
+    //https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s
+    ATourGuideModel? data = ref.watch(aTourGuideProvider);
+  
     return Scaffold(
       // extendBodyBehindAppBar: true,
-      body: isLoading
+      body:  ref.watch(isLoadingProvider)==true||data==null
           ? Center(
               child: CupertinoActivityIndicator(
                 radius: 35,
@@ -105,7 +107,9 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
               controller: _scrollController,
               slivers: [
                 SliverAppBarWidget(
-                  backGroundImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s",
+                  backGroundImg:  data
+                                      .images
+                                      .toString() ,
                   value: false,
                 ),
                 SliverToBoxAdapter(
@@ -121,14 +125,14 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  data[0].name,
+                                  data.name.toString(),
                                   style: AppTypography.label16MD,
                                 ),
                                 Row(
                                   children: [
                                     const Icon(Icons.location_on_outlined),5 .width(),
                                     Text(
-                                      data[0].location,
+                                      data.location.toString(),
                                       style: AppTypography.paragraph14MD,
                                     )
                                   ],
@@ -204,18 +208,19 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                         ),
                         8.height(),
                         Text(
-                          data[0].description,
+                          data.description.toString(),
                           style: AppTypography.paragraph14MD,
                         )
                       ],
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
+              if(data.similarTourGuides?.isNotEmpty??false)...[
+                  SliverToBoxAdapter(
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 16),
                     child: Text(
-                      "More From ${data[0].location}",
+                      "More From ${data.location}",
                       style: AppTypography.title18LG,
                     ),
                   ),
@@ -225,33 +230,39 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                     margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
                     height: 110,
                     child: ListView.builder(
-                      itemCount: dummyNames.length,
+                      itemCount: data.similarTourGuides?.length,
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                onBackgroundImageError:
-                                    (exception, stackTrace) {},
-                                radius: 25,
-                                backgroundImage: cachedNetworkImageProvider(
-                                    imageUrl: dummyImages[index]),
-                              ),
-                              10.height(),
-                              Text(
-                                dummyNames[index],
-                                style: AppTypography.paragraph18XL,
-                              )
-                            ],
+                        return GestureDetector(
+                          onTap: (){
+                            context.navigatepushReplacementNamed(HomeDetailView.routeName,arguments: data.similarTourGuides![index].id.toString() );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  onBackgroundImageError:
+                                      (exception, stackTrace) {},
+                                  radius: 25,
+                                  backgroundImage: cachedNetworkImageProvider(
+                                      imageUrl: data.similarTourGuides![index].images.toString()),
+                                ),
+                                10.height(),
+                                Text(
+                                data.similarTourGuides![index].name.toString(),
+                                  style: AppTypography.paragraph18XL,
+                                )
+                              ],
+                            ),
                           ),
                         );
                       },
                     ),
                   ),
                 )
+              ]
               ],
             ),
     );

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SupportView extends ConsumerStatefulWidget {
+  static const routeName="/supportView";
   const SupportView({super.key});
 
   @override
