@@ -66,21 +66,23 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottomBarWidget;
   final List<Widget>? actions;
   final double toolBarHeight;
-  final String title;
+  final String? title;
   final bool? centerTitle;
   final double? leadingWidth, titleSpacing;
+  final Widget? titleWidget;
 
   final void Function()? onTap;
   const AppBarWidget(
       {super.key,
       this.bottomBarWidget,
-      required this.title,
+      this.title,
       this.centerTitle,
       this.toolBarHeight = 90,
       this.leadingWidth,
       this.onTap,
       this.titleSpacing,
-      this.actions});
+      this.actions,
+      this.titleWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         surfaceTintColor: AppColor.surfaceBackgroundColor,
         titleSpacing: titleSpacing ?? 0,
         leadingWidth: leadingWidth ?? 40,
-        leading: onTap!=null? GestureDetector(
+        leading: onTap != null
+            ? GestureDetector(
                 onTap: onTap,
                 child: Transform.scale(
                   scale: 1.2,
@@ -97,16 +100,17 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColor.surfaceBrandDarkColor,
                   ),
                 ),
-              ):SizedBox.shrink(),
-          
+              )
+            : SizedBox.shrink(),
         backgroundColor: AppColor.surfaceBackgroundColor,
         elevation: 0.0,
         actions: actions,
-        title: Text(
-          title,
-          style:
-              AppTypography.label18LG.copyWith(color: AppColor.textBlackColor),
-        ),
+        title: titleWidget ??
+            Text(
+              title.toString(),
+              style: AppTypography.title24XL.copyWith(
+                  fontWeight: FontWeight.w400, color: AppColor.textBlackColor),
+            ),
         centerTitle: centerTitle ?? false,
         bottom: bottomBarWidget);
   }
@@ -135,30 +139,28 @@ class SliverAppBarWidget extends StatelessWidget {
         expandedHeight: 450,
         pinned: true,
         stretch: true,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(150.0), // Add this code
-          child: Text(''),
-        ),
-        leadingWidth: 50,
-        leading: GestureDetector(
+        leadingWidth: 0,
+        title: GestureDetector(
           onTap: () {
             context.maybePopPage();
           },
           child: Container(
-              margin: const EdgeInsets.only(
-                left: 19,
-              ),
               alignment: Alignment.center,
               padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                  color: AppColor.surfaceBrandDarkColor,
-                  shape: BoxShape.circle),
-              child: Transform.scale(
-                scale: 1.05,
-                child: SvgPicture.asset(
-                  AppAssets.backArrowIcon,
-                  color: AppColor.textWhiteColor,
-                ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.keyboard_arrow_left,
+                    color: AppColor.surfaceBackgroundColor,
+                    size: 40,
+                  ),
+                  6.width(),
+                  Text(
+                    "Back",
+                    style: AppTypography.paragraph18XL.copyWith(
+                        fontSize: 24, color: AppColor.surfaceBackgroundColor),
+                  )
+                ],
               )),
         ),
         flexibleSpace: SizedBox(

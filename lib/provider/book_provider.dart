@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 
 final selectedDateProvider =
-    StateNotifierProvider.autoDispose<SelectDate, DateTime?>((ref) {
+    StateNotifierProvider<SelectDate, DateTime?>((ref) {
   return SelectDate();
 });
 
@@ -13,9 +14,11 @@ class SelectDate extends StateNotifier<DateTime?> {
     state = value;
   }
 }
-
+final isPhoneNoProvider = StateProvider<bool>((ref) {
+  return false ;
+});
 final selectedFromTimeProvider =
-    StateNotifierProvider.autoDispose<SelectDate, DateTime?>((ref) {
+    StateNotifierProvider<SelectDate, DateTime?>((ref) {
   return SelectDate();
 });
 
@@ -28,15 +31,7 @@ class SelectFromTime extends StateNotifier<DateTime?> {
 }
 
 final selectedToTimeProvider =
-    StateNotifierProvider.autoDispose<SelectDate, DateTime?>((ref) {
-  return SelectDate();
+    StateProvider<int>((ref) {
+  return 0;
 });
-
-class SelectToTime extends StateNotifier<DateTime?> {
-  SelectToTime() : super(null);
-
-  updateDate(DateTime value) {
-    state = value;
-  }
-}
 

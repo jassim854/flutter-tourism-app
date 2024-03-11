@@ -7,12 +7,12 @@ class AppColor {
   static Color textBrandSecondaryColor = const Color(0xff34424B);
   static Color textPrimaryColor = const Color(0xff83A6F3);
   // static Color textInvertSubtitle = const Color(0xffC7C9CC);
-  // static Color textSubTitleColor = const Color(0xff80898F);
+  static Color textSubTitleColor = const Color(0xff3C3C43);
   // static Color textPrimaryColor = const Color(0xff4D5A62);
   // static Color textInvertPrimaryColor = const Color(0xffF3F6FE);
 
   /// surface
-  static Color surfaceBrandPrimaryColor =  Colors.black;
+  static Color surfaceBrandPrimaryColor = Colors.black;
   static Color surfaceBrandSecondaryColor = const Color(0xff34424B);
   static Color surfaceBrandDarkColor = const Color(0xff01131E);
   static Color surfaceBackgroundColor = Colors.white;
@@ -23,8 +23,8 @@ class AppColor {
 
   /// button
   static Color buttonPrimaryColor = Colors.black;
-  static Color buttonDisableColor = const Color(0xff80898F);
-  static Color buttonSecondaryColor = const Color(0xff5A7DCE);
+  static Color buttonDisableColor = const Color(0xffC8C8C8);
+  static Color buttonSecondaryColor = const Color(0xff0079B0);
   static Color buttonTertiaryColor = const Color(0xffE6EDFD);
   static Color buttonLabelColor = Colors.white;
 

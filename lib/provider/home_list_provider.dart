@@ -35,3 +35,23 @@ class CountryWiseTourGuideData extends StateNotifier<List<TourGuidModel>> {
     state.addAll(data);
   }
 }
+
+final searchedAmbassdorProvider = StateNotifierProvider.family
+    .autoDispose<SearchedAmbassdor, List<TourGuidModel>, List<TourGuidModel>>(
+        (ref, data) {
+  return SearchedAmbassdor(data);
+});
+
+class SearchedAmbassdor extends StateNotifier<List<TourGuidModel>> {
+  SearchedAmbassdor(super.state);
+
+  void addData(List<TourGuidModel> data) {
+    state = data;
+  }
+
+  void filterData(String value, List<TourGuidModel> data) {
+    state = [
+      ...data.where(
+          (element) => element.name!.toLowerCase().trim().contains(value))
+    ];
+  }}

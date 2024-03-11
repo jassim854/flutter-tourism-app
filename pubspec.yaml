@@ -92,17 +92,35 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: Work Sans
+      fonts:
+        - asset: assets/fonts/WorkSans-Black.ttf
+        - asset: assets/fonts/WorkSans-Bold.ttf
+        - asset: assets/fonts/WorkSans-BoldItalic.ttf
+        - asset: assets/fonts/WorkSans-ExtraBold.ttf
+        - asset: assets/fonts/WorkSans-ExtraBoldItalic.ttf  
+        - asset: assets/fonts/WorkSans-ExtraLight.ttf  
+        - asset: assets/fonts/WorkSans-ExtraLightItalic.ttf  
+        - asset: assets/fonts/WorkSans-Italic.ttf  
+        - asset: assets/fonts/WorkSans-Light.ttf
+        - asset: assets/fonts/WorkSans-LightItalic.ttf
+        - asset: assets/fonts/WorkSans-Medium.ttf
+        - asset: assets/fonts/WorkSans-MediumItalic.ttf  
+        - asset: assets/fonts/WorkSans-Regular.ttf
+        - asset: assets/fonts/WorkSans-SemiBold.ttf  
+        - asset: assets/fonts/WorkSans-SemiBoldItalic.ttf
+        - asset: assets/fonts/WorkSans-Thin.ttf  
+        - asset: assets/fonts/WorkSans-ThinItalic.ttf
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Black.ttf
         - asset: assets/fonts/Poppins-Bold.ttf
         - asset: assets/fonts/Poppins-ExtraBold.ttf
-        - asset: assets/fonts/Poppins-ExtraLight.ttf
         - asset: assets/fonts/Poppins-Light.ttf           
         - asset: assets/fonts/Poppins-Medium.ttf                    
         - asset: assets/fonts/Poppins-Regular.ttf       
         - asset: assets/fonts/Poppins-SemiBold.ttf                      
-        - asset: assets/fonts/Poppins-Thin.ttf
+     
   
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

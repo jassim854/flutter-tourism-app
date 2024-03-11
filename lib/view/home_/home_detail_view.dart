@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
@@ -14,6 +17,7 @@ import 'package:flutter_tourism_app/utils/extensions.dart';
 
 import 'package:flutter_tourism_app/view/home_/book_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_view.dart';
+import 'package:flutter_tourism_app/widgets/book_bottom_sheet.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
@@ -33,7 +37,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
 
   @override
   void initState() {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       callApi();
     });
     _scrollController = ScrollController()
@@ -46,8 +50,6 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
       });
     // TODO: implement initState
     super.initState();
-
-
   }
 
   callApi() async {
@@ -77,26 +79,26 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
     'William Thomas',
     'Amanda Garcia',
   ];
-    List<String> dummyImages = [
-"https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg",
-"https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVyc29ufGVufDB8fDB8fHww",
-"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqjhFHlDHQi2QahdbwAe2RzFlw3894RkzCgDueYWxpmw&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRImhGqnK1GlnIeKEMt0M-t9JqsjVbdoZNLWXW-Xp64M6eN4oVzB43YFImf9A&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREVbsZiiOitWNNhWRiSlCS4sNuQO_YEFqs2w&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzNF2YIDP9cVqoLBNf4Pr7kJ82bWmA1Ups2g&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE4g-3ZH_1TjfN-zOuCRru2LrfrGtPbwaCsQ&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJRFPeLuX1CzCS21KZB6BpL0zSeVxKHwg1Mw&s",
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToOoJnrndFqTIcvygz9DmXfGbhxfTCxss17g&s"
+  List<String> dummyImages = [
+    "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVyc29ufGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqjhFHlDHQi2QahdbwAe2RzFlw3894RkzCgDueYWxpmw&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRImhGqnK1GlnIeKEMt0M-t9JqsjVbdoZNLWXW-Xp64M6eN4oVzB43YFImf9A&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREVbsZiiOitWNNhWRiSlCS4sNuQO_YEFqs2w&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzNF2YIDP9cVqoLBNf4Pr7kJ82bWmA1Ups2g&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE4g-3ZH_1TjfN-zOuCRru2LrfrGtPbwaCsQ&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJRFPeLuX1CzCS21KZB6BpL0zSeVxKHwg1Mw&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToOoJnrndFqTIcvygz9DmXfGbhxfTCxss17g&s"
   ];
   @override
   Widget build(BuildContext context) {
     //https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTUzn7-qinvq-jbUgQWNL-OfnXUFXfxbtwMs6-Utey3A&s
     ATourGuideModel? data = ref.watch(aTourGuideProvider);
-  
+
     return Scaffold(
       // extendBodyBehindAppBar: true,
-      body:  ref.watch(isLoadingProvider)==true||data==null
+      body: ref.watch(isLoadingProvider) == true || data == null
           ? Center(
               child: CupertinoActivityIndicator(
                 radius: 35,
@@ -107,9 +109,7 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
               controller: _scrollController,
               slivers: [
                 SliverAppBarWidget(
-                  backGroundImg:  data
-                                      .images
-                                      .toString() ,
+                  backGroundImg: data.images.toString(),
                   value: false,
                 ),
                 SliverToBoxAdapter(
@@ -130,7 +130,8 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(Icons.location_on_outlined),5 .width(),
+                                    const Icon(Icons.location_on_outlined),
+                                    5.width(),
                                     Text(
                                       data.location.toString(),
                                       style: AppTypography.paragraph14MD,
@@ -140,54 +141,30 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                                 // const RattingWiget(),
                               ],
                             ),
-                            CustomElevatedButton(
-                              onPressed: () {
-                                context.navigateNamed(BookView.routeName,
-                                    arguments: widget.id);
-                                // showCupertinoDialog(
-                                //   context: context,
-                                //   builder: (context) {
-                                //     return CupertinoAlertDialog(
-                                //       title: Text(
-                                //         'Enter Details',
-                                //         style: AppTypography.title18LG,
-                                //       ),
-                                //       content: SizedBox(
-                                //         height: 250,
-                                //         // width: 400,
-                                //         child:
-                                //       ),
-                                //       actions: [
-                                //         CupertinoDialogAction(
-                                //           textStyle: AppTypography.label16MD
-                                //               .copyWith(color: AppColor.redColor),
-                                //           onPressed: () {
-                                //             context.popPage();
-                                //           },
-                                //           child: const Text(
-                                //             'Cancel',
-                                //           ),
-                                //         ),
-                                //         CupertinoDialogAction(
-                                //           textStyle: AppTypography.label16MD.copyWith(
-                                //               color: AppColor.textPrimaryColor),
-                                //           child: const Text(
-                                //             'Submit',
-                                //           ),
-                                //           onPressed: () {
-                                //             // You can handle the submission here
-
-                                //             Navigator.of(context).pop();
-                                //             selectDateSheetWidget(context);
-                                //           },
-                                //         ),
-                                //       ],
-                                //     );
-                                //   },
-                                // );
-                              },
-                              title: 'Book Now',
-                            )
+                            Builder(builder: (context) {
+                              return CustomElevatedButton(
+                                childPadding:
+                                    EdgeInsets.symmetric(horizontal: 0),
+                                radius: 20,
+                                onPressed: () async {
+                                  await showModalBottomSheet(
+                                      useSafeArea: true,
+                                      enableDrag: false,
+                                      isDismissible: false,
+                                      backgroundColor:
+                                          AppColor.surfaceBackgroundBaseColor,
+                                      isScrollControlled: true,
+                                      useRootNavigator: true,
+                                      context: context,
+                                      builder: (context) {
+                                        return PopScope(
+                                            canPop: false,
+                                            child: SelectedDateSheetWidget());
+                                      });
+                                },
+                                title: 'Book Now',
+                              );
+                            })
                           ],
                         )
                       ],
@@ -215,54 +192,61 @@ class _DetailViewState extends ConsumerState<HomeDetailView> {
                     ),
                   ),
                 ),
-              if(data.similarTourGuides?.isNotEmpty??false)...[
+                if (data.similarTourGuides?.isNotEmpty ?? false) ...[
                   SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 20, left: 16),
-                    child: Text(
-                      "More From ${data.location}",
-                      style: AppTypography.title18LG,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20, left: 16),
+                      child: Text(
+                        "More From ${data.location}",
+                        style: AppTypography.title18LG,
+                      ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
-                    height: 110,
-                    child: ListView.builder(
-                      itemCount: data.similarTourGuides?.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: (){
-                            context.navigatepushReplacementNamed(HomeDetailView.routeName,arguments: data.similarTourGuides![index].id.toString() );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  onBackgroundImageError:
-                                      (exception, stackTrace) {},
-                                  radius: 25,
-                                  backgroundImage: cachedNetworkImageProvider(
-                                      imageUrl: data.similarTourGuides![index].images.toString()),
-                                ),
-                                10.height(),
-                                Text(
-                                data.similarTourGuides![index].name.toString(),
-                                  style: AppTypography.paragraph18XL,
-                                )
-                              ],
+                  SliverToBoxAdapter(
+                    child: Container(
+                      margin:
+                          const EdgeInsets.only(left: 10, right: 10, top: 20),
+                      height: 110,
+                      child: ListView.builder(
+                        itemCount: data.similarTourGuides?.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              context.navigatepushReplacementNamed(
+                                  HomeDetailView.routeName,
+                                  arguments: data.similarTourGuides![index].id
+                                      .toString());
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    onBackgroundImageError:
+                                        (exception, stackTrace) {},
+                                    radius: 25,
+                                    backgroundImage: cachedNetworkImageProvider(
+                                        imageUrl: data
+                                            .similarTourGuides![index].images
+                                            .toString()),
+                                  ),
+                                  10.height(),
+                                  Text(
+                                    data.similarTourGuides![index].name
+                                        .toString(),
+                                    style: AppTypography.paragraph18XL,
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                )
-              ]
+                  )
+                ]
               ],
             ),
     );
@@ -330,39 +314,39 @@ class ConfirmBookRowWidget extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                  width: 4.5, color: AppColor.surfaceBrandPrimaryColor)),
-          child: Icon(
-            Icons.check,
-            shadows: [
-              Shadow(
-                  blurRadius: 0,
-                  offset: const Offset(0, 1),
-                  color: AppColor.surfaceBrandPrimaryColor),
-              Shadow(
-                  blurRadius: 0,
-                  offset: const Offset(0, 1.1),
-                  color: AppColor.surfaceBrandPrimaryColor)
-            ],
-            weight: 10000,
-            color: AppColor.surfaceBrandPrimaryColor,
-          ),
-        ),
-        20.width(),
+            padding: const EdgeInsets.all(4),
+            child: SvgPicture(SvgAssetLoader(title
+                    .toLowerCase()
+                    .contains("name")
+                ? AppAssets.userIcon
+                : title.toLowerCase().contains("email")
+                    ? AppAssets.emailIcon
+                    : title.toLowerCase().contains("phone")
+                        ? AppAssets.phoneIcon
+                        : title.toLowerCase().contains("date")
+                            ? AppAssets.dateIcon
+                            : title.toLowerCase().contains("booking start time")
+                                ? AppAssets.clockIcon
+                                : title.toLowerCase().contains("booking hours")
+                                    ? AppAssets.watchIcon
+                                    : title
+                                            .toLowerCase()
+                                            .contains("booking end time")
+                                        ? AppAssets.clockIcon
+                                        : ""))),
+        15.width(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: AppTypography.title18LG,
+              style: AppTypography.title18LG.copyWith(fontSize: 15),
             ),
-            1.height(),
+            // 1.height(),
             Text(
               subtitle,
-              style: AppTypography.paragraph16LG,
+              style: AppTypography.paragraph16LG
+                  .copyWith(fontSize: 15, color: AppColor.textSubTitleColor),
             )
           ],
         )

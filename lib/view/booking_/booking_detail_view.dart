@@ -11,6 +11,7 @@ import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
+import 'package:flutter_tourism_app/view/booking_/all_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
@@ -48,19 +49,32 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
     });
   }
 
+  int calculateAmount(DateTime startTime, DateTime endTime, double amount) {
+    Duration difference = endTime.difference(startTime);
+
+    return amount.toInt() * difference.inHours;
+  }
+
   @override
   Widget build(BuildContext context) {
     UserBookedModel? data = ref.watch(userDetailProvider);
-    //   Map<String,dynamic> j={};
-    // var a=  j.isNotEmpty?1:2;
+
     return Scaffold(
       appBar: AppBarWidget(
-          onTap: () {
-            context.maybePopPage();
-          },
-          titleSpacing: 10,
-          leadingWidth: 40,
-          title: "Booking with ${data?.tourGuide?.name}"),
+        onTap: () {
+          context.maybePopPage();
+        },
+        titleSpacing: 10,
+        leadingWidth: 40,
+        title: "Booking with ${data?.tourGuide?.name ?? ""}",
+        actions: [
+          if (data != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: StatusContainer(status: data.booking!.status!),
+            )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,26 +102,40 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                             ),
                           ),
                           ConfirmBookRowWidget(
+                              title: 'Name',
+                              subtitle: data.user!.fullName.toString()),
+                          20.height(),
+                          ConfirmBookRowWidget(
+                              title: 'Email',
+                              subtitle: data.user!.email.toString()),
+                          20.height(),
+                          ConfirmBookRowWidget(
+                              title: 'Phone',
+                              subtitle: data.user!.phoneNumber.toString()),
+                          20.height(),
+                          ConfirmBookRowWidget(
                               title: 'Date',
-                              subtitle: DateFormat("yyyy/MM/dd").format(
-                                  data?.booking?.date ?? DateTime.now())),
+                              subtitle: DateFormat("dd MMM yyyy")
+                                  .format(data.booking!.date!)),
                           20.height(),
                           ConfirmBookRowWidget(
-                            title: "From Time",
-                            subtitle: DateFormat("h:m a").format(
-                                DateFormat("H:m:s")
-                                    .parse(data?.booking?.startTime ?? "")),
-                          ),
+                              title: "Booking Start Time",
+                              subtitle: DateFormat("hh:mm a")
+                                  .format(data.booking!.startTime!)),
                           20.height(),
                           ConfirmBookRowWidget(
-                              title: "To Time",
-                              subtitle: DateFormat("h:m a").format(
-                                  DateFormat("H:m:s")
-                                      .parse(data?.booking?.endTime ?? ""))),
+                              title: "Booking End Time",
+                              subtitle: DateFormat("hh:mm a")
+                                  .format(data.booking!.endTime!)),
                           20.height(),
-                          ConfirmBookRowWidget(
-                              title: "Name",
-                              subtitle: data.user?.fullName ?? ""),
+                          if (data.booking?.notes != null) ...[
+                            Text(
+                              "Additional notes",
+                              style: AppTypography.title18LG,
+                            ),
+                            2.height(),
+                            Text(data.booking!.notes.toString())
+                          ],
                           if (data.car?.carName != null) ...[
                             Container(
                               margin: const EdgeInsets.only(
@@ -118,81 +146,79 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                                 style: AppTypography.title18LG,
                               ),
                             ),
+                            2.height(),
                             Card(
                               color: AppColor.surfaceBackgroundColor,
                               surfaceTintColor: AppColor.surfaceBackgroundColor,
-                              child: Stack(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: AppColor
-                                                .surfaceBackgroundBaseDarkColor,
-                                            border: Border.all(
-                                                width: 0.1,
-                                                color: AppColor
-                                                    .surfaceBrandPrimaryColor),
-                                            borderRadius:
-                                                BorderRadius.circular(16)),
-                                        height: 200,
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            child: cacheNetworkWidget(context,
-                                                imageUrl: data.car!.imagePath
-                                                    .toString(),
-                                                fit: BoxFit.cover)),
-                                      ),
-                                      8.height(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColor
+                                              .surfaceBackgroundBaseDarkColor,
+                                          border: Border.all(
+                                              width: 0.1,
+                                              color: AppColor
+                                                  .surfaceBrandPrimaryColor),
+                                          borderRadius:
+                                              BorderRadius.circular(16)),
+                                      height: 200,
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: cacheNetworkWidget(context,
+                                              imageUrl: data.car!.imagePath
+                                                  .toString(),
+                                              fit: BoxFit.cover)),
+                                    ),
+                                    8.height(),
 
-                                      // const RattingWiget(),
-                                      // 8.height(),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                data.car!.carName.toString(),
-                                                style: AppTypography.label18LG,
-                                              ),
-                                              8.height(),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    data.car!.currency
-                                                        .toString(),
-                                                    style: AppTypography
-                                                        .label14SM
-                                                        .copyWith(
-                                                            color: AppColor
-                                                                .textBrandSecondaryColor),
-                                                  ),
-                                                  8.width(),
-                                                  // const Icon(Icons.location_on_outlined),
-                                                  // 8.width(),
-                                                  Text(
-                                                    "${data.car!.price}",
-                                                    style: AppTypography
-                                                        .paragraph16LG,
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                    // const RattingWiget(),
+                                    // 8.height(),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              data.car!.carName.toString(),
+                                              style: AppTypography.label18LG,
+                                            ),
+                                            8.height(),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  data.car!.currency.toString(),
+                                                  style: AppTypography.label14SM
+                                                      .copyWith(
+                                                          color: AppColor
+                                                              .textBrandSecondaryColor),
+                                                ),
+                                                8.width(),
+                                                // const Icon(Icons.location_on_outlined),
+                                                // 8.width(),
+                                                Text(
+                                                  "${calculateAmount(data.booking!.startTime!, data.booking!.endTime!, data.car!.price!)}",
+                                                  style: AppTypography
+                                                      .paragraph16LG,
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             )
                           ]

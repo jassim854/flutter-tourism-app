@@ -49,6 +49,8 @@ class TextFieldWidget extends StatelessWidget {
                     AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
             borderRadius: BorderRadius.circular(8),
           ),
+          errorStyle:
+              AppTypography.paragraph12SM.copyWith(color: AppColor.redColor),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide(

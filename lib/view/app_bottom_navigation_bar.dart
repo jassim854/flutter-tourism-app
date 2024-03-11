@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
+import 'package:flutter_tourism_app/utils/app_assets.dart';
 
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_routes.dart';
@@ -33,8 +34,7 @@ class _AppBottomNavigationBarState
     extends ConsumerState<AppBottomNavigationBar> {
   List<Widget> _buildScreens() {
     return [
-      // const SelectCountryView(),
-      const HomeView(),
+      const SelectCountryView(),
       const BookingView(),
       const SupportView(),
     ];
@@ -42,16 +42,6 @@ class _AppBottomNavigationBarState
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
-      //    PersistentBottomNavBarItem(
-      //   routeAndNavigatorSettings: const RouteAndNavigatorSettings(
-      //       initialRoute: SelectCountryView.routeName,
-      //       onGenerateRoute: AppRoutes.generateRoute),
-      //   icon: const Icon(Icons.home),
-      //   title: ("Home"),
-      //   textStyle: AppTypography.label12XSM,
-      //   activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
-      //   inactiveColorPrimary: CupertinoColors.systemGrey,
-      // ),
       PersistentBottomNavBarItem(
         routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: HomeView.routeName,
@@ -63,31 +53,39 @@ class _AppBottomNavigationBarState
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        onSelectedTabPressWhenNoScreensPushed: ()async{
-             SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? value = preferences.getString("email");
-    if (value != null) {
-      ref.read(isLoadingProvider.notifier).state = true;
+        onSelectedTabPressWhenNoScreensPushed: () async {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          String? value = preferences.getString("email");
+          if (value != null) {
+            ref.read(isLoadingProvider.notifier).state = true;
 
-      await ref.read(apiServiceProvider).getUserBookedRequest(context,
-          payload: {"user_email": value}).then((val) {
-        if (val != null) {
-          ref.read(userAllBookedListProvider.notifier).addValue(val);
-          ref.read(isLoadingProvider.notifier).state = false;
+            await ref.read(apiServiceProvider).getUserBookedRequest(context,
+                payload: {"user_email": value}).then((val) {
+              if (val != null) {
+                ref.read(userAllBookedListProvider.notifier).addValue(val);
+                ref.read(isLoadingProvider.notifier).state = false;
 
-ref.read(userConfirmBookedListProvider.notifier).addValue(val);
-ref.read(userCancelledBookedListProvider.notifier).addValue(val);
-ref.read(userPendingBookedListProvider.notifier).addValue(val);
-        } else {
-          ref.read(isLoadingProvider.notifier).state = false;
-        }
-      });
-    }
+                // ref
+                //     .read(userConfirmedBookedListProvider.notifier)
+                //     .addValue(val);
+                ref.read(userCompletedListProvider.notifier).addValue(val);
+                ref
+                    .read(userCancelledBookedListProvider.notifier)
+                    .addValue(val);
+                // ref.read(userPendingBookedListProvider.notifier).addValue(val);
+              } else {
+                ref.read(isLoadingProvider.notifier).state = false;
+              }
+            });
+          }
         },
         routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: BookingView.routeName,
             onGenerateRoute: AppRoutes.generateRoute),
-        icon: const Icon(Icons.bookmark_border),
+        icon: Transform.scale(
+            scale: 2.5,
+            origin: Offset(0, -5),
+            child: Image.asset(AppAssets.book)),
         title: ("Bookings"),
         textStyle: AppTypography.label12XSM,
         activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
@@ -156,10 +154,13 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
         //   //   },
         //   // );
         // },
-                routeAndNavigatorSettings: const RouteAndNavigatorSettings(
+        routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: SupportView.routeName,
             onGenerateRoute: AppRoutes.generateRoute),
-        icon: const Icon(CupertinoIcons.circle_grid_hex_fill),
+        icon: Transform.scale(
+            scale: 2.5,
+            origin: Offset(0, -5),
+            child: Image.asset(AppAssets.support)),
         title: ("Support"),
         textStyle: AppTypography.label12XSM,
         activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
@@ -168,22 +169,15 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
     ];
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
-    
       context,
       controller: controller,
-   
 
-    
       // padding: NavBarPadding.all(0),
       screens: _buildScreens(),
-      
+
       items: _navBarsItems(),
       confineInSafeArea: true,
       backgroundColor:
@@ -191,7 +185,7 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
       handleAndroidBackButtonPress: true, // Default is true.
       resizeToAvoidBottomInset:
           true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: false, // Default is true.
+
       hideNavigationBarWhenKeyboardShows:
           true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
@@ -200,7 +194,6 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
       ),
       popAllScreensOnTapOfSelectedTab: true,
       // popAllScreensOnTapAnyTabs: true,
-  
 
       screenTransitionAnimation: const ScreenTransitionAnimation(
         // Screen transition animation on change of selected tab.

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppTypography {
-  static const String _fontFamily = "Poppins";
+  static const String _fontFamily = "Work Sans";
+    static const String fontFamily2 = "Poppins";
   static TextStyle title60_6XL = const TextStyle(
       fontFamily: _fontFamily, fontWeight: FontWeight.w700, fontSize: 60);
   static TextStyle title40_4XL = const TextStyle(

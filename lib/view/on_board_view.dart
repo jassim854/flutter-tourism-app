@@ -28,12 +28,13 @@ class _OnBoardViewState extends ConsumerState<OnBoardView> {
   @override
   void initState() {
     _pageController = PageController();
-initilize();
+    initilize();
     // TODO: implement initState
     super.initState();
   }
-  initilize() async{
-    preferences=await SharedPreferences.getInstance();
+
+  initilize() async {
+    preferences = await SharedPreferences.getInstance();
   }
 
   @override
@@ -55,7 +56,7 @@ initilize();
       "Welcome! We're thrilled to have you on board"
     ];
     List<String> subtitle = [
-      "Capture your ideas, orgainze your thoughts, and never missan important details again.",
+      "Welcome to Cultural Guides by SMCCU! 🌍 Discover the essence of cultural exploration with our innovative ambassador booking app. Immerse yourself in authentic experiences curated by knowledgeable ambassadors ready to unveil the hidden gems of each destination.",
       "Record your thoughts in the blink of an eye, Start creating your first note and seehow our app empowers you to capture ideas on the go.",
       "Create notebooks, tags, and folders to categorize your notes and keep everything neatly sorted.",
       "No matter where you are, access your notes on all device seamlessly. Let's get started on your productive note-taking journey!"
@@ -118,9 +119,9 @@ initilize();
                       if (index < 3)
                         GestureDetector(
                           onTap: () {
-preferences.setBool("isFirstTime", false);
+                            preferences.setBool("isFirstTime", false);
                             context.navigateToRemovedUntilNamed(
-                                SelectCountryView.routeName);
+                                AppBottomNavigationBar.routeName);
                           },
                           child: Text(
                             "Skip",
@@ -148,61 +149,78 @@ preferences.setBool("isFirstTime", false);
                       // )
                     ],
                   ),
-                  Container(
-                    height: 220,
-                    margin: const EdgeInsets.only(top: 30),
-                    width: double.infinity,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        images[index],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  20.height(),
-                  Text(
-                    title[index],
-                    style: AppTypography.title24XL
-                        .copyWith(color: AppColor.textBlackColor),
-                  ),
-                  20.height(),
-                  Text(
-                    subtitle[index],
-                    style: AppTypography.label18LG
-                        .copyWith(color: AppColor.textBlackColor),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomElevatedButton(
-                          onPressed: () async {
-                            if (index < 3) {
-                              await _pageController.animateToPage(index + 1,
-                                  duration: const Duration(milliseconds: 250),
-                                  curve: Curves.easeOutBack);
-                            } else {
-                              preferences.setBool("isFirstTime", false);
-                              context.navigateToRemovedUntilNamed(
-                                  SelectCountryView.routeName);
-                              // countryPickerSheetWidget(
-                              //   context,
-                              //   onSelect: (p0) {
-                              //     print(p0);
-                              //     WidgetsBinding.instance
-                              //         .addPostFrameCallback((_) {
-
-                              //     });
-                              //   },
-                              // );
-                            }
-                          },
-                          title: index == 3 ? "Start now" : "Next",
-                          textColor: AppColor.textWhiteColor,
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              Container(
+                                height: 220,
+                                margin: const EdgeInsets.only(top: 30),
+                                width: double.infinity,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.asset(
+                                    images[index],
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              20.height(),
+                              Text(
+                                title[index],
+                                style: AppTypography.label18LG.copyWith(
+                                    fontFamily: AppTypography.fontFamily2,
+                                    fontSize: 24,
+                                    color: AppColor.textBlackColor),
+                              ),
+                              20.height(),
+                              Text(
+                                subtitle[index],
+                                style: AppTypography.paragraph16LG.copyWith(
+                                    color: AppColor.textSubTitleColor),
+                              ),
+                              20.height(),
+                              // const Spacer(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomElevatedButton(
+                                onPressed: () async {
+                                  if (index < 3) {
+                                    await _pageController.animateToPage(
+                                        index + 1,
+                                        duration:
+                                            const Duration(milliseconds: 250),
+                                        curve: Curves.easeOutBack);
+                                  } else {
+                                    preferences.setBool("isFirstTime", false);
+                                    context.navigateToRemovedUntilNamed(
+                                        AppBottomNavigationBar.routeName);
+                                    // countryPickerSheetWidget(
+                                    //   context,
+                                    //   onSelect: (p0) {
+                                    //     print(p0);
+                                    //     WidgetsBinding.instance
+                                    //         .addPostFrameCallback((_) {
+
+                                    //     });
+                                    //   },
+                                    // );
+                                  }
+                                },
+                                title: index == 3 ? "Start now" : "Next",
+                                textColor: AppColor.textWhiteColor,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

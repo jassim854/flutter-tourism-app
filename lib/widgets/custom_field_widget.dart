@@ -4,6 +4,7 @@ import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/validators.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class CustomSearchTextFieldWidget extends StatelessWidget {
   CustomSearchTextFieldWidget(
@@ -76,21 +77,24 @@ class CustomSearchTextFieldWidget extends StatelessWidget {
 
 class PhoneNumberFieldWidget extends StatefulWidget {
   final TextEditingController controller;
-  const PhoneNumberFieldWidget({super.key, required this.controller});
+
+  const PhoneNumberFieldWidget({
+    super.key,
+    required this.controller,
+  });
 
   @override
   State<PhoneNumberFieldWidget> createState() => _PhoneNumberFieldWidgetState();
 }
 
 class _PhoneNumberFieldWidgetState extends State<PhoneNumberFieldWidget> {
-  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return IntlPhoneField(
       initialCountryCode: "AE",
-
+      // controller: widget.controller,
       pickerDialogStyle: PickerDialogStyle(
-        searchFieldPadding: EdgeInsets.all(10),
+        searchFieldPadding: const EdgeInsets.all(10),
         backgroundColor: AppColor.surfaceBackgroundColor,
         searchFieldInputDecoration: InputDecoration(
           filled: true,
@@ -103,6 +107,15 @@ class _PhoneNumberFieldWidgetState extends State<PhoneNumberFieldWidget> {
                 color:
                     AppColor.surfaceBackgroundBaseDarkColor.withOpacity(0.5)),
             borderRadius: BorderRadius.circular(8),
+          ),
+          errorStyle:
+              AppTypography.paragraph12SM.copyWith(color: AppColor.redColor),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: AppColor.redColor,
+              width: 2.0,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -126,11 +139,14 @@ class _PhoneNumberFieldWidgetState extends State<PhoneNumberFieldWidget> {
       dropdownDecoration: BoxDecoration(
         color: AppColor.surfaceBackgroundColor,
       ),
+
       onChanged: (value) {
         widget.controller.text = "${value.countryCode}${value.number}";
       },
-      // initialValue: PhoneNumber(dialCode: "971", isoCode: "AE"),
 
+      // onCountryChanged: (value) {
+      //   widget.controller.text = value.fullCountryCode + widget.controller.text;
+      // },
       // dropdownDecoration: InputDecoration(
       //   filled: true,
       //   fillColor: AppColor.surfaceBackgroundColor,

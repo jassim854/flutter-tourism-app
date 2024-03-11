@@ -93,7 +93,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         isScroll == true ? false : true;
     ref.read(isNoDataProvider.notifier).state = false;
 
-    if (isScroll == false) {      
+    if (isScroll == false) {
       ref.read(countryWiseTourGuideDataProvider).clear();
 
       pageNumber = 1;
@@ -132,15 +132,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    List<TourGuidModel> data = ref.watch(countryWiseTourGuideDataProvider);
+    List<TourGuidModel> dataa = ref.watch(countryWiseTourGuideDataProvider);
+    List<TourGuidModel> searchAmbassdor =
+        ref.watch(searchedAmbassdorProvider(dataa));
     bool closeIcon = ref.watch(showCloseIconProvider);
     CountryModel? selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
         appBar: AppBarWidget(
-          onTap: (){
-               PersistentNavBarNavigator.pushNewScreen(context, screen: SelectCountryView(),withNavBar: false );
+          onTap: () {
+            context.maybePopPage();
           },
-       
           title: "Ambassadors",
           bottomBarWidget: AppBar(
             surfaceTintColor: AppColor.surfaceBackgroundColor,
@@ -159,59 +160,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ref.read(showCloseIconProvider.notifier).state = true;
                   }
                   delayedFunction(fn: () {
-                    print(value);
+                    ref
+                        .read(searchedAmbassdorProvider(dataa).notifier)
+                        .filterData(value, dataa);
                   });
                 },
                 onIconTap: () {
                   ref.read(showCloseIconProvider.notifier).state = false;
+                  ref.read(searchedAmbassdorProvider(dataa).notifier).state =
+                      dataa;
+
                   _searchController.clear();
                 },
                 searchController: _searchController),
             actions: [
-              InkWell(
-                onTap: () async {
-                  context.hideKeypad();
-                  await showModalBottomSheet(
-                    useSafeArea: true,
-                    enableDrag: false,
-                    isDismissible: false,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16))),
-                    backgroundColor: AppColor.surfaceBackgroundBaseColor,
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (_) {
-                      return PopScope(
-                        canPop: false,
-                        child: FilterSheetWidget(() {
-                          callApiFn(isScroll: false);
-                        }),
-                      );
-                    },
-                  );
-                  // dynamic state = dropdownKey.currentState;
-                  // state.showButtonMenu();
-                  // dropdownKey.currentState?.widget
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.only(right: 20, left: 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 3.5,
-                           color: AppColor.surfaceBrandPrimaryColor,
-                    ),
-                 
-                      shape: BoxShape.circle),
-                  child: SvgPicture.network(
-              selectedCountry?.countryFlagUrl??"",
-                  
-                  ),
-                ),
+              Container(
+                height: 30,
+                width: 34,
+                // padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(right: 20, left: 4),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(100000)),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(800000000),
+                    child: SvgPicture(
+                      SvgNetworkLoader(
+                        selectedCountry?.countryFlagUrl ?? "",
+                      ),
+                      fit: BoxFit.cover,
+                    )),
               )
               // _searchController.text.isNotEmpty
               //     ? GestureDetector(
@@ -256,34 +233,28 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 : Expanded(
                     child: ListView.builder(
                         controller: _scrollController,
-                        itemCount: data.length,
+                        itemCount: searchAmbassdor.length,
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  context.hideKeypad();
                                   context.navigateNamed(
                                       HomeDetailView.routeName,
-                                      arguments: ref
-                                          .read(countryWiseTourGuideDataProvider)[
-                                              index]
-                                          .id
-                                          .toString());
+                                      arguments:
+                                          searchAmbassdor[index].id.toString());
                                 },
                                 child: CardWidget(
-                                  name: data[
-                                          index]
-                                      .name
-                                      .toString(),
-                                  status: data[
-                                              index]
-                                          .status ??
-                                      false,
-                                  url:  data[
-                                          index]
-                                      .images
-                                      .toString()
-                                ),
+                                    name:
+                                        searchAmbassdor[index].name.toString(),
+                                    status:
+                                        searchAmbassdor[index].status ?? false,
+                                    url: searchAmbassdor[index]
+                                        .images
+                                        .toString()),
                               ),
                               if (ref.watch(isLoadMoreProvider) &&
                                   index ==
@@ -381,21 +352,17 @@ class CardWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(16),
       color: AppColor.surfaceBackgroundColor,
+      elevation: 0.2,
       surfaceTintColor: AppColor.surfaceBackgroundColor,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: AppColor.surfaceBackgroundBaseDarkColor,
-                  border: Border.all(
-                      width: 0.1, color: AppColor.surfaceBrandPrimaryColor),
-                  borderRadius: BorderRadius.circular(16)),
-              height: 200,
+            SizedBox(
+              height: 380,
               child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                   child: cacheNetworkWidget(context,
                       imageUrl: url, fit: BoxFit.cover)),
             ),

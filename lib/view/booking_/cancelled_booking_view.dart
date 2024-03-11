@@ -6,6 +6,7 @@ import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
+import 'package:flutter_tourism_app/view/booking_/all_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_detail_view.dart';
 import 'package:intl/intl.dart';
 
@@ -18,30 +19,44 @@ class CancelledBookingView extends ConsumerStatefulWidget {
 }
 
 class _CancelledBookingViewState extends ConsumerState<CancelledBookingView> {
-   
   @override
   Widget build(BuildContext context) {
-     List<UserBookedModel> data=ref.watch(userCancelledBookedListProvider);
+    List<UserBookedModel> data = ref.watch(userCancelledBookedListProvider);
     return ColoredBox(
       color: AppColor.surfaceBackgroundColor,
-      child: ref.watch(isLoadingProvider)==true? CupertinoActivityIndicator(radius: 30,) :data.isEmpty?Center(child: Text("No Bookings avilable"),) : ListView.separated(
-          padding: const EdgeInsets.all(20),
-          itemBuilder: (context, index) {
-            return GestureDetector(
-                  onTap: () {
-               Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingDetailView(data[index].booking!.id.toString()), ));
-              },
-              child: Text(
-                    "Booking with ${data[index].tourGuide?.name}"
-,                    // on ${DateFormat("MM/dd/yyyy").format(data[index].booking!.date!)}",
-                style: AppTypography.label16MD,
-              ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const Divider();
-          },
-          itemCount: data.length),
+      child: ref.watch(isLoadingProvider) == true
+          ? CupertinoActivityIndicator(
+              radius: 30,
+            )
+          : data.isEmpty
+              ? Center(
+                  child: Text("No Bookings avilable"),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(20),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => BookingDetailView(
+                                data[index].booking!.id.toString()),
+                          ));
+                        },
+                        child: ShowBookingRowWidget(
+                          imageUrl:
+                              data[index].tourGuide?.images.toString() ?? "",
+                          name: data[index].tourGuide?.name.toString() ?? "",
+                          bookingId: data[index].booking?.id.toString() ?? "",
+                          bookingStatus:
+                              data[index].booking?.status.toString() ?? "",
+                          bookingDate:
+                              data[index].booking?.date ?? DateTime(2000),
+                        ));
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider();
+                  },
+                  itemCount: data.length),
     );
   }
 }

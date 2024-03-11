@@ -38,6 +38,8 @@
 //     };
 // }
 
+import 'package:intl/intl.dart';
+
 class UserBookedModel {
   final Booking? booking;
   final User? user;
@@ -73,28 +75,33 @@ class UserBookedModel {
 class Booking {
   final int? id;
   final DateTime? date;
-  final String? startTime;
-  final String? endTime;
+  final DateTime? startTime;
+  final DateTime? endTime;
   final String? status;
   final String? car;
+  final String? notes;
 
-  Booking({
-    this.id,
-    this.date,
-    this.startTime,
-    this.endTime,
-    this.status,
-    this.car,
-  });
+  Booking(
+      {this.id,
+      this.date,
+      this.startTime,
+      this.endTime,
+      this.status,
+      this.car,
+      this.notes});
 
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
-        id: json["id"],
-        date: json["date"] == null ? null : DateTime.parse(json["date"]),
-        startTime: json["start_time"],
-        endTime: json["end_time"],
-        status: json["status"],
-        car: json["car"],
-      );
+      id: json["id"],
+      date: json["date"] == null ? null : DateTime.parse(json["date"]),
+      startTime: json["start_time"] == null
+          ? null
+          : DateFormat("HH:mm:ss").parse(json["start_time"]),
+      endTime: json["end_time"] == null
+          ? null
+          : DateFormat("HH:mm:ss").parse(json["end_time"]),
+      status: json["status"],
+      car: json["car"],
+      notes: json["notes"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,

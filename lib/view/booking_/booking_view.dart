@@ -9,7 +9,9 @@ import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/booking_/all_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/cancelled_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/completd_booking_view.dart';
+import 'package:flutter_tourism_app/view/booking_/confirmed_booking_view.dart';
 import 'package:flutter_tourism_app/view/booking_/pending_booking_view.dart';
+import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,12 +28,14 @@ class _BookingViewState extends ConsumerState<BookingView>
   late TabController _tabController;
   @override
   void initState() {
-    _tabController = TabController(vsync: this, length: 4, initialIndex: 0);
-       WidgetsBinding.instance.addPostFrameCallback((_) {
+    super.initState();
+    _tabController = TabController(vsync: this, length: 3, initialIndex: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       // callBooking();
     });
   }
-    callBooking() async {
+
+  callBooking() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? value = preferences.getString("email");
     if (value != null) {
@@ -42,10 +46,10 @@ class _BookingViewState extends ConsumerState<BookingView>
         if (val != null) {
           ref.read(userAllBookedListProvider.notifier).addValue(val);
           ref.read(isLoadingProvider.notifier).state = false;
-
-ref.read(userConfirmBookedListProvider.notifier).addValue(val);
-ref.read(userCancelledBookedListProvider.notifier).addValue(val);
-ref.read(userPendingBookedListProvider.notifier).addValue(val);
+          // ref.read(userConfirmedBookedListProvider.notifier).addValue(val);
+          ref.read(userCompletedListProvider.notifier).addValue(val);
+          ref.read(userCancelledBookedListProvider.notifier).addValue(val);
+          // ref.read(userPendingBookedListProvider.notifier).addValue(val);
         } else {
           ref.read(isLoadingProvider.notifier).state = false;
         }
@@ -53,13 +57,12 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
         toolBarHeight: 110,
-        title: 'Bookings',
+        title: 'My Bookings',
         bottomBarWidget: AppBar(
           toolbarHeight: 80,
           backgroundColor: AppColor.surfaceBackgroundColor,
@@ -93,26 +96,26 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
                           style: AppTypography.label14SM
                               .copyWith(color: AppColor.textBlackColor),
                         ),
-                          Text(
-                          "Pending",
-                          style: AppTypography.label14SM
-                              .copyWith(color: AppColor.textBlackColor),
-                        ),
+
                         Text(
                           "Completed",
                           style: AppTypography.label14SM
                               .copyWith(color: AppColor.textBlackColor),
                         ),
-
+                        // Text(
+                        //   "Confirmed",
+                        //   style: AppTypography.label14SM
+                        //       .copyWith(color: AppColor.textBlackColor),
+                        // ),
                         Row(
                           children: [
-                             5.width(),
+                            5.width(),
                             Container(
                               width: 2,
                               height: 20,
                               color: AppColor.surfaceBackgroundBaseDarkColor,
                             ),
-                          5.width(),
+                            20.width(),
                             Text(
                               "Cancelled",
                               style: AppTypography.label14SM
@@ -133,11 +136,10 @@ ref.read(userPendingBookedListProvider.notifier).addValue(val);
               controller: _tabController,
               children: const [
                 AllBookingView(),
-                   PendingBookingView(),
+                // PendingBookingView(),
                 CompletedBookingView(),
+                // ConfirmedBookingView(),
                 CancelledBookingView(),
-             
-
               ],
             ),
           ),

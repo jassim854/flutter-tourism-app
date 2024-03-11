@@ -42,16 +42,16 @@ class AppRoutes {
       // case BookingDetailView.routeName:
       //   return MaterialPageRoute(
       //       builder: ((context) => const BookingDetailView()));
-      case BookView.routeName:
-        return MaterialPageRoute(builder: ((context) {
-          String id = setting.arguments as String;
-          return BookView(id);
-        }));
-      case CarView.routeName:
-        return MaterialPageRoute(builder: ((context) {
-          Map<String,dynamic>data=setting.arguments as Map<String,dynamic>;
-          return  CarView(data);
-        }));
+      // case BookView.routeName:
+      //   return MaterialPageRoute(builder: ((context) {
+      //     String id = setting.arguments as String;
+      //     return BookView(id);
+      //   }));
+      // case CarView.routeName:
+      //   return MaterialPageRoute(builder: ((context) {
+      //     Map<String,dynamic>data=setting.arguments as Map<String,dynamic>;
+      //     return  CarView(data);
+      //   }));
       default:
         return MaterialPageRoute(
           builder: (context) {

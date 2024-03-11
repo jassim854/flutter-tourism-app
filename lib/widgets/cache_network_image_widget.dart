@@ -15,8 +15,11 @@ CachedNetworkImage cacheNetworkWidget(BuildContext context,
     },
     useOldImageOnUrlChange: false,
     progressIndicatorBuilder: (context, url, progress) {
-      return Center(
-        child: BaseHelper.loadingWidget(value: progress.progress),
+      return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Center(
+          child: BaseHelper.loadingWidget(value: progress.progress),
+        ),
       );
     },
     errorWidget: (context, url, error) {
