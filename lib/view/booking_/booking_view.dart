@@ -46,11 +46,12 @@ class _BookingViewState extends ConsumerState<BookingView>
         if (val != null) {
           ref.read(userAllBookedListProvider.notifier).addValue(val);
           ref.read(isLoadingProvider.notifier).state = false;
-          // ref.read(userConfirmedBookedListProvider.notifier).addValue(val);
+     
           ref.read(userCompletedListProvider.notifier).addValue(val);
           ref.read(userCancelledBookedListProvider.notifier).addValue(val);
-          // ref.read(userPendingBookedListProvider.notifier).addValue(val);
+
         } else {
+
           ref.read(isLoadingProvider.notifier).state = false;
         }
       });
