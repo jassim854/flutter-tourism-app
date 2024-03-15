@@ -135,156 +135,105 @@ class _HomeViewState extends ConsumerState<HomeView> {
     List<TourGuidModel> dataa = ref.watch(countryWiseTourGuideDataProvider);
     List<TourGuidModel> searchAmbassdor =
         ref.watch(searchedAmbassdorProvider(dataa));
-    bool closeIcon = ref.watch(showCloseIconProvider);
+
     CountryModel? selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
+        backgroundColor: AppColor.surfaceBackgroundSecondaryColor,
         appBar: AppBarWidget(
           onTap: () {
             context.maybePopPage();
           },
           title: "Ambassadors",
-          bottomBarWidget: AppBar(
-            surfaceTintColor: AppColor.surfaceBackgroundColor,
-            elevation: 0,
-            backgroundColor: AppColor.surfaceBackgroundColor,
-            leadingWidth: 0,
-            titleSpacing: 0,
-            leading: const SizedBox.shrink(),
-            title: CustomSearchTextFieldWidget(
-                hintText: "Search",
-                showCloseIcon: closeIcon,
-                onChange: (value) {
-                  if (value == "") {
-                    ref.read(showCloseIconProvider.notifier).state = false;
-                  } else {
-                    ref.read(showCloseIconProvider.notifier).state = true;
-                  }
-                  delayedFunction(fn: () {
-                    ref
-                        .read(searchedAmbassdorProvider(dataa).notifier)
-                        .filterData(value, dataa);
-                  });
-                },
-                onIconTap: () {
-                  ref.read(showCloseIconProvider.notifier).state = false;
-                  ref.read(searchedAmbassdorProvider(dataa).notifier).state =
-                      dataa;
-
-                  _searchController.clear();
-                },
-                searchController: _searchController),
-            actions: [
-              Container(
-                height: 30,
-                width: 34,
-                // padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.only(right: 20, left: 4),
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(100000)),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(800000000),
-                    child: SvgPicture(
-                      SvgNetworkLoader(
-                        selectedCountry?.countryFlagUrl ?? "",
-                      ),
-                      fit: BoxFit.cover,
-                    )),
-              )
-              // _searchController.text.isNotEmpty
-              //     ? GestureDetector(
-              //         onTap: () {
-              //           context.hideKeypad();
-              //           _searchController.clear();
-              //         },
-              //         child: Container(
-              //           alignment: Alignment.center,
-              //           margin: const EdgeInsets.only(right: 20),
-              //           child: Text("Cancel",
-              //               style: AppTypography.label14SM.copyWith(
-              //                 color: AppColor.textPrimaryColor,
-              //               )),
-              //         ),
-              //       )
-              //     : Container()
-            ],
-          ),
+          actions: [
+            Container(
+              height: 45,
+              width: 45,
+              // padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(
+                right: 20,
+              ),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(100000)),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(800000000),
+                  child: SvgPicture(
+                    SvgNetworkLoader(
+                      selectedCountry?.countryFlagUrl ?? "",
+                    ),
+                    fit: BoxFit.cover,
+                  )),
+            )
+          ],
         ),
         body: Column(
           children: [
-            // ColoredBox(
-            //   color: AppColor.surfaceBackgroundColor,
-            //   child: Container(
-            //       margin: const EdgeInsets.only(
-            //           left: 20, right: 20, top: 10, bottom: 10),
-            //       height: 45,
-            //       alignment: Alignment.center,
-            //       decoration: BoxDecoration(
-            //           borderRadius: BorderRadius.circular(24),
-            //           border: Border.all(
-            //               width: 3.5,
-            //               color: AppColor.surfaceBrandPrimaryColor)),
-            //       child: Text(
-            //         selectedCountry?.countryName??"",
-            //         style: AppTypography.label18LG,
-            //       )),
-            // ),
+            2.height(),
             ref.watch(isLoadingProvider)
                 ? const Expanded(child: ListShimmer())
                 : Expanded(
                     child: ListView.builder(
+                        padding: EdgeInsets.zero,
                         controller: _scrollController,
                         itemCount: searchAmbassdor.length,
                         keyboardDismissBehavior:
                             ScrollViewKeyboardDismissBehavior.onDrag,
                         itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  context.hideKeypad();
-                                  context.navigateNamed(
-                                      HomeDetailView.routeName,
-                                      arguments:
-                                          searchAmbassdor[index].id.toString());
-                                },
-                                child: CardWidget(
-                                    name:
-                                        searchAmbassdor[index].name.toString(),
-                                    status:
-                                        searchAmbassdor[index].status ?? false,
-                                    url: searchAmbassdor[index]
-                                        .images
-                                        .toString()),
-                              ),
-                              if (ref.watch(isLoadMoreProvider) &&
-                                  index ==
-                                      ref
-                                              .watch(
-                                                  countryWiseTourGuideDataProvider)
-                                              .length -
-                                          1)
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 5, bottom: 40),
-                                  child: CupertinoActivityIndicator(
-                                    radius: 18,
-                                  ),
+                          return Container(
+                            padding: EdgeInsets.only(top: index == 0 ? 20 : 0),
+                            // margin: EdgeInsets.only(bottom: 2),
+                            color: AppColor.surfaceBackgroundColor,
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    context.hideKeypad();
+                                    context.navigateNamed(
+                                        HomeDetailView.routeName,
+                                        arguments: searchAmbassdor[index]
+                                            .id
+                                            .toString());
+                                  },
+                                  child: CardWidget(
+                                      name: searchAmbassdor[index]
+                                          .name
+                                          .toString(),
+                                      status: searchAmbassdor[index].status ??
+                                          false,
+                                      url: searchAmbassdor[index]
+                                          .images
+                                          .toString()),
                                 ),
-                              if (ref.watch(nextPageProvider) == false &&
-                                  index ==
-                                      ref
-                                              .watch(
-                                                  countryWiseTourGuideDataProvider)
-                                              .length -
-                                          1)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 5, bottom: 40),
-                                  child: Text(
-                                    "no Data",
-                                    style: AppTypography.label18LG,
+                                if (ref.watch(isLoadMoreProvider) &&
+                                    index ==
+                                        ref
+                                                .watch(
+                                                    countryWiseTourGuideDataProvider)
+                                                .length -
+                                            1)
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 5, bottom: 40),
+                                    child: CupertinoActivityIndicator(
+                                      radius: 18,
+                                    ),
                                   ),
-                                )
-                            ],
+                                if (ref.watch(nextPageProvider) == false &&
+                                    index ==
+                                        ref
+                                                .watch(
+                                                    countryWiseTourGuideDataProvider)
+                                                .length -
+                                            1)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5, bottom: 40),
+                                    child: Text(
+                                      "no Data",
+                                      style: AppTypography.label18LG,
+                                    ),
+                                  )
+                              ],
+                            ),
                           );
                         }),
                   ),
@@ -349,11 +298,15 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      color: AppColor.surfaceBackgroundColor,
-      elevation: 0.2,
-      surfaceTintColor: AppColor.surfaceBackgroundColor,
+    return Container(
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          // color: AppColor.surfaceBackgroundColor,
+          border: Border.all(
+            width: 0.7,
+            color: AppColor.surfaceBackgroundBaseDarkColor,
+          )),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(

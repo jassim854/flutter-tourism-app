@@ -185,6 +185,8 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final aTourGuideData = ref.read(aTourGuideProvider);
+    final currentDate = DateTime.now();
     return ClipRRect(
         borderRadius: BorderRadius.circular(40),
         child: Scaffold(
@@ -204,8 +206,11 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
               SizedBox(
                 height: 200,
                 child: CupertinoDatePicker(
+                    // minuteInterval: 30,
                     mode: CupertinoDatePickerMode.time,
-                    initialDateTime: DateTime.now(),
+                    minuteInterval: 30,
+                    initialDateTime: currentDate
+                        .add(Duration(minutes: 30 - currentDate.minute % 30)),
                     // initialEntryMode: TimePickerEntryMode.input,
                     onDateTimeChanged: (value) {
                       ref
@@ -215,7 +220,7 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
               ),
               30.height(),
               Text(
-                "Booking Hours",
+                "Tour Hours",
                 style: AppTypography.title28_2XL
                     .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
               ),
@@ -230,9 +235,9 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
                                   index;
                             },
                             child: Container(
-                              height: 44,
-                              width: 60,
-                              alignment: Alignment.center,
+                              height: 76,
+                              width: 63,
+                              padding: const EdgeInsets.only(top: 8),
                               margin: const EdgeInsets.only(right: 8),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
@@ -241,14 +246,42 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
                                           ? AppColor.surfaceBrandDarkColor
                                           : AppColor
                                               .surfaceBackgroundSecondaryColor),
-                              child: Text(
-                                "${4 + index}",
-                                style: AppTypography.paragraph18XL.copyWith(
-                                    fontSize: 23,
-                                    color: ref.watch(selectedToTimeProvider) ==
-                                            index
-                                        ? AppColor.textWhiteColor
-                                        : AppColor.textBlackColor),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "${4 + index}",
+                                    style: AppTypography.paragraph12SM.copyWith(
+                                        fontSize: 23,
+                                        color:
+                                            ref.watch(selectedToTimeProvider) ==
+                                                    index
+                                                ? AppColor.textWhiteColor
+                                                : AppColor.textLightGreyeColor),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "${aTourGuideData!.currency!} ",
+                                        style: AppTypography.paragraph12SM.copyWith(
+                                            color: ref.watch(
+                                                        selectedToTimeProvider) ==
+                                                    index
+                                                ? AppColor.textWhiteColor
+                                                : AppColor.textLightGreyeColor),
+                                      ),
+                                      Text(
+                                        "${double.parse(aTourGuideData!.price!).toInt() * (4 + index)}",
+                                        style: AppTypography.paragraph12SM.copyWith(
+                                            color: ref.watch(
+                                                        selectedToTimeProvider) ==
+                                                    index
+                                                ? AppColor.textWhiteColor
+                                                : AppColor.textLightGreyeColor),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ))),
@@ -387,20 +420,25 @@ class _CompleteBookingSheetWidgetState
       child: Scaffold(
         backgroundColor: AppColor.surfaceBackgroundBaseColor,
         body: ListView(
+          padding: const EdgeInsets.only(left: 16, right: 16),
           children: [
             40.height(),
             const SvgPicture(SvgAssetLoader(AppAssets.completeBookIcon)),
             30.height(),
             Center(
-              child: Text(
-                "Complete Booking",
-                style: AppTypography.title28_2XL
-                    .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Complete Reservation",
+                  style: AppTypography.title28_2XL
+                      .copyWith(fontWeight: FontWeight.w400, fontSize: 34),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
 
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
+              padding: const EdgeInsets.only(top: 30),
               child: Form(
                 key: formKey,
                 child: Column(
@@ -433,7 +471,7 @@ class _CompleteBookingSheetWidgetState
             ),
 
             Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20),
               child: Row(
                 children: [
                   CustomCheckbox(
@@ -462,7 +500,7 @@ class _CompleteBookingSheetWidgetState
               child: ref.watch(isLoadingProvider)
                   ? const CupertinoActivityIndicator()
                   : ListView.builder(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       itemCount: carData?.length,
                       itemBuilder: (context, index) {
@@ -471,11 +509,14 @@ class _CompleteBookingSheetWidgetState
                           padding:
                               const EdgeInsets.only(left: 6, top: 8, bottom: 8),
                           decoration: BoxDecoration(
-                            color:
-                                selectedCar?.carName == carData![index].carName
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                width: 1.5,
+                                color: selectedCar?.carName ==
+                                        carData![index].carName
                                     ? AppColor.surfaceBrandDarkColor
-                                    : null,
-                          ),
+                                    : Colors.transparent,
+                              )),
                           child: InkWell(
                             onTap: () {
                               ref.read(selectedCarProvider.notifier).state =
@@ -504,21 +545,17 @@ class _CompleteBookingSheetWidgetState
                                   children: [
                                     Text(
                                       carData[index].carName,
-                                      style: AppTypography.label18LG.copyWith(
-                                          fontSize: 20,
-                                          color: selectedCar?.carName ==
-                                                  carData[index].carName
-                                              ? AppColor.textWhiteColor
-                                              : AppColor.textBlackColor),
+                                      style: AppTypography.title18LG.copyWith(
+                                          fontSize: 15,
+                                          color: AppColor.textBlackColor),
                                     ),
                                     Text(
                                       "${carData[index].price} ${carData[index].currency} / Hour",
-                                      style: AppTypography.label14SM.copyWith(
-                                          fontSize: 15,
-                                          color: selectedCar?.carName ==
-                                                  carData[index].carName
-                                              ? AppColor.textWhiteColor
-                                              : AppColor.textSubTitleColor),
+                                      style: AppTypography.paragraph14MD
+                                          .copyWith(
+                                              fontSize: 15,
+                                              color:
+                                                  AppColor.textLightGreyeColor),
                                     ),
                                   ],
                                 ),
@@ -531,7 +568,9 @@ class _CompleteBookingSheetWidgetState
             ),
             // const Spacer(),
             Padding(
-              padding: const EdgeInsets.only(bottom: 0, left: 20, right: 20),
+              padding: const EdgeInsets.only(
+                bottom: 0,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -539,13 +578,154 @@ class _CompleteBookingSheetWidgetState
                       radius: 12,
                       onPressed: () async {
                         if (widget._phoneController.text.length < 6) {
-                          BaseHelper.showSnackBar(
-                              context, "Enter your phone no");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
+                            content: Container(
+                              alignment: Alignment.bottomCenter,
+                              // color: Colors.red,
+                              height: 60,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    padding: const EdgeInsets.all(8),
+                                    margin: const EdgeInsets.only(
+                                        left: 20, right: 20, bottom: 8),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: AppColor.redColor)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning_amber_outlined,
+                                          color: AppColor.redColor,
+                                        ),
+                                        8.width(),
+                                        Text(
+                                          "Enter your phone number",
+                                          style: AppTypography.paragraph12SM
+                                              .copyWith(
+                                                  color: AppColor.redColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 18,
+                                    top: -4,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: AppColor.redColor,
+                                            shape: BoxShape.circle),
+                                        child: Icon(
+                                          Icons.close,
+                                          color:
+                                              AppColor.surfaceBackgroundColor,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            margin: const EdgeInsets.all(5),
+                            duration: const Duration(seconds: 4),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          ));
                           return;
                         }
                         if (ref.watch(isBookCarProvider) == true &&
                             selectedCar == null) {
-                          BaseHelper.showSnackBar(context, "Select a Car");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
+                            content: Container(
+                              alignment: Alignment.bottomCenter,
+                              // color: Colors.red,
+                              height: 60,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    padding: const EdgeInsets.all(8),
+                                    margin: const EdgeInsets.only(
+                                        left: 20, right: 20, bottom: 8),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: AppColor.redColor)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning_amber_outlined,
+                                          color: AppColor.redColor,
+                                        ),
+                                        8.width(),
+                                        Text(
+                                          "Select a car",
+                                          style: AppTypography.paragraph12SM
+                                              .copyWith(
+                                                  color: AppColor.redColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 18,
+                                    top: -4,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: AppColor.redColor,
+                                            shape: BoxShape.circle),
+                                        child: Icon(
+                                          Icons.close,
+                                          color:
+                                              AppColor.surfaceBackgroundColor,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            margin: const EdgeInsets.all(5),
+                            duration: const Duration(seconds: 4),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          ));
                           return;
                         }
                         if (formKey.currentState!.validate()) {
@@ -575,7 +755,7 @@ class _CompleteBookingSheetWidgetState
                         }
                         return;
                       },
-                      title: 'Confirm',
+                      title: 'Confirm Reservation',
                       style: AppTypography.title18LG.copyWith(
                           fontSize: 17, color: AppColor.surfaceBackgroundColor),
                     ),
@@ -584,7 +764,9 @@ class _CompleteBookingSheetWidgetState
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+              padding: const EdgeInsets.only(
+                bottom: 20,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -636,6 +818,7 @@ class _ConfirmBooingSheetWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final selectedCountry = ref.read(selectedCountryProvider);
     DateTime? selectedDate = ref.watch(selectedDateProvider);
     DateTime? selectFromTime = ref.watch(selectedFromTimeProvider);
     int? bookingHours = ref.watch(selectedToTimeProvider);
@@ -651,7 +834,7 @@ class _ConfirmBooingSheetWidgetState
         30.height(),
         Center(
           child: Text(
-            "Confirm Booking",
+            "Confirm Reservation",
             style: AppTypography.title28_2XL
                 .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
           ),
@@ -673,13 +856,12 @@ class _ConfirmBooingSheetWidgetState
                   subtitle: DateFormat("dd MMM yyyy").format(selectedDate!)),
               20.height(),
               ConfirmBookRowWidget(
-                  title: "Booking Start Time",
+                  title: "Tour Start Time",
                   subtitle:
                       "${DateFormat("hh:mm a").format(selectFromTime!)} - ${DateFormat("hh:mm a").format(selectFromTime.add(Duration(hours: 4 + bookingHours!)))}"),
               20.height(),
               ConfirmBookRowWidget(
-                  title: "Booking Hours",
-                  subtitle: "${4 + bookingHours} Hours"),
+                  title: "Your Hours", subtitle: "${4 + bookingHours} Hours"),
               15.height(),
               const Divider(),
               15.height(),
@@ -706,6 +888,35 @@ class _ConfirmBooingSheetWidgetState
                       // 1.height(),
                       Text(
                         tourGuideData.name.toString(),
+                        style: AppTypography.paragraph16LG.copyWith(
+                            fontSize: 15, color: AppColor.textSubTitleColor),
+                      )
+                    ],
+                  )
+                ],
+              ),
+              15.height(),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SvgPicture.network(
+                            selectedCountry!.countryFlagUrl)),
+                  ),
+                  15.width(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Country",
+                        style: AppTypography.title18LG.copyWith(fontSize: 15),
+                      ),
+                      // 1.height(),
+                      Text(
+                        selectedCountry.countryName,
                         style: AppTypography.paragraph16LG.copyWith(
                             fontSize: 15, color: AppColor.textSubTitleColor),
                       )
@@ -765,8 +976,8 @@ class _ConfirmBooingSheetWidgetState
           ),
         ),
         ref.watch(isLoadingProvider)
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: CupertinoActivityIndicator(),
               )
             : Padding(

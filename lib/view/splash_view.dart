@@ -49,21 +49,31 @@ class _SplashViewState extends ConsumerState<SplashView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 50, right: 50),
             child: Text(
-              "Cultural Guides by SMCCU!",
-              style:
-                  AppTypography.title24XL.copyWith(fontWeight: FontWeight.w400),
+              "Cultural Guides by",
+              style: AppTypography.title40_4XL.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 37,
+                  color: AppColor.textLightBlueColor),
+              textAlign: TextAlign.center,
             ),
           ),
-          AnimatedSize(
-            duration: const Duration(seconds: 1),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-              ),
-              child: SvgPicture.asset(AppAssets.appLogo),
+          10.height(),
+          SizedBox(
+            height: 77,
+            // color: Colors.red,
+            child: AnimatedSize(
+              duration: const Duration(seconds: 1),
+              child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                  ),
+                  child: Image.asset(
+                    AppAssets.appLogo,
+                    fit: BoxFit.fill,
+                  )),
             ),
           ),
         ],

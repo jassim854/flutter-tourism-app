@@ -92,8 +92,7 @@ class ApiServices {
     return null;
   }
 
-  ATourGuideModel _convertATourGuideResponseList(
-      Response<dynamic> response) {
+  ATourGuideModel _convertATourGuideResponseList(Response<dynamic> response) {
     Map<String, dynamic> newData = {};
 
     newData.addAll({
@@ -103,10 +102,11 @@ class ApiServices {
       "location": response.data[0]["location"],
       "status": response.data[0]["status"],
       "images": response.data[0]["images"],
-      "similar_tour_guides":
-          response.data[1]["similar_tour_guides"],
+      'currency': response.data[0]["currency"],
+      'price': response.data[0]["price"],
+      "similar_tour_guides": response.data[1]["similar_tour_guides"],
     });
-    return  ATourGuideModel.fromJson(newData);
+    return ATourGuideModel.fromJson(newData);
     // return List.from(response.data.map((e) => ATourGuideModel.fromJson(e[0])));
   }
 
@@ -120,16 +120,15 @@ class ApiServices {
         return response.data;
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode==400) {
-           BaseHelper.showSnackBar(context, "Tour guide is already booked for this time slot on this day.");
-      }else{
-         BaseHelper.showSnackBar(context, e.message);
+      if (e.response?.statusCode == 400) {
+        BaseHelper.showSnackBar(context,
+            "Tour guide is already booked for this time slot on this day.");
+      } else {
+        BaseHelper.showSnackBar(context, e.message);
       }
-   
     }
     return null;
   }
-
 
   Future<List<UserBookedModel>?> getUserBookedRequest(context,
       {required Map<String, dynamic> payload}) async {
@@ -145,10 +144,12 @@ class ApiServices {
     }
     return null;
   }
+
   List<UserBookedModel> _convertUserBookeResponseList(
       Response<dynamic> response) {
     return List.from(response.data.map((e) => UserBookedModel.fromJson(e)));
   }
+
   Future<UserBookedModel?> getUserDetailBookedRequest(context,
       {required Map<String, dynamic> payload}) async {
     try {
@@ -156,7 +157,7 @@ class ApiServices {
       Response<dynamic> response =
           await networkHelper.getBookingDetailApi(payLoad: payload);
       if (response.statusCode == 200) {
-            return UserBookedModel.fromJson(response.data);
+        return UserBookedModel.fromJson(response.data);
         // return await compute(_convertUserDetailBookeResponse, response);
       }
     } on DioException catch (e) {
@@ -164,10 +165,11 @@ class ApiServices {
     }
     return null;
   }
-  UserBookedModel _convertUserDetailBookeResponse(
-      Response<dynamic> response) {
+
+  UserBookedModel _convertUserDetailBookeResponse(Response<dynamic> response) {
     return UserBookedModel.fromJson(response.data);
   }
+
   Future<List<CarModel>?> getCarListdRequest(context,
       {required Map<String, dynamic> payload}) async {
     try {
@@ -182,8 +184,8 @@ class ApiServices {
     }
     return null;
   }
-  List<CarModel> _convertCarListResponseList(
-      Response<dynamic> response) {
+
+  List<CarModel> _convertCarListResponseList(Response<dynamic> response) {
     return List.from(response.data.map((e) => CarModel.fromJson(e)));
   }
 }

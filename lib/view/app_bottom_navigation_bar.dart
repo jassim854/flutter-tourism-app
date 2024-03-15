@@ -86,7 +86,7 @@ class _AppBottomNavigationBarState
             scale: 2.5,
             origin: Offset(0, -5),
             child: Image.asset(AppAssets.book)),
-        title: ("Bookings"),
+        title: ("Reservations"),
         textStyle: AppTypography.label12XSM,
         activeColorPrimary: AppColor.surfaceBrandPrimaryColor,
         inactiveColorPrimary: CupertinoColors.systemGrey,

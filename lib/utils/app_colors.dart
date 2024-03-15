@@ -6,8 +6,10 @@ class AppColor {
   static Color textWhiteColor = Colors.white;
   static Color textBrandSecondaryColor = const Color(0xff34424B);
   static Color textPrimaryColor = const Color(0xff83A6F3);
+  static Color textLightBlueColor = const Color(0xff0079B1);
   // static Color textInvertSubtitle = const Color(0xffC7C9CC);
   static Color textSubTitleColor = const Color(0xff3C3C43);
+  static Color textLightGreyeColor = const Color(0xff848488);
   // static Color textPrimaryColor = const Color(0xff4D5A62);
   // static Color textInvertPrimaryColor = const Color(0xffF3F6FE);
 

@@ -23,7 +23,7 @@ void main() {
     DeviceOrientation.portraitDown,
   ]).then((value) => runApp(DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) =>  ProviderScope(child: MyApp()))));
+      builder: (context) =>  const ProviderScope(child: MyApp()))));
 }
 
 class MyApp extends StatelessWidget {

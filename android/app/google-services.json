@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "748887606554",
+    "project_id": "tourism-app-da359",
+    "storage_bucket": "tourism-app-da359.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748887606554:android:7cbf5a4347e787d329d8a3",
+        "android_client_info": {
+          "package_name": "com.example.flutter_tourism_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYVo54Bpe4sLqWQEHk4E0sGGXrGCLgtpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

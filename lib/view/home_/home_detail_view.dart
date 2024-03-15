@@ -315,25 +315,24 @@ class ConfirmBookRowWidget extends StatelessWidget {
       children: [
         Container(
             padding: const EdgeInsets.all(4),
-            child: SvgPicture(SvgAssetLoader(title
-                    .toLowerCase()
-                    .contains("name")
-                ? AppAssets.userIcon
-                : title.toLowerCase().contains("email")
-                    ? AppAssets.emailIcon
-                    : title.toLowerCase().contains("phone")
-                        ? AppAssets.phoneIcon
-                        : title.toLowerCase().contains("date")
-                            ? AppAssets.dateIcon
-                            : title.toLowerCase().contains("booking start time")
-                                ? AppAssets.clockIcon
-                                : title.toLowerCase().contains("booking hours")
-                                    ? AppAssets.watchIcon
-                                    : title
-                                            .toLowerCase()
-                                            .contains("booking end time")
-                                        ? AppAssets.clockIcon
-                                        : ""))),
+            child: SvgPicture(SvgAssetLoader(
+                title.toLowerCase().contains("name")
+                    ? AppAssets.userIcon
+                    : title.toLowerCase().contains("email")
+                        ? AppAssets.emailIcon
+                        : title.toLowerCase().contains("phone")
+                            ? AppAssets.phoneIcon
+                            : title.toLowerCase().contains("date")
+                                ? AppAssets.dateIcon
+                                : title.toLowerCase().contains("start time")
+                                    ? AppAssets.clockIcon
+                                    : title.toLowerCase().contains("hours")
+                                        ? AppAssets.watchIcon
+                                        : title
+                                                .toLowerCase()
+                                                .contains("booking end time")
+                                            ? AppAssets.clockIcon
+                                            : ""))),
         15.width(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

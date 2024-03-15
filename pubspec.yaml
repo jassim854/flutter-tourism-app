@@ -51,6 +51,7 @@ dependencies:
   intl: ^0.18.1
   url_launcher: ^6.0.13
   shared_preferences: ^2.2.2
+  firebase_core: ^2.27.0
   # flutter_native_splash: ^2.3.13
 dev_dependencies:
   flutter_test:

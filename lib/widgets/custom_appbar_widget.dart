@@ -90,6 +90,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         surfaceTintColor: AppColor.surfaceBackgroundColor,
         titleSpacing: titleSpacing ?? 0,
         leadingWidth: leadingWidth ?? 40,
+        toolbarHeight: toolBarHeight,
+      
         leading: onTap != null
             ? GestureDetector(
                 onTap: onTap,
