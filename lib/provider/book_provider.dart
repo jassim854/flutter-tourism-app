@@ -10,12 +10,13 @@ final selectedDateProvider =
 class SelectDate extends StateNotifier<DateTime?> {
   SelectDate() : super(null);
 
-  updateDate(DateTime value) {
+  updateDate(DateTime? value) {
     state = value;
   }
 }
+
 final isPhoneNoProvider = StateProvider<bool>((ref) {
-  return false ;
+  return false;
 });
 final selectedFromTimeProvider =
     StateNotifierProvider<SelectDate, DateTime?>((ref) {
@@ -30,8 +31,6 @@ class SelectFromTime extends StateNotifier<DateTime?> {
   }
 }
 
-final selectedToTimeProvider =
-    StateProvider<int>((ref) {
+final selectedToTimeProvider = StateProvider<int>((ref) {
   return 0;
 });
-

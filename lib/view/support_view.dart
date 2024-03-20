@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/support_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
-import 'package:flutter_tourism_app/provider/support_model.dart';
+import 'package:flutter_tourism_app/provider/support_data_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';

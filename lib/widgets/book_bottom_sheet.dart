@@ -52,6 +52,11 @@ class _SelectedDateSheetWidgetState
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.read(selectedDateProvider.notifier).updateDate(null);
+      ref.read(selectedFromTimeProvider.notifier).updateDate(null);
+      ref.read(selectedToTimeProvider.notifier).state = 0;
+    });
     _additionalInfoController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
@@ -854,6 +859,7 @@ class _ConfirmBooingSheetWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final selectedCountry = ref.watch(selectedCountryProvider);
     DateTime? selectedDate = ref.watch(selectedDateProvider);
     DateTime? selectFromTime = ref.watch(selectedFromTimeProvider);
     int? bookingHours = ref.watch(selectedToTimeProvider);
@@ -940,7 +946,7 @@ class _ConfirmBooingSheetWidgetState
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: SvgPicture.network(
-                            tourGuideData.countryImg.toString())),
+                            selectedCountry!.countryFlagUrl.toString())),
                   ),
                   15.width(),
                   Column(
@@ -1181,8 +1187,6 @@ class _RequestSubmissionSheetWidgetState
                                 ref
                                     .read(userAllBookedListProvider.notifier)
                                     .addValue(val);
-                                ref.read(isLoadingProvider.notifier).state =
-                                    false;
 
                                 ref
                                     .read(userCompletedListProvider.notifier)
@@ -1191,7 +1195,10 @@ class _RequestSubmissionSheetWidgetState
                                     .read(userCancelledBookedListProvider
                                         .notifier)
                                     .addValue(val);
+                                ref.read(isLoadingProvider.notifier).state =
+                                    false;
                                 context.multiPopPage(popPageCount: 5);
+
                                 controller.jumpToTab(1);
                               } else {
                                 ref.read(isLoadingProvider.notifier).state =
