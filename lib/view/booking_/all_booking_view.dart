@@ -135,9 +135,10 @@ class ShowBookingRowWidget extends StatelessWidget {
                     ),
                     // 1.height(),
                     Text(
-                      "Booking No. $bookingId . ${DateFormat("dd/MM/yyyy").format(bookingDate)}",
+                      "Res. No. $bookingId . ${DateFormat("dd/MM/yyyy").format(bookingDate)}",
                       style: AppTypography.paragraph16LG.copyWith(
-                          fontSize: 15, color: AppColor.textSubTitleColor),
+                          fontSize: 15,
+                          color: AppColor.textSubTitleColor.withOpacity(0.60)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     )
@@ -163,19 +164,19 @@ class StatusContainer extends StatelessWidget {
       padding: const EdgeInsets.only(left: 14, right: 14, top: 8, bottom: 8),
       decoration: BoxDecoration(
           color: status.toLowerCase().contains("pending")
-              ? const Color(0xffD0B317)
-              : status.toLowerCase().contains("completed")
-                  ? const Color(0xff218A363)
+              ? const Color(0xffD0B317).withOpacity(0.28)
+              : status.toLowerCase().contains("complete")
+                  ? const Color(0xff218A36).withOpacity(0.20)
                   : status.toLowerCase().contains("cancelled")
-                      ? const Color(0xff92929233)
+                      ? const Color(0xff929292).withOpacity(0.20)
                       : status.toLowerCase().contains("confirmed")
-                          ? const Color(0xff0079B0)
+                          ? const Color(0xff0079B0).withOpacity(0.20)
                           : null,
           borderRadius: BorderRadius.circular(10)),
       child: Text(
         status,
         style: AppTypography.paragraph14MD
-            .copyWith(color: AppColor.surfaceBrandDarkColor),
+            .copyWith(fontSize: 12, color: AppColor.surfaceBrandDarkColor),
       ),
     );
   }

@@ -151,24 +151,32 @@ class TourGuide {
   final String? name;
   final String? description;
   final String? location;
+  final String? countryImg;
   final bool? status;
   final String? images;
+  final String? currency;
+  final double? price;
 
-  TourGuide({
-    this.id,
-    this.name,
-    this.description,
-    this.location,
-    this.status,
-    this.images,
-  });
+  TourGuide(
+      {this.currency,
+      this.price,
+      this.id,
+      this.name,
+      this.description,
+      this.location,
+      this.status,
+      this.images,
+      this.countryImg});
 
   factory TourGuide.fromJson(Map<String, dynamic> json) => TourGuide(
         id: json["id"],
         name: json["name"],
+        currency: json["currency"],
+        price: json["price"],
         description: json["description"],
         location: json["location"],
         status: json["status"],
+        countryImg: json['country-image'],
         images: json["images"],
       );
 

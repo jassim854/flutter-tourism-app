@@ -1,6 +1,8 @@
 class NetworkEndPoints {
   static const String dummyListApi = 'v2/list';
   static const String dummyDetailApi = 'id/';
+      static const String getOnBoardEndPoint = 'get-onboardings';
+            static const String getSupportEndPoint = 'get-support';
     static const String getAllCountriesEndPoint = 'get-countries';
      static const String getAllTourGuideEndPoint = 'get-all-tour-guides';
       static const String getCountryWiseGuidEndPoint = 'get-countrywise-tour-guides';

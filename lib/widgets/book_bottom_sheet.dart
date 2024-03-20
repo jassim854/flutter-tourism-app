@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/helper/basehelper.dart';
@@ -9,9 +10,11 @@ import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart'
 import 'package:flutter_tourism_app/model/network_model/car_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/book_provider.dart';
+import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/car_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/home_detail_provider.dart';
+import 'package:flutter_tourism_app/provider/home_list_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -19,6 +22,7 @@ import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/utils/validators.dart';
 import 'package:flutter_tourism_app/view/app_bottom_navigation_bar.dart';
+import 'package:flutter_tourism_app/view/booking_/booking_detail_view.dart';
 import 'package:flutter_tourism_app/view/booking_/booking_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
@@ -202,164 +206,196 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
                 style: AppTypography.title28_2XL
                     .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
               ),
-              const Spacer(),
-              SizedBox(
-                height: 200,
-                child: CupertinoDatePicker(
-                    // minuteInterval: 30,
-                    mode: CupertinoDatePickerMode.time,
-                    minuteInterval: 30,
-                    initialDateTime: currentDate
-                        .add(Duration(minutes: 30 - currentDate.minute % 30)),
-                    // initialEntryMode: TimePickerEntryMode.input,
-                    onDateTimeChanged: (value) {
-                      ref
-                          .read(selectedFromTimeProvider.notifier)
-                          .updateDate(value);
-                    }),
-              ),
-              30.height(),
-              Text(
-                "Tour Hours",
-                style: AppTypography.title28_2XL
-                    .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
-              ),
-              30.height(),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                      5,
-                      (index) => InkWell(
-                            onTap: () {
-                              ref.read(selectedToTimeProvider.notifier).state =
-                                  index;
-                            },
-                            child: Container(
-                              height: 76,
-                              width: 63,
-                              padding: const EdgeInsets.only(top: 8),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color:
-                                      ref.watch(selectedToTimeProvider) == index
-                                          ? AppColor.surfaceBrandDarkColor
-                                          : AppColor
-                                              .surfaceBackgroundSecondaryColor),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "${4 + index}",
-                                    style: AppTypography.paragraph12SM.copyWith(
-                                        fontSize: 23,
-                                        color:
-                                            ref.watch(selectedToTimeProvider) ==
-                                                    index
-                                                ? AppColor.textWhiteColor
-                                                : AppColor.textLightGreyeColor),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "${aTourGuideData!.currency!} ",
-                                        style: AppTypography.paragraph12SM.copyWith(
-                                            color: ref.watch(
-                                                        selectedToTimeProvider) ==
-                                                    index
-                                                ? AppColor.textWhiteColor
-                                                : AppColor.textLightGreyeColor),
+              // const Spacer(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        child: CupertinoDatePicker(
+                            // minuteInterval: 30,
+                            mode: CupertinoDatePickerMode.time,
+                            minuteInterval: 30,
+                            initialDateTime: currentDate.add(Duration(
+                                minutes: 30 - currentDate.minute % 30)),
+                            // initialEntryMode: TimePickerEntryMode.input,
+                            onDateTimeChanged: (value) {
+                              ref
+                                  .read(selectedFromTimeProvider.notifier)
+                                  .updateDate(value);
+                            }),
+                      ),
+                      30.height(),
+                      Text(
+                        "Tour Hours",
+                        style: AppTypography.title28_2XL.copyWith(
+                            fontWeight: FontWeight.w400, fontSize: 32),
+                      ),
+                      30.height(),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                              5,
+                              (index) => InkWell(
+                                    onTap: () {
+                                      ref
+                                          .read(selectedToTimeProvider.notifier)
+                                          .state = index;
+                                    },
+                                    child: Container(
+                                      // width: 70,
+                                      padding: EdgeInsets.only(
+                                          top: 8,
+                                          right: context.dynamicWidth * 0.008,
+                                          left: context.dynamicWidth * 0.008,
+                                          bottom: 20),
+                                      margin: EdgeInsets.only(
+                                          left: index == 0
+                                              ? context.dynamicWidth * 0.02
+                                              : 0,
+                                          right: context.dynamicWidth * 0.02),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: ref.watch(
+                                                      selectedToTimeProvider) ==
+                                                  index
+                                              ? AppColor.surfaceBrandDarkColor
+                                              : AppColor
+                                                  .surfaceBackgroundSecondaryColor),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            "${4 + index}",
+                                            style: AppTypography.paragraph12SM
+                                                .copyWith(
+                                                    fontSize: 23,
+                                                    color: ref.watch(
+                                                                selectedToTimeProvider) ==
+                                                            index
+                                                        ? AppColor
+                                                            .textWhiteColor
+                                                        : AppColor
+                                                            .textLightGreyeColor),
+                                          ),
+                                          SizedBox(
+                                            width: context.dynamicWidth * 0.16,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    "${aTourGuideData!.currency!} ",
+                                                    textAlign: TextAlign.center,
+                                                    style: AppTypography
+                                                        .paragraph12SM
+                                                        .copyWith(
+                                                            color: ref.watch(
+                                                                        selectedToTimeProvider) ==
+                                                                    index
+                                                                ? AppColor
+                                                                    .textWhiteColor
+                                                                : AppColor
+                                                                    .textLightGreyeColor),
+                                                  ),
+                                                  Text(
+                                                    "${(double.parse(aTourGuideData.price!).toInt() * (4 + index)).formatter}",
+                                                    textAlign: TextAlign.center,
+                                                    style: AppTypography
+                                                        .paragraph12SM
+                                                        .copyWith(
+                                                            color: ref.watch(
+                                                                        selectedToTimeProvider) ==
+                                                                    index
+                                                                ? AppColor
+                                                                    .textWhiteColor
+                                                                : AppColor
+                                                                    .textLightGreyeColor),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        "${double.parse(aTourGuideData!.price!).toInt() * (4 + index)}",
-                                        style: AppTypography.paragraph12SM.copyWith(
-                                            color: ref.watch(
-                                                        selectedToTimeProvider) ==
-                                                    index
-                                                ? AppColor.textWhiteColor
-                                                : AppColor.textLightGreyeColor),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ))),
+                      // const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 0, left: 20, right: 20, top: 30),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: CustomElevatedButton(
+                                radius: 12,
+                                onPressed: () async {
+                                  if (ref.read(selectedFromTimeProvider) ==
+                                      null) {
+                                    ref
+                                        .read(selectedFromTimeProvider.notifier)
+                                        .updateDate(DateTime.now().add(Duration(
+                                            minutes:
+                                                30 - currentDate.minute % 30)));
+                                  }
+                                  await showModalBottomSheet(
+                                      useSafeArea: true,
+                                      enableDrag: false,
+                                      isDismissible: false,
+                                      backgroundColor:
+                                          AppColor.surfaceBackgroundBaseColor,
+                                      isScrollControlled: true,
+                                      useRootNavigator: true,
+                                      context: context,
+                                      builder: (context) {
+                                        return PopScope(
+                                            canPop: false,
+                                            child: CompleteBookingSheetWidget(
+                                                _nameontroller,
+                                                _emailController,
+                                                _phoneController,
+                                                _additionalInfoController));
+                                      });
+                                },
+                                title: 'Continue',
+                                style: AppTypography.title18LG.copyWith(
+                                    fontSize: 17,
+                                    color: AppColor.surfaceBackgroundColor),
                               ),
                             ),
-                          ))),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 0, left: 20, right: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        radius: 12,
-                        onPressed: () async {
-                          if (ref.read(selectedFromTimeProvider) == null) {
-                            ref
-                                .read(selectedFromTimeProvider.notifier)
-                                .updateDate(DateTime.now());
-                          }
-                          await showModalBottomSheet(
-                              useSafeArea: true,
-                              enableDrag: false,
-                              isDismissible: false,
-                              backgroundColor:
-                                  AppColor.surfaceBackgroundBaseColor,
-                              isScrollControlled: true,
-                              useRootNavigator: true,
-                              context: context,
-                              builder: (context) {
-                                return PopScope(
-                                    canPop: false,
-                                    child: CompleteBookingSheetWidget(
-                                        _nameontroller,
-                                        _emailController,
-                                        _phoneController,
-                                        _additionalInfoController));
-                              });
-                        },
-                        title: 'Continue',
-                        style: AppTypography.title18LG.copyWith(
-                            fontSize: 17,
-                            color: AppColor.surfaceBackgroundColor),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        btnColor: AppColor.buttonDisableColor,
-                        radius: 12,
-                        onPressed: () async {
-                          context.popPage();
-                          ref.read(selectedFromTimeProvider.notifier).state =
-                              null;
-                          ref.read(selectedToTimeProvider.notifier).state = 0;
-                          // await showModalBottomSheet(
-                          //     useSafeArea: true,
-                          //     enableDrag: false,
-                          //     isDismissible: false,
-                          //     backgroundColor: AppColor.surfaceBackgroundBaseColor,
-                          //     isScrollControlled: true,
-                          //     useRootNavigator: true,
-                          //     context: context,
-                          //     builder: (context) {
-                          //       return const PopScope(
-                          //           canPop: false, child: SelectDateSheetWidget());
-                          //     });
-                        },
-                        title: 'Back',
-                        style: AppTypography.title18LG.copyWith(
-                            fontSize: 17,
-                            color: AppColor.surfaceBackgroundColor),
-                      ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 20, left: 20, right: 20),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: CustomElevatedButton(
+                                btnColor: AppColor.buttonDisableColor,
+                                radius: 12,
+                                onPressed: () async {
+                                  context.popPage();
+                                  ref
+                                      .read(selectedFromTimeProvider.notifier)
+                                      .state = null;
+                                  ref
+                                      .read(selectedToTimeProvider.notifier)
+                                      .state = 0;
+                                },
+                                title: 'Back',
+                                style: AppTypography.title18LG.copyWith(
+                                    fontSize: 17,
+                                    color: AppColor.surfaceBackgroundColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               )
             ],
@@ -413,7 +449,7 @@ class _CompleteBookingSheetWidgetState
   @override
   Widget build(BuildContext context) {
     List<CarModel>? carData = ref.watch(carListDataProvider);
-    bool isPhoneNo = ref.watch(isPhoneNoProvider);
+    // bool isPhoneNo = ref.watch(isPhoneNoProvider);
     CarModel? selectedCar = ref.watch(selectedCarProvider);
     return ClipRRect(
       borderRadius: BorderRadius.circular(40),
@@ -818,13 +854,13 @@ class _ConfirmBooingSheetWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final selectedCountry = ref.read(selectedCountryProvider);
     DateTime? selectedDate = ref.watch(selectedDateProvider);
     DateTime? selectFromTime = ref.watch(selectedFromTimeProvider);
     int? bookingHours = ref.watch(selectedToTimeProvider);
     ATourGuideModel? tourGuideData = ref.watch(aTourGuideProvider);
     bool isCarBooked = ref.watch(isBookCarProvider);
     CarModel? selectedCarData = ref.watch(selectedCarProvider);
+    final aTourGuideData = ref.read(aTourGuideProvider);
     return ClipRRect(
       borderRadius: BorderRadius.circular(40),
       child: Scaffold(
@@ -858,10 +894,10 @@ class _ConfirmBooingSheetWidgetState
               ConfirmBookRowWidget(
                   title: "Tour Start Time",
                   subtitle:
-                      "${DateFormat("hh:mm a").format(selectFromTime!)} - ${DateFormat("hh:mm a").format(selectFromTime.add(Duration(hours: 4 + bookingHours!)))}"),
+                      "${DateFormat("h:mm a").format(selectFromTime!)} - ${DateFormat("h:mm a").format(selectFromTime.add(Duration(hours: 4 + bookingHours!)))}"),
               20.height(),
               ConfirmBookRowWidget(
-                  title: "Your Hours", subtitle: "${4 + bookingHours} Hours"),
+                  title: "Tour Hours", subtitle: "${4 + bookingHours} Hours"),
               15.height(),
               const Divider(),
               15.height(),
@@ -904,7 +940,7 @@ class _ConfirmBooingSheetWidgetState
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: SvgPicture.network(
-                            selectedCountry!.countryFlagUrl)),
+                            tourGuideData.countryImg.toString())),
                   ),
                   15.width(),
                   Column(
@@ -916,7 +952,7 @@ class _ConfirmBooingSheetWidgetState
                       ),
                       // 1.height(),
                       Text(
-                        selectedCountry.countryName,
+                        tourGuideData.location.toString(),
                         style: AppTypography.paragraph16LG.copyWith(
                             fontSize: 15, color: AppColor.textSubTitleColor),
                       )
@@ -939,7 +975,7 @@ class _ConfirmBooingSheetWidgetState
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: cacheNetworkWidget(context,
-                            imageUrl: selectedCarData!.imagePath.toString(),
+                            imageUrl: selectedCarData.imagePath.toString(),
                             fit: BoxFit.contain),
                       ),
                     ),
@@ -963,7 +999,7 @@ class _ConfirmBooingSheetWidgetState
                         ),
                         // 1.height(),
                         Text(
-                          "${calculateTotalAmount(selectedCarData.price, 4 + bookingHours).toStringAsFixed(0)} ${selectedCarData.currency}",
+                          "${calculateTotalAmount(selectedCarData.price, 4 + bookingHours).formatter} ${selectedCarData.currency}",
                           style: AppTypography.paragraph16LG.copyWith(
                               fontSize: 15, color: AppColor.textSubTitleColor),
                         )
@@ -971,10 +1007,18 @@ class _ConfirmBooingSheetWidgetState
                     )
                   ],
                 ),
-              ]
+              ],
+              PaymentWidget(
+                currency: aTourGuideData!.currency.toString(),
+                tourAmount: double.parse(aTourGuideData.price!).toInt() *
+                    (4 + bookingHours),
+                carAmount: calculateTotalAmount(
+                    selectedCarData!.price, 4 + bookingHours),
+              )
             ],
           ),
         ),
+        20.height(),
         ref.watch(isLoadingProvider)
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -988,6 +1032,7 @@ class _ConfirmBooingSheetWidgetState
                       child: CustomElevatedButton(
                         radius: 12,
                         onPressed: () async {
+                          String? deviceToken = ref.read(deviceTokenProvider);
                           ref.read(isLoadingProvider.notifier).state = true;
                           Map<String, dynamic> payload = {
                             "user_email": widget.email,
@@ -997,15 +1042,16 @@ class _ConfirmBooingSheetWidgetState
                             "date":
                                 DateFormat("yyyy-MM-dd").format(selectedDate),
                             "start_time":
-                                DateFormat("H:m:s").format(selectFromTime),
-                            "end_time": DateFormat("H:m:s").format(
+                                DateFormat("HH:mm:ss").format(selectFromTime),
+                            "end_time": DateFormat("HH:mm:ss").format(
                                 selectFromTime
                                     .add(Duration(hours: 4 + bookingHours))),
                             "book_car":
                                 isCarBooked.toString().capitalizeFirst(),
                             if (selectedCarData != null)
                               "car_id": selectedCarData.id,
-                            "notes": widget.additionalNoes
+                            "notes": widget.additionalNoes,
+                            if (deviceToken != null) "fcm_token": deviceToken
                           };
                           await ref
                               .read(apiServiceProvider)
@@ -1017,17 +1063,31 @@ class _ConfirmBooingSheetWidgetState
                               SharedPreferences pre =
                                   await SharedPreferences.getInstance();
                               pre.setString("email", widget.email);
-                              context.multiPopPage(popPageCount: 4);
-                              controller.jumpToTab(1);
+                              if (context.mounted) {
+                                await showModalBottomSheet(
+                                    useSafeArea: true,
+                                    enableDrag: false,
+                                    isDismissible: false,
+                                    backgroundColor:
+                                        AppColor.surfaceBackgroundBaseColor,
+                                    isScrollControlled: true,
+                                    useRootNavigator: true,
+                                    context: context,
+                                    builder: (context) {
+                                      return const PopScope(
+                                          canPop: false,
+                                          child:
+                                              RequestSubmissionSheetWidget());
+                                    });
+                              }
                             } else {
                               ref.read(isLoadingProvider.notifier).state =
                                   false;
                               context.multiPopPage(popPageCount: 3);
                             }
                           });
-//
                         },
-                        title: 'Book Now',
+                        title: 'Reserve Now',
                         style: AppTypography.title18LG.copyWith(
                             fontSize: 17,
                             color: AppColor.surfaceBackgroundColor),
@@ -1048,6 +1108,121 @@ class _ConfirmBooingSheetWidgetState
                     context.popPage();
                   },
                   title: 'Back',
+                  style: AppTypography.title18LG.copyWith(
+                      fontSize: 17, color: AppColor.surfaceBackgroundColor),
+                ),
+              ),
+            ],
+          ),
+        )
+      ])),
+    );
+  }
+}
+
+class RequestSubmissionSheetWidget extends ConsumerStatefulWidget {
+  const RequestSubmissionSheetWidget({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _RequestSubmissionSheetWidgetState();
+}
+
+class _RequestSubmissionSheetWidgetState
+    extends ConsumerState<RequestSubmissionSheetWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(40),
+      child: Scaffold(
+          body: Column(children: [
+        40.height(),
+        const SvgPicture(SvgAssetLoader(AppAssets.confirmBookIcon)),
+        30.height(),
+        Center(
+          child: Text(
+            "Request Submitted",
+            style: AppTypography.title28_2XL
+                .copyWith(fontWeight: FontWeight.w400, fontSize: 32),
+          ),
+        ),
+        Padding(
+            padding:
+                const EdgeInsets.only(left: 30, top: 30, right: 30, bottom: 10),
+            child: Text(
+              "Thank you for submitting your request. we will get back to you shortly to confirm your booking.",
+              style: AppTypography.paragraph16LG,
+              textAlign: TextAlign.center,
+            )),
+        const Spacer(),
+        ref.watch(isLoadingProvider)
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CupertinoActivityIndicator(),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(bottom: 0, left: 20, right: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomElevatedButton(
+                        radius: 12,
+                        onPressed: () async {
+                          ref.read(isLoadingProvider.notifier).state = true;
+                          SharedPreferences preferences =
+                              await SharedPreferences.getInstance();
+                          String? value = preferences.getString("email");
+                          if (value != null) {
+                            await ref
+                                .read(apiServiceProvider)
+                                .getUserBookedRequest(context,
+                                    payload: {"user_email": value}).then((val) {
+                              if (val != null) {
+                                ref
+                                    .read(userAllBookedListProvider.notifier)
+                                    .addValue(val);
+                                ref.read(isLoadingProvider.notifier).state =
+                                    false;
+
+                                ref
+                                    .read(userCompletedListProvider.notifier)
+                                    .addValue(val);
+                                ref
+                                    .read(userCancelledBookedListProvider
+                                        .notifier)
+                                    .addValue(val);
+                                context.multiPopPage(popPageCount: 5);
+                                controller.jumpToTab(1);
+                              } else {
+                                ref.read(isLoadingProvider.notifier).state =
+                                    false;
+                                BaseHelper.showSnackBar(
+                                    context, "Something went Wrong");
+                              }
+                            });
+                          }
+                        },
+                        title: 'View Reservation',
+                        style: AppTypography.title18LG.copyWith(
+                            fontSize: 17,
+                            color: AppColor.surfaceBackgroundColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: CustomElevatedButton(
+                  btnColor: AppColor.buttonDisableColor,
+                  radius: 12,
+                  onPressed: () async {
+                    context.multiPopPage(popPageCount: 5);
+                  },
+                  title: 'Close',
                   style: AppTypography.title18LG.copyWith(
                       fontSize: 17, color: AppColor.surfaceBackgroundColor),
                 ),

@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tourism_app/firebase_options.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_routes.dart';
 import 'package:flutter_tourism_app/utils/theme.dart';
@@ -14,10 +16,13 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/view/splash_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-void main() {
+import 'package:firebase_messaging/firebase_messaging.dart';
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
- 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -25,7 +30,8 @@ void main() {
       enabled: !kReleaseMode,
       builder: (context) =>  const ProviderScope(child: MyApp()))));
 }
-
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
 class MyApp extends StatelessWidget {
 
   const MyApp({super.key,e});

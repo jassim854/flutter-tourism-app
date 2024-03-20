@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 extension SpaceExtension on num {
   height() {
@@ -83,6 +84,10 @@ extension NavigationExtensions on BuildContext {
     Navigator.of(this).pushNamedAndRemoveUntil(routeName, (route) => false,
         arguments: arguments);
   }
+}
+
+extension NumberFormatExtension on num {
+  get formatter => NumberFormat('#,##,000').format(this);
 }
 
 extension DynanicSizeExtension on BuildContext {

@@ -64,13 +64,13 @@ class _SplashViewState extends ConsumerState<SplashView> {
             height: 77,
             // color: Colors.red,
             child: AnimatedSize(
-              duration: const Duration(seconds: 1),
+              duration: const Duration(milliseconds: 750),
               child: Padding(
                   padding: const EdgeInsets.only(
                     left: 20,
                     right: 20,
                   ),
-                  child: Image.asset(
+                  child: SvgPicture.asset(
                     AppAssets.appLogo,
                     fit: BoxFit.fill,
                   )),

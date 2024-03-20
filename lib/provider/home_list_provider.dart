@@ -6,6 +6,9 @@ final dropdownvalueProvider = StateProvider.autoDispose<String>((ref) {
   return "Country";
 });
 
+final deviceTokenProvider = StateProvider<String?>((ref) {
+  return null ;
+});
 // final dummyListDataProvider =
 //     StateNotifierProvider.autoDispose<DummyListData, List<DummyModel>>((
 //   ref,

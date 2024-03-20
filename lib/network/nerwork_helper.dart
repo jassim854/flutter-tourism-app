@@ -6,8 +6,8 @@ class NetworkHelper {
 
   NetworkHelper() {
     dio = Dio(BaseOptions(
-           baseUrl: "http://188.166.150.139:8800/",
-   
+      baseUrl: "http://admin.culturalguides.com/",
+
       // baseUrl: "https://picsum.photos/",
       // headers: {
       //   'Content-Type': 'application/json',
@@ -17,61 +17,74 @@ class NetworkHelper {
       // },
     ));
   }
-  Future<Response> getDummyListApi({required Map<String, dynamic> data}) async {
-    return await dio.get(NetworkEndPoints.dummyListApi, queryParameters: data);
-  }
+  // Future<Response> getDummyListApi({required Map<String, dynamic> data}) async {
+  //   return await dio.get(NetworkEndPoints.dummyListApi, queryParameters: data);
+  // }
 
-  Future<Response> getDummyDetail({required String id}) async {
+  // Future<Response> getDummyDetail({required String id}) async {
+  //   return await dio.get(
+  //     "${NetworkEndPoints.dummyDetailApi}id/info",
+
+  //   );
+  // }
+  Future<Response> getOnBoardApi() async {
     return await dio.get(
-      "${NetworkEndPoints.dummyDetailApi}id/info",
-
+      NetworkEndPoints.getOnBoardEndPoint,
     );
   }
+
+  Future<Response> getSupportApi() async {
+    return await dio.get(
+      NetworkEndPoints.getSupportEndPoint,
+    );
+  }
+
   Future<Response> getAllCountryApi() async {
     return await dio.get(
       NetworkEndPoints.getAllCountriesEndPoint,
     );
   }
+
   Future<Response> getAllTourGuidesApi() async {
     return await dio.get(
       NetworkEndPoints.getAllTourGuideEndPoint,
     );
   }
-  Future<Response> getCountryWiseTourGuideApi({required Map<String,dynamic> payLoad}) async {
-    return await dio.get(
-      NetworkEndPoints.getCountryWiseGuidEndPoint,
-      data: payLoad
-    );
-  }
-  Future<Response> getATourGuideApi({required Map<String,dynamic>payload}) async {
-    return await dio.get(
-      NetworkEndPoints.getTourGuideByIdEndPoint,
-      data: payload
-    );
+
+  Future<Response> getCountryWiseTourGuideApi(
+      {required Map<String, dynamic> payLoad}) async {
+    return await dio.get(NetworkEndPoints.getCountryWiseGuidEndPoint,
+        data: payLoad);
   }
 
-  Future<Response> postCreateBookingApi({required Map<String,dynamic>payLoad}) async {
+  Future<Response> getATourGuideApi(
+      {required Map<String, dynamic> payload}) async {
+    return await dio.get(NetworkEndPoints.getTourGuideByIdEndPoint,
+        data: payload);
+  }
+
+  Future<Response> postCreateBookingApi(
+      {required Map<String, dynamic> payLoad}) async {
     return await dio.post(
       NetworkEndPoints.postBookingEndPoint,
       data: payLoad,
     );
   }
-    Future<Response> getUserBookingApi( {required Map<String,dynamic> payLoad}) async {
-    return await dio.get(
-      NetworkEndPoints.getUserBookingEndPoint,
-      data: payLoad
-    );
+
+  Future<Response> getUserBookingApi(
+      {required Map<String, dynamic> payLoad}) async {
+    return await dio.get(NetworkEndPoints.getUserBookingEndPoint,
+        data: payLoad);
   }
-     Future<Response> getBookingDetailApi ({required Map<String,dynamic> payLoad}) async {
-    return await dio.get(
-      NetworkEndPoints.getBookingDetailEndPoint,
-      data: payLoad
-    );
+
+  Future<Response> getBookingDetailApi(
+      {required Map<String, dynamic> payLoad}) async {
+    return await dio.get(NetworkEndPoints.getBookingDetailEndPoint,
+        data: payLoad);
   }
-    Future<Response> getCarListApi ({required Map<String,dynamic> payLoad}) async {
-    return await dio.get(
-      NetworkEndPoints.getCarListEndPoint,
-      data: payLoad
-    );
+
+  Future<Response> getCarListApi(
+      {required Map<String, dynamic> payLoad}) async {
+    return await dio.get(NetworkEndPoints.getCarListEndPoint, data: payLoad);
   }
 }

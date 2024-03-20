@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/firebase_services.dart';
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
@@ -46,6 +47,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   void initState() {
+
     _searchController = TextEditingController();
     _scrollController = ScrollController();
 

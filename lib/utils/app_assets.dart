@@ -8,7 +8,7 @@ class AppAssets {
   static const String backArrowIcon = 'assets/icons/back_arrow_icon.svg';
   static const String filterIcon = 'assets/icons/filter.svg';
   static const String boxIcon = 'assets/icons/box_icon.png';
-  static const String appLogo = 'assets/images/app_logo.png';
+  static const String appLogo = 'assets/icons/app_logo.svg';
   static const String selectDateIcon = 'assets/icons/select_date_icon.svg';
   static const String selectTimeIcon = 'assets/icons/select_time_icon.svg';
   static const String confirmBookIcon = 'assets/icons/confirm_book_icon.svg';

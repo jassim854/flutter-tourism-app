@@ -14,12 +14,14 @@ CachedNetworkImage cacheNetworkWidget(BuildContext context,
       log(value.toString());
     },
     useOldImageOnUrlChange: false,
-    progressIndicatorBuilder: (context, url, progress) {
-      return Padding(
-        padding: const EdgeInsets.all(6.0),
-        child: Center(
-          child: BaseHelper.loadingWidget(value: progress.progress),
-        ),
+    progressIndicatorBuilder: (_, url, progress) {
+      return Container(
+    
+        height: 30,
+    
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(8.0),
+        child: BaseHelper.loadingWidget(value: progress.progress),
       );
     },
     errorWidget: (context, url, error) {

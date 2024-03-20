@@ -1,18 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
-import 'package:flutter_tourism_app/model/network_model/user_detail_booking_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
-import 'package:flutter_tourism_app/provider/book_provider.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
-import 'package:flutter_tourism_app/utils/app_assets.dart';
+import 'package:flutter_tourism_app/provider/home_detail_provider.dart';
+import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
 import 'package:flutter_tourism_app/view/booking_/all_booking_view.dart';
-import 'package:flutter_tourism_app/view/booking_/car_view.dart';
 import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
@@ -49,15 +48,48 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
     });
   }
 
-  int calculateAmount(DateTime startTime, DateTime endTime, double amount) {
-    Duration difference = endTime.difference(startTime);
+  int calculateCarAmount(int differenceHour, double amount) {
+    return amount.toInt() * differenceHour;
+  }
 
-    return amount.toInt() * difference.inHours;
+  int getTimeDeifference(
+    DateTime startTime,
+    DateTime endTime,
+  ) {
+    TimeOfDay t = TimeOfDay.fromDateTime(startTime);
+    TimeOfDay t2 = TimeOfDay.fromDateTime(endTime);
+    Duration d = calculateTimeDifference(t, t2);
+    return d.inHours;
+  }
+
+  Duration calculateTimeDifference(TimeOfDay startTime, TimeOfDay endTime) {
+    final now = DateTime.now();
+    final start = DateTime(
+        now.year, now.month, now.day, startTime.hour, startTime.minute);
+    final end =
+        DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute);
+
+    Duration difference = end.difference(start);
+    return difference.isNegative
+        ? difference + const Duration(days: 1)
+        : difference;
+  }
+
+  int caluateTourCost(double amount, int hour) {
+    return amount.toInt() * hour;
   }
 
   @override
   Widget build(BuildContext context) {
     UserBookedModel? data = ref.watch(userDetailProvider);
+
+    int timeDifference = getTimeDeifference(
+      data?.booking?.startTime ?? DateTime.now(),
+      data?.booking?.endTime ?? DateTime.now(),
+    );
+    int carAmount = calculateCarAmount(timeDifference, data?.car?.price ?? 0.0);
+    int tourAmount =
+        caluateTourCost(data?.tourGuide?.price ?? 0, timeDifference);
 
     return Scaffold(
       appBar: AppBarWidget(
@@ -66,7 +98,7 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
         },
         titleSpacing: 10,
         leadingWidth: 40,
-        title: "Booking with ${data?.tourGuide?.name ?? ""}",
+        title: "Reservation ${data?.booking?.id ?? ""}",
         actions: [
           if (data != null)
             Padding(
@@ -75,43 +107,32 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
             )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            4.height(),
-            ref.watch(isLoadingProvider) == true || data == null
-                ? const Center(
-                    child: CupertinoActivityIndicator(
-                    radius: 30,
-                  ))
-                : ColoredBox(
+      body: ref.watch(isLoadingProvider) == true || data == null
+          ? const Center(
+              child: CupertinoActivityIndicator(
+              radius: 30,
+            ))
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  4.height(),
+                  ColoredBox(
                     color: AppColor.surfaceBackgroundColor,
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          CoverImageWidget(
-                            imageUrl: data?.tourGuide?.images ?? "",
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            child: DescriptionWidget(
-                              text: data?.tourGuide?.description ?? "",
-                            ),
-                          ),
                           ConfirmBookRowWidget(
-                              title: 'Name',
-                              subtitle: data.user!.fullName.toString()),
+                              title: 'Name', subtitle: data.user!.fullName!),
                           20.height(),
                           ConfirmBookRowWidget(
-                              title: 'Email',
-                              subtitle: data.user!.email.toString()),
+                              title: 'Email', subtitle: data.user!.email!),
                           20.height(),
                           ConfirmBookRowWidget(
                               title: 'Phone',
-                              subtitle: data.user!.phoneNumber.toString()),
+                              subtitle: data.user!.phoneNumber!),
                           20.height(),
                           ConfirmBookRowWidget(
                               title: 'Date',
@@ -119,116 +140,264 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                                   .format(data.booking!.date!)),
                           20.height(),
                           ConfirmBookRowWidget(
-                              title: "Booking Start Time",
-                              subtitle: DateFormat("hh:mm a")
-                                  .format(data.booking!.startTime!)),
+                              title: "Tour Start Time",
+                              subtitle:
+                                  "${DateFormat("h:mm a").format(data.booking!.startTime!)} - ${DateFormat("h:mm a").format(data.booking!.endTime!)}"),
                           20.height(),
                           ConfirmBookRowWidget(
-                              title: "Booking End Time",
-                              subtitle: DateFormat("hh:mm a")
-                                  .format(data.booking!.endTime!)),
-                          20.height(),
-                          if (data.booking?.notes != null) ...[
-                            Text(
-                              "Additional notes",
-                              style: AppTypography.title18LG,
-                            ),
-                            2.height(),
-                            Text(data.booking!.notes.toString())
-                          ],
-                          if (data.car?.carName != null) ...[
-                            Container(
-                              margin: const EdgeInsets.only(
-                                top: 20,
-                              ),
-                              child: Text(
-                                "Booked Car",
-                                style: AppTypography.title18LG,
-                              ),
-                            ),
-                            2.height(),
-                            Card(
-                              color: AppColor.surfaceBackgroundColor,
-                              surfaceTintColor: AppColor.surfaceBackgroundColor,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: AppColor
-                                              .surfaceBackgroundBaseDarkColor,
-                                          border: Border.all(
-                                              width: 0.1,
-                                              color: AppColor
-                                                  .surfaceBrandPrimaryColor),
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                      height: 200,
-                                      child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: cacheNetworkWidget(context,
-                                              imageUrl: data.car!.imagePath
-                                                  .toString(),
-                                              fit: BoxFit.cover)),
-                                    ),
-                                    8.height(),
-
-                                    // const RattingWiget(),
-                                    // 8.height(),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              data.car!.carName.toString(),
-                                              style: AppTypography.label18LG,
-                                            ),
-                                            8.height(),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  data.car!.currency.toString(),
-                                                  style: AppTypography.label14SM
-                                                      .copyWith(
-                                                          color: AppColor
-                                                              .textBrandSecondaryColor),
-                                                ),
-                                                8.width(),
-                                                // const Icon(Icons.location_on_outlined),
-                                                // 8.width(),
-                                                Text(
-                                                  "${calculateAmount(data.booking!.startTime!, data.booking!.endTime!, data.car!.price!)}",
-                                                  style: AppTypography
-                                                      .paragraph16LG,
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  ],
+                              title: "Tour Hours",
+                              subtitle: "$timeDifference Hours"),
+                          15.height(),
+                          const Divider(),
+                          15.height(),
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: cacheNetworkWidget(context,
+                                      imageUrl:
+                                          data.tourGuide!.images.toString(),
+                                      fit: BoxFit.cover),
                                 ),
                               ),
+                              15.width(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Ambassador",
+                                    style: AppTypography.title18LG
+                                        .copyWith(fontSize: 15),
+                                  ),
+                                  // 1.height(),
+                                  Text(
+                                    data.tourGuide!.name.toString(),
+                                    style: AppTypography.paragraph16LG.copyWith(
+                                        fontSize: 15,
+                                        color: AppColor.textSubTitleColor),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                          15.height(),
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SvgPicture.network(
+                                        data.tourGuide!.countryImg.toString())),
+                              ),
+                              15.width(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Country",
+                                    style: AppTypography.title18LG
+                                        .copyWith(fontSize: 15),
+                                  ),
+                                  // 1.height(),
+                                  Text(
+                                    data.tourGuide!.location.toString(),
+                                    style: AppTypography.paragraph16LG.copyWith(
+                                        fontSize: 15,
+                                        color: AppColor.textSubTitleColor),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                          15.height(),
+                          if (data.car!.carName != null) ...[
+                            Text(
+                              "Extras",
+                              style: AppTypography.paragraph16LG
+                                  .copyWith(fontSize: 15),
+                            ),
+                            15.height(),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: cacheNetworkWidget(context,
+                                        imageUrl:
+                                            data.car!.imagePath.toString(),
+                                        fit: BoxFit.contain),
+                                  ),
+                                ),
+                                15.width(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "${data.car!.carName} ",
+                                          style: AppTypography.title18LG
+                                              .copyWith(fontSize: 15),
+                                        ),
+                                        Text(
+                                          "$timeDifference Hours",
+                                          style: AppTypography.paragraph12SM
+                                              .copyWith(
+                                                  color: AppColor
+                                                      .textSubTitleColor),
+                                        ),
+                                      ],
+                                    ),
+                                    // 1.height(),
+                                    Text(
+                                      "${carAmount.formatter}",
+                                      style: AppTypography.paragraph16LG
+                                          .copyWith(
+                                              fontSize: 15,
+                                              color:
+                                                  AppColor.textSubTitleColor),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                            PaymentWidget(
+                              currency: data.tourGuide!.currency.toString(),
+                              tourAmount: tourAmount,
+                              carAmount: carAmount,
+                            ),
+                            8.height(),
+                            const Divider(),
+                            8.height(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Additional info',
+                                  style: AppTypography.paragraph14MD.copyWith(
+                                      fontSize: 15,
+                                      color: AppColor.textSubTitleColor
+                                          .withOpacity(0.60)),
+                                ),
+                                8.height(),
+                                Text(
+                                    'Created at: ${DateFormat("dd/MM/yyyy").format(data.booking!.date!)} ${DateFormat("hh:mm a").format(data.booking!.startTime!)} ',
+                                    style: AppTypography.paragraph14MD.copyWith(
+                                        fontSize: 15,
+                                        color: AppColor.textSubTitleColor
+                                            .withOpacity(0.60)))
+                              ],
                             )
                           ]
                         ],
                       ),
                     ),
                   )
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+class PaymentWidget extends StatelessWidget {
+  PaymentWidget({
+    super.key,
+    required this.tourAmount,
+    required this.carAmount,
+    required this.currency,
+  }) : totalAmount = carAmount + tourAmount;
+
+  final int tourAmount;
+  final int carAmount;
+  final String currency;
+  int totalAmount;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        8.height(),
+        const Divider(),
+        8.height(),
+        Text(
+          "Payment",
+          style: AppTypography.title18LG.copyWith(fontSize: 20),
+        ),
+        12.height(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Tour Cost",
+              style: AppTypography.title18LG.copyWith(fontSize: 15),
+            ),
+            Row(
+              children: [
+                Text(
+                  "${tourAmount.formatter} ",
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+                Text(
+                  currency,
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+              ],
+            ),
           ],
         ),
-      ),
+        8.height(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Extra",
+              style: AppTypography.title18LG.copyWith(fontSize: 15),
+            ),
+            Row(
+              children: [
+                Text(
+                  "${carAmount.formatter} ",
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+                Text(
+                  currency,
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+              ],
+            ),
+          ],
+        ),
+        8.height(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Total",
+              style: AppTypography.title18LG.copyWith(fontSize: 15),
+            ),
+            Row(
+              children: [
+                Text(
+                  "${totalAmount.formatter} ",
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+                Text(
+                  currency,
+                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                ),
+              ],
+            ),
+          ],
+        )
+      ],
     );
   }
 }

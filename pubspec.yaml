@@ -52,6 +52,10 @@ dependencies:
   url_launcher: ^6.0.13
   shared_preferences: ^2.2.2
   firebase_core: ^2.27.0
+  firebase_messaging: ^14.7.19
+  app_settings: ^5.1.1
+  flutter_local_notifications: ^17.0.0
+  permission_handler: ^11.3.0
   # flutter_native_splash: ^2.3.13
 dev_dependencies:
   flutter_test:

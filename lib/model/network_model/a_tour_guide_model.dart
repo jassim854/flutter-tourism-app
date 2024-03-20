@@ -3,6 +3,7 @@ class ATourGuideModel {
   final String? name;
   final String? description;
   final String? location;
+  final String? countryImg;
   final String? currency;
   final String? price;
   final bool? status;
@@ -18,6 +19,7 @@ class ATourGuideModel {
     this.location,
     this.status,
     this.images,
+    this.countryImg,
     this.similarTourGuides,
   });
 
@@ -29,6 +31,7 @@ class ATourGuideModel {
         name: json["name"],
         description: json["description"],
         location: json["location"],
+        countryImg: json['country-image'],
         status: json["status"],
         images: json["images"],
         similarTourGuides: json["similar_tour_guides"] == null

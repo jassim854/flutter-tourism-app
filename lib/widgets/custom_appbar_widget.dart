@@ -91,7 +91,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         titleSpacing: titleSpacing ?? 0,
         leadingWidth: leadingWidth ?? 40,
         toolbarHeight: toolBarHeight,
-      
         leading: onTap != null
             ? GestureDetector(
                 onTap: onTap,
@@ -142,6 +141,7 @@ class SliverAppBarWidget extends StatelessWidget {
         pinned: true,
         stretch: true,
         leadingWidth: 0,
+        leading: SizedBox.shrink(),
         title: GestureDetector(
           onTap: () {
             context.maybePopPage();

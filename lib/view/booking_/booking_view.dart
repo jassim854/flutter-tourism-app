@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
+import 'package:flutter_tourism_app/provider/car_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
+import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
 import 'package:flutter_tourism_app/utils/extensions.dart';
@@ -31,7 +35,7 @@ class _BookingViewState extends ConsumerState<BookingView>
     super.initState();
     _tabController = TabController(vsync: this, length: 3, initialIndex: 0);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // callBooking();
+      callBooking();
     });
   }
 
@@ -46,12 +50,10 @@ class _BookingViewState extends ConsumerState<BookingView>
         if (val != null) {
           ref.read(userAllBookedListProvider.notifier).addValue(val);
           ref.read(isLoadingProvider.notifier).state = false;
-     
+
           ref.read(userCompletedListProvider.notifier).addValue(val);
           ref.read(userCancelledBookedListProvider.notifier).addValue(val);
-
         } else {
-
           ref.read(isLoadingProvider.notifier).state = false;
         }
       });
@@ -60,10 +62,19 @@ class _BookingViewState extends ConsumerState<BookingView>
 
   @override
   Widget build(BuildContext context) {
+    final selectedCountry = ref.watch(selectedCountryProvider);
     return Scaffold(
       appBar: AppBarWidget(
-        toolBarHeight: 110,
-        title: 'My Bookings',
+        leadingWidth: 20,
+        toolBarHeight: 120,
+        title: 'My Reservations',
+        actions: [
+          if (selectedCountry != null)
+            SizedBox(
+                height: 80,
+                width: 80,
+                child: SvgPicture.network(selectedCountry.countryFlagUrl))
+        ],
         bottomBarWidget: AppBar(
           toolbarHeight: 80,
           backgroundColor: AppColor.surfaceBackgroundColor,

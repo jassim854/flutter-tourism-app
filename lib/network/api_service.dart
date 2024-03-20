@@ -8,6 +8,8 @@ import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart'
 import 'package:flutter_tourism_app/model/network_model/car_model.dart';
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
+import 'package:flutter_tourism_app/model/network_model/on_board_model.dart';
+import 'package:flutter_tourism_app/model/network_model/support_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
 import 'package:flutter_tourism_app/model/network_model/user_detail_booking_model.dart';
@@ -18,14 +20,32 @@ final apiServiceProvider = Provider<ApiServices>((ref) {
 });
 
 class ApiServices {
-  Future<List<DummyModel>?> getDummyList(context,
-      {required Map<String, dynamic> data}) async {
+  // Future<List<DummyModel>?> getDummyList(context,
+  //     {required Map<String, dynamic> data}) async {
+  //   try {
+  //     NetworkHelper networkHelper = NetworkHelper();
+  //     Response<dynamic> response =
+  //         await networkHelper.getDummyListApi(data: data);
+  //     if (response.statusCode == 200) {
+  //       return await compute(_convertDummyModelResponseList, response);
+  //     }
+  //   } on DioException catch (e) {
+  //     BaseHelper.showSnackBar(context, e.message);
+  //   }
+  //   return null;
+  // }
+
+  // List<DummyModel> _convertDummyModelResponseList(Response<dynamic> response) {
+  //   return List.from(response.data.map((e) => DummyModel.fromJson(e)));
+  // }
+  Future<OnBoardModel?> getOnBoardData(
+    context,
+  ) async {
     try {
       NetworkHelper networkHelper = NetworkHelper();
-      Response<dynamic> response =
-          await networkHelper.getDummyListApi(data: data);
+      Response<dynamic> response = await networkHelper.getOnBoardApi();
       if (response.statusCode == 200) {
-        return await compute(_convertDummyModelResponseList, response);
+        return await compute(_convertOnBoardResponseList, response);
       }
     } on DioException catch (e) {
       BaseHelper.showSnackBar(context, e.message);
@@ -33,8 +53,27 @@ class ApiServices {
     return null;
   }
 
-  List<DummyModel> _convertDummyModelResponseList(Response<dynamic> response) {
-    return List.from(response.data.map((e) => DummyModel.fromJson(e)));
+  OnBoardModel _convertOnBoardResponseList(Response<dynamic> response) {
+    return OnBoardModel.fromJson(response.data[0]);
+  }
+
+  Future<SupportModel?> getSupportData(
+    context,
+  ) async {
+    try {
+      NetworkHelper networkHelper = NetworkHelper();
+      Response<dynamic> response = await networkHelper.getSupportApi();
+      if (response.statusCode == 200) {
+        return await compute(_convertSupportResponseList, response);
+      }
+    } on DioException catch (e) {
+      BaseHelper.showSnackBar(context, e.message);
+    }
+    return null;
+  }
+
+  SupportModel _convertSupportResponseList(Response<dynamic> response) {
+    return SupportModel.fromJson(response.data[0]);
   }
 
   Future<List<CountryModel>?> getAllcountriesRequest(

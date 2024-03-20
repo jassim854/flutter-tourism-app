@@ -53,38 +53,38 @@ class _AppBottomNavigationBarState
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        onSelectedTabPressWhenNoScreensPushed: () async {
-          SharedPreferences preferences = await SharedPreferences.getInstance();
-          String? value = preferences.getString("email");
-          if (value != null) {
-            ref.read(isLoadingProvider.notifier).state = true;
+        // onSelectedTabPressWhenNoScreensPushed: () async {
+        //   SharedPreferences preferences = await SharedPreferences.getInstance();
+        //   String? value = preferences.getString("email");
+        //   if (value != null) {
+        //     ref.read(isLoadingProvider.notifier).state = true;
 
-            await ref.read(apiServiceProvider).getUserBookedRequest(context,
-                payload: {"user_email": value}).then((val) {
-              if (val != null) {
-                ref.read(userAllBookedListProvider.notifier).addValue(val);
-                ref.read(isLoadingProvider.notifier).state = false;
+        //     await ref.read(apiServiceProvider).getUserBookedRequest(context,
+        //         payload: {"user_email": value}).then((val) {
+        //       if (val != null) {
+        //         ref.read(userAllBookedListProvider.notifier).addValue(val);
+        //         ref.read(isLoadingProvider.notifier).state = false;
 
-                // ref
-                //     .read(userConfirmedBookedListProvider.notifier)
-                //     .addValue(val);
-                ref.read(userCompletedListProvider.notifier).addValue(val);
-                ref
-                    .read(userCancelledBookedListProvider.notifier)
-                    .addValue(val);
-                // ref.read(userPendingBookedListProvider.notifier).addValue(val);
-              } else {
-                ref.read(isLoadingProvider.notifier).state = false;
-              }
-            });
-          }
-        },
+        //         // ref
+        //         //     .read(userConfirmedBookedListProvider.notifier)
+        //         //     .addValue(val);
+        //         ref.read(userCompletedListProvider.notifier).addValue(val);
+        //         ref
+        //             .read(userCancelledBookedListProvider.notifier)
+        //             .addValue(val);
+        //         // ref.read(userPendingBookedListProvider.notifier).addValue(val);
+        //       } else {
+        //         ref.read(isLoadingProvider.notifier).state = false;
+        //       }
+        //     });
+        //   }
+        // },
         routeAndNavigatorSettings: const RouteAndNavigatorSettings(
             initialRoute: BookingView.routeName,
             onGenerateRoute: AppRoutes.generateRoute),
         icon: Transform.scale(
             scale: 2.5,
-            origin: Offset(0, -5),
+            origin: const Offset(0, -5),
             child: Image.asset(AppAssets.book)),
         title: ("Reservations"),
         textStyle: AppTypography.label12XSM,
@@ -159,7 +159,7 @@ class _AppBottomNavigationBarState
             onGenerateRoute: AppRoutes.generateRoute),
         icon: Transform.scale(
             scale: 2.5,
-            origin: Offset(0, -5),
+            origin: const Offset(0, -5),
             child: Image.asset(AppAssets.support)),
         title: ("Support"),
         textStyle: AppTypography.label12XSM,
@@ -169,6 +169,7 @@ class _AppBottomNavigationBarState
     ];
   }
 
+  bool popAllscreen = false;
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
@@ -185,7 +186,44 @@ class _AppBottomNavigationBarState
       handleAndroidBackButtonPress: true, // Default is true.
       resizeToAvoidBottomInset:
           true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
+      onItemSelected: (value) async {
+        if (value == 1) {
+          popAllscreen = true;
+          setState(() {});
+          // controller.jumpToTab(1);
+          // Navigator.of(context)
+          //     .popUntil(ModalRoute.withName(BookingView.routeName));
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          String? value = preferences.getString("email");
+          if (value != null) {
+            ref.read(isLoadingProvider.notifier).state = true;
 
+            await ref.read(apiServiceProvider).getUserBookedRequest(context,
+                payload: {"user_email": value}).then((val) {
+              if (val != null) {
+                ref.read(userAllBookedListProvider.notifier).addValue(val);
+                ref.read(isLoadingProvider.notifier).state = false;
+
+                // ref
+                //     .read(userConfirmedBookedListProvider.notifier)
+                //     .addValue(val);
+                ref.read(userCompletedListProvider.notifier).addValue(val);
+                ref
+                    .read(userCancelledBookedListProvider.notifier)
+                    .addValue(val);
+                // ref.read(userPendingBookedListProvider.notifier).addValue(val);
+              } else {
+                ref.read(isLoadingProvider.notifier).state = false;
+              }
+            });
+          }
+        } else {
+          popAllscreen = false;
+          setState(() {});
+        }
+      },
+      popAllScreensOnTapAnyTabs: popAllscreen,
+      // popActionScreens: PopActionScreensType.all,
       hideNavigationBarWhenKeyboardShows:
           true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
