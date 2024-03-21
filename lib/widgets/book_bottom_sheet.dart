@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/firebase_services.dart';
 import 'package:flutter_tourism_app/helper/basehelper.dart';
 import 'package:flutter_tourism_app/model/network_model/a_tour_guide_model.dart';
 import 'package:flutter_tourism_app/model/network_model/car_model.dart';
@@ -981,7 +982,7 @@ class _ConfirmBooingSheetWidgetState
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: cacheNetworkWidget(context,
-                            imageUrl: selectedCarData.imagePath.toString(),
+                            imageUrl: selectedCarData!.imagePath.toString(),
                             fit: BoxFit.contain),
                       ),
                     ),
@@ -1018,8 +1019,8 @@ class _ConfirmBooingSheetWidgetState
                 currency: aTourGuideData!.currency.toString(),
                 tourAmount: double.parse(aTourGuideData.price!).toInt() *
                     (4 + bookingHours),
-                carAmount: calculateTotalAmount(
-                    selectedCarData!.price, 4 + bookingHours),
+                carAmount: selectedCarData!=null?calculateTotalAmount(
+                    selectedCarData!.price, 4 + bookingHours):null 
               )
             ],
           ),
@@ -1038,6 +1039,21 @@ class _ConfirmBooingSheetWidgetState
                       child: CustomElevatedButton(
                         radius: 12,
                         onPressed: () async {
+                          NotificationServices.checkNotficationPermission()
+                              .then((value) {
+                            if (value == true) {
+                              NotificationServices.firebaseInIt(context);
+                              NotificationServices.foregroundMessaging();
+                              NotificationServices.setupInteractMessage(
+                                  context);
+
+                              NotificationServices.getDeviceToken()
+                                  .then((value) async {
+                                ref.read(deviceTokenProvider.notifier).state =
+                                    value;
+                              });
+                            }
+                          });
                           String? deviceToken = ref.read(deviceTokenProvider);
                           ref.read(isLoadingProvider.notifier).state = true;
                           Map<String, dynamic> payload = {
@@ -1057,7 +1073,8 @@ class _ConfirmBooingSheetWidgetState
                             if (selectedCarData != null)
                               "car_id": selectedCarData.id,
                             "notes": widget.additionalNoes,
-                            if (deviceToken != null) "fcm_token": deviceToken
+                            if (deviceToken != null) "fcm_token": deviceToken,
+                            "user_date": DateTime.now().toIso8601String()
                           };
                           await ref
                               .read(apiServiceProvider)

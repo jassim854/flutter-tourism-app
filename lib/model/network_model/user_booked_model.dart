@@ -80,9 +80,11 @@ class Booking {
   final String? status;
   final String? car;
   final String? notes;
+  final DateTime? userDate;
 
   Booking(
       {this.id,
+      this.userDate,
       this.date,
       this.startTime,
       this.endTime,
@@ -101,7 +103,9 @@ class Booking {
           : DateFormat("HH:mm:ss").parse(json["end_time"]),
       status: json["status"],
       car: json["car"],
-      notes: json["notes"]);
+      notes: json["notes"],
+      userDate:
+          json["user_date"] == null ? null : DateTime.parse(json["user_date"]));
 
   Map<String, dynamic> toJson() => {
         "id": id,

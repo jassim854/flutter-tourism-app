@@ -268,14 +268,16 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                                 )
                               ],
                             ),
-                            PaymentWidget(
-                              currency: data.tourGuide!.currency.toString(),
-                              tourAmount: tourAmount,
-                              carAmount: carAmount,
-                            ),
-                            8.height(),
-                            const Divider(),
-                            8.height(),
+                          ],
+                          PaymentWidget(
+                            currency: data.tourGuide!.currency.toString(),
+                            tourAmount: tourAmount,
+                            carAmount: carAmount == 0 ? null : carAmount,
+                          ),
+                          8.height(),
+                          const Divider(),
+                          8.height(),
+                          if (data.booking?.userDate != null)
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -288,14 +290,13 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                                 ),
                                 8.height(),
                                 Text(
-                                    'Created at: ${DateFormat("dd/MM/yyyy").format(data.booking!.date!)} ${DateFormat("hh:mm a").format(data.booking!.startTime!)} ',
+                                    'Created at: ${DateFormat("dd/MM/yyyy").format(data.booking!.userDate!)} ${DateFormat("hh:mm a").format(data.booking!.userDate!)} ',
                                     style: AppTypography.paragraph14MD.copyWith(
                                         fontSize: 15,
                                         color: AppColor.textSubTitleColor
                                             .withOpacity(0.60)))
                               ],
                             )
-                          ]
                         ],
                       ),
                     ),
@@ -313,10 +314,10 @@ class PaymentWidget extends StatelessWidget {
     required this.tourAmount,
     required this.carAmount,
     required this.currency,
-  }) : totalAmount = carAmount + tourAmount;
+  }) : totalAmount = carAmount ?? 0 + tourAmount;
 
   final int tourAmount;
-  final int carAmount;
+  final int? carAmount;
   final String currency;
   int totalAmount;
   @override
@@ -353,28 +354,30 @@ class PaymentWidget extends StatelessWidget {
             ),
           ],
         ),
-        8.height(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Extra",
-              style: AppTypography.title18LG.copyWith(fontSize: 15),
-            ),
-            Row(
-              children: [
-                Text(
-                  "${carAmount.formatter} ",
-                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
-                ),
-                Text(
-                  currency,
-                  style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
-                ),
-              ],
-            ),
-          ],
-        ),
+        if (carAmount != null) ...[
+          8.height(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Extra",
+                style: AppTypography.title18LG.copyWith(fontSize: 15),
+              ),
+              Row(
+                children: [
+                  Text(
+                    "${carAmount!.formatter} ",
+                    style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                  ),
+                  Text(
+                    currency,
+                    style: AppTypography.paragraph14MD.copyWith(fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
         8.height(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

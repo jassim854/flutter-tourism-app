@@ -47,7 +47,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   void initState() {
-
     _searchController = TextEditingController();
     _scrollController = ScrollController();
 
@@ -75,6 +74,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   void didChangeDependencies() {
+    NotificationServices.checkNotficationPermission().then((value) {
+      if (value == true) {
+        NotificationServices.firebaseInIt(context);
+        NotificationServices.foregroundMessaging();
+        NotificationServices.setupInteractMessage(context);
+
+        NotificationServices.getDeviceToken().then((value) async {
+          ref.read(deviceTokenProvider.notifier).state = value;
+        });
+      }
+    });
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }

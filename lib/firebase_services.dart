@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_tourism_app/helper/basehelper.dart';
+import 'package:flutter_tourism_app/utils/app_colors.dart';
+import 'package:flutter_tourism_app/utils/app_typography.dart';
 
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,19 +22,16 @@ class NotificationServices {
     if (await permission.isGranted) return true;
 
     if (await permission.isPermanentlyDenied) {
-      // await _handleOpenSettings(permission);
+      handleOpenSettings(context);
+    }
 
+    final granted = await permission.request();
+    if (granted.isGranted) {
+      return true;
+    } else if (granted.isDenied) {
       return false;
     }
-
- 
-    final granted = await permission.request().isGranted;
-    if (granted) {
-      return true;
-    } else {
-      await AppSettings.openAppSettings(type: AppSettingsType.notification);
-    }
-    return null;
+    return false;
 
     // PermissionStatus permissionStatus = await Permission.notification.status;
     // if (permissionStatus.isDenied) {
@@ -74,6 +75,54 @@ class NotificationServices {
     //   return true;
     // }
     // return true;
+  }
+
+ static Future<bool> checkNotficationPermission() async {
+    const permission = Permission.notification;
+    if (await permission.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
+    
+  }
+
+  static Future<void> handleOpenSettings(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Notification"),
+          content: const Text("Your notification are permanately are blocked"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Settings"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await AppSettings.openAppSettings(
+                        type: AppSettingsType.notification, asAnotherTask: true)
+                    .then((value) async {
+                  const permission = Permission.notification;
+                  if (await permission.isGranted) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+
+                // Declare _hasOpenedNotificationsSettings = false && _hasOpenedLocationSettings = false
+                // at the top of your class
+              },
+            ),
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   static void initLocalNotification(context, RemoteMessage message) async {
