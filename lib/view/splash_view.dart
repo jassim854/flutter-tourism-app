@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_tourism_app/firebase_services.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
@@ -23,13 +25,18 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     checkIsFirst();
+    getDeviceUdid();
     Future.delayed(const Duration(seconds: 3), () {
       context.navigateToRemovedUntilNamed(firstRouteName);
     });
     // TODO: implement initState
     super.initState();
   }
-
+getDeviceUdid()async{
+await NotificationServices.getDeviceUdid().then((value) {
+ref.read(deviceUDIDProvider.notifier).state=value;
+});
+}
   checkIsFirst() async {
     SharedPreferences preferences;
     preferences = await SharedPreferences.getInstance();

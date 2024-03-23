@@ -2,10 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 
-final dropdownvalueProvider = StateProvider.autoDispose<String>((ref) {
-  return "Country";
-});
+// final dropdownvalueProvider = StateProvider.autoDispose<String>((ref) {
+//   return "Country";
+// });
 
+final deviceUDIDProvider = StateProvider<String>((ref) {
+  return "";
+});
 final deviceTokenProvider = StateProvider<String?>((ref) {
   return null ;
 });

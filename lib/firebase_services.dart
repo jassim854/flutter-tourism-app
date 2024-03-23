@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_tourism_app/helper/basehelper.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -76,7 +77,10 @@ class NotificationServices {
     // }
     // return true;
   }
-
+static Future<String> getDeviceUdid()async{
+return await FlutterUdid.udid;
+ 
+}
  static Future<bool> checkNotficationPermission() async {
     const permission = Permission.notification;
     if (await permission.isGranted) {

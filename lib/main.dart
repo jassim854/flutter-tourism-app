@@ -17,8 +17,10 @@ import 'package:flutter_tourism_app/view/select_country_view.dart';
 import 'package:flutter_tourism_app/view/splash_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+   tzdata.initializeTimeZones();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

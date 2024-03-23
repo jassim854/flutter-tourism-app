@@ -15,7 +15,7 @@ import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/car_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/home_detail_provider.dart';
-import 'package:flutter_tourism_app/provider/home_list_provider.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -36,6 +36,7 @@ import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:timezone/timezone.dart' as tz;
 class SelectedDateSheetWidget extends ConsumerStatefulWidget {
   const SelectedDateSheetWidget({super.key});
 
@@ -192,10 +193,24 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
   const SelectedTimeSheetWidget(this._nameontroller, this._emailController,
       this._phoneController, this._additionalInfoController,
       {super.key});
+Future<DateTime> getCurrentTimeInUAE(DateTime currentTime) async {
+  final uaeTimeZone = tz.getLocation('Asia/Dubai');
 
+  final now = tz.TZDateTime.now(uaeTimeZone);
+  // Adjust the hour to be in 12-hour format
+  // int hour = now.hour % 12;
+  // hour = hour == 0 ? 12 : hour; // Handle midnight (0 hour)
+  
+  // // Determine AM/PM
+  // String period = now.hour < 12 ? 'AM' : 'PM';
+  return now;
+}
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
+
     final aTourGuideData = ref.read(aTourGuideProvider);
+
     final currentDate = DateTime.now();
     return ClipRRect(
         borderRadius: BorderRadius.circular(40),
@@ -219,18 +234,32 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
                     children: [
                       SizedBox(
                         height: 200,
-                        child: CupertinoDatePicker(
-                            // minuteInterval: 30,
-                            mode: CupertinoDatePickerMode.time,
-                            minuteInterval: 30,
-                            initialDateTime: currentDate.add(Duration(
-                                minutes: 30 - currentDate.minute % 30)),
-                            // initialEntryMode: TimePickerEntryMode.input,
-                            onDateTimeChanged: (value) {
-                              ref
-                                  .read(selectedFromTimeProvider.notifier)
-                                  .updateDate(value);
-                            }),
+                       
+                        child: Stack(
+               
+                          children: [
+                            CupertinoDatePicker(
+                                // minuteInterval: 30,
+                                mode: CupertinoDatePickerMode.time,
+                                minuteInterval: 30,
+                                initialDateTime: currentDate.add(Duration(
+                                    minutes: 30 - currentDate.minute % 30)),
+                                // initialEntryMode: TimePickerEntryMode.input,
+                                onDateTimeChanged: (value) {
+                                  ref
+                                      .read(selectedFromTimeProvider.notifier)
+                                      .updateDate(value);
+                                }),
+                                  Positioned(
+                                    right: 55,
+                                    top: 92.5,
+
+                                    child: FutureBuilder(future:getCurrentTimeInUAE(ref.watch(selectedFromTimeProvider)??DateTime.now()) , builder: (context, snapshot) {
+                                      return   Text("UAE GMT+0${snapshot.data?.timeZoneOffset.inHours}",style: AppTypography.label10XXSM.copyWith(color: AppColor.textBlackColor),);
+                                    },),
+                                  ),
+                          ],
+                        ),
                       ),
                       30.height(),
                       Text(
@@ -327,6 +356,9 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
                                       ),
                                     ),
                                   ))),
+
+                                  
+                              
                       // const Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(
@@ -1039,21 +1071,7 @@ class _ConfirmBooingSheetWidgetState
                       child: CustomElevatedButton(
                         radius: 12,
                         onPressed: () async {
-                          NotificationServices.checkNotficationPermission()
-                              .then((value) {
-                            if (value == true) {
-                              NotificationServices.firebaseInIt(context);
-                              NotificationServices.foregroundMessaging();
-                              NotificationServices.setupInteractMessage(
-                                  context);
-
-                              NotificationServices.getDeviceToken()
-                                  .then((value) async {
-                                ref.read(deviceTokenProvider.notifier).state =
-                                    value;
-                              });
-                            }
-                          });
+                       
                           String? deviceToken = ref.read(deviceTokenProvider);
                           ref.read(isLoadingProvider.notifier).state = true;
                           Map<String, dynamic> payload = {
@@ -1074,7 +1092,8 @@ class _ConfirmBooingSheetWidgetState
                               "car_id": selectedCarData.id,
                             "notes": widget.additionalNoes,
                             if (deviceToken != null) "fcm_token": deviceToken,
-                            "user_date": DateTime.now().toIso8601String()
+                            "user_date": DateTime.now().toIso8601String(),
+                            "device_id":ref.read(deviceUDIDProvider)
                           };
                           await ref
                               .read(apiServiceProvider)
@@ -1192,14 +1211,13 @@ class _RequestSubmissionSheetWidgetState
                         radius: 12,
                         onPressed: () async {
                           ref.read(isLoadingProvider.notifier).state = true;
-                          SharedPreferences preferences =
-                              await SharedPreferences.getInstance();
-                          String? value = preferences.getString("email");
-                          if (value != null) {
-                            await ref
+                     
+                         
+                        try {
+                              await ref
                                 .read(apiServiceProvider)
                                 .getUserBookedRequest(context,
-                                    payload: {"user_email": value}).then((val) {
+                                    payload: {"device_id":ref.read(deviceUDIDProvider) }).then((val) {
                               if (val != null) {
                                 ref
                                     .read(userAllBookedListProvider.notifier)
@@ -1217,14 +1235,13 @@ class _RequestSubmissionSheetWidgetState
                                 context.multiPopPage(popPageCount: 5);
 
                                 controller.jumpToTab(1);
-                              } else {
-                                ref.read(isLoadingProvider.notifier).state =
-                                    false;
-                                BaseHelper.showSnackBar(
-                                    context, "Something went Wrong");
-                              }
-                            });
-                          }
+                           
+                            }});
+                        } catch (e) {
+                              ref.read(isLoadingProvider.notifier).state = false;
+                        }
+                        
+                          
                         },
                         title: 'View Reservation',
                         style: AppTypography.title18LG.copyWith(

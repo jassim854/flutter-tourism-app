@@ -7,6 +7,7 @@ import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/bottom_nav_bar_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -175,18 +176,17 @@ class _AppBottomNavigationBarState
     controller.addListener(() async {
       log(controller.index.toString());
       if (controller.index == 1) {
+
         ref.read(popAllScreenProvider.notifier).state = true;
 
         // controller.jumpToTab(1);
         // Navigator.of(context)
         //     .popUntil(ModalRoute.withName(BookingView.routeName));
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String? value = preferences.getString("email");
-        if (value != null) {
+    
           ref.read(isLoadingProvider.notifier).state = true;
 
           await ref.read(apiServiceProvider).getUserBookedRequest(context,
-              payload: {"user_email": value}).then((val) {
+              payload: {"device_id": ref.read(deviceUDIDProvider)}).then((val) {
             if (val != null) {
               ref.read(userAllBookedListProvider.notifier).addValue(val);
               ref.read(isLoadingProvider.notifier).state = false;
@@ -201,10 +201,14 @@ class _AppBottomNavigationBarState
               ref.read(isLoadingProvider.notifier).state = false;
             }
           });
-        }
-      } else {
-        ref.read(popAllScreenProvider.notifier).state = false;
-      }
+        
+     
+       
+      
+    }else{
+ ref.read(popAllScreenProvider.notifier).state = false;
+    }
+    
     });
     // TODO: implement initState
     super.initState();
@@ -212,6 +216,7 @@ class _AppBottomNavigationBarState
 
   @override
   Widget build(BuildContext context) {
+    bool popAllScreen=ref.watch(popAllScreenProvider);
     return PersistentTabView(
       context,
       controller: controller,
@@ -234,7 +239,7 @@ class _AppBottomNavigationBarState
 
       //   }
       // },
-      popAllScreensOnTapAnyTabs: ref.watch(popAllScreenProvider),
+      popAllScreensOnTapAnyTabs:popAllScreen,
       // popActionScreens: PopActionScreensType.all,
       hideNavigationBarWhenKeyboardShows:
           true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.

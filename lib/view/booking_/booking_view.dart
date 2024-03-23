@@ -6,6 +6,7 @@ import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/car_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
 import 'package:flutter_tourism_app/utils/app_typography.dart';
@@ -40,13 +41,11 @@ class _BookingViewState extends ConsumerState<BookingView>
   }
 
   callBooking() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? value = preferences.getString("email");
-    if (value != null) {
+ 
       ref.read(isLoadingProvider.notifier).state = true;
 
       await ref.read(apiServiceProvider).getUserBookedRequest(context,
-          payload: {"user_email": value}).then((val) {
+          payload: {"device_id": ref.read(deviceUDIDProvider)}).then((val) {
         if (val != null) {
           ref.read(userAllBookedListProvider.notifier).addValue(val);
           ref.read(isLoadingProvider.notifier).state = false;
@@ -57,7 +56,7 @@ class _BookingViewState extends ConsumerState<BookingView>
           ref.read(isLoadingProvider.notifier).state = false;
         }
       });
-    }
+    
   }
 
   @override

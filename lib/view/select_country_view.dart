@@ -9,7 +9,7 @@ import 'package:flutter_tourism_app/helper/basehelper.dart';
 import 'package:flutter_tourism_app/model/network_model/country_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
-import 'package:flutter_tourism_app/provider/home_list_provider.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -23,7 +23,7 @@ import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_button_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_field_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-
+import 'package:flutter_udid/flutter_udid.dart';
 class SelectCountryView extends ConsumerStatefulWidget {
   static const routeName = "/selectCountryView";
   const SelectCountryView({super.key});
@@ -42,6 +42,9 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       callApi();
     });
+     NotificationServices.getDeviceToken().then((value) async {
+              ref.read(deviceTokenProvider.notifier).state = value;
+            });
     // TODO: implement initState
     super.initState();
   }
@@ -69,9 +72,7 @@ class _SelectCountryViewState extends ConsumerState<SelectCountryView> {
             NotificationServices.foregroundMessaging();
             NotificationServices.setupInteractMessage(context);
 
-            NotificationServices.getDeviceToken().then((value) async {
-              ref.read(deviceTokenProvider.notifier).state = value;
-            });
+           
           }
         });
         ref.read(countryListDataProvider.notifier).addData(value);

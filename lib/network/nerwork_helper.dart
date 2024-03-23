@@ -6,7 +6,7 @@ class NetworkHelper {
 
   NetworkHelper() {
     dio = Dio(BaseOptions(
-      baseUrl: "http://admin.culturalguides.com/",
+      baseUrl: "https://admin.culturalguides.com/",
 
       // baseUrl: "https://picsum.photos/",
       // headers: {

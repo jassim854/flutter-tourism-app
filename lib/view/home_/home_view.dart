@@ -12,7 +12,7 @@ import 'package:flutter_tourism_app/model/network_model/dummy_model.dart';
 import 'package:flutter_tourism_app/model/network_model/tour_guide_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
-import 'package:flutter_tourism_app/provider/home_list_provider.dart';
+import 'package:flutter_tourism_app/provider/home_provider.dart';
 import 'package:flutter_tourism_app/provider/select_country_provider.dart';
 import 'package:flutter_tourism_app/utils/app_assets.dart';
 import 'package:flutter_tourism_app/utils/app_colors.dart';
@@ -79,10 +79,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
         NotificationServices.firebaseInIt(context);
         NotificationServices.foregroundMessaging();
         NotificationServices.setupInteractMessage(context);
-
-        NotificationServices.getDeviceToken().then((value) async {
-          ref.read(deviceTokenProvider.notifier).state = value;
-        });
       }
     });
     // TODO: implement didChangeDependencies
