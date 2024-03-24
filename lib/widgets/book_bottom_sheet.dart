@@ -36,7 +36,7 @@ import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:timezone/timezone.dart' as tz;
+
 class SelectedDateSheetWidget extends ConsumerStatefulWidget {
   const SelectedDateSheetWidget({super.key});
 
@@ -193,18 +193,7 @@ class SelectedTimeSheetWidget extends ConsumerWidget {
   const SelectedTimeSheetWidget(this._nameontroller, this._emailController,
       this._phoneController, this._additionalInfoController,
       {super.key});
-Future<DateTime> getCurrentTimeInUAE(DateTime currentTime) async {
-  final uaeTimeZone = tz.getLocation('Asia/Dubai');
 
-  final now = tz.TZDateTime.now(uaeTimeZone);
-  // Adjust the hour to be in 12-hour format
-  // int hour = now.hour % 12;
-  // hour = hour == 0 ? 12 : hour; // Handle midnight (0 hour)
-  
-  // // Determine AM/PM
-  // String period = now.hour < 12 ? 'AM' : 'PM';
-  return now;
-}
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     
@@ -250,14 +239,7 @@ Future<DateTime> getCurrentTimeInUAE(DateTime currentTime) async {
                                       .read(selectedFromTimeProvider.notifier)
                                       .updateDate(value);
                                 }),
-                                  Positioned(
-                                    right: 55,
-                                    top: 92.5,
-
-                                    child: FutureBuilder(future:getCurrentTimeInUAE(ref.watch(selectedFromTimeProvider)??DateTime.now()) , builder: (context, snapshot) {
-                                      return   Text("UAE GMT+0${snapshot.data?.timeZoneOffset.inHours}",style: AppTypography.label10XXSM.copyWith(color: AppColor.textBlackColor),);
-                                    },),
-                                  ),
+                    
                           ],
                         ),
                       ),
@@ -543,7 +525,7 @@ class _CompleteBookingSheetWidgetState
                 ),
               ),
             ),
-
+if(carData?.isNotEmpty??false)
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 20),
               child: Row(
@@ -1074,6 +1056,7 @@ class _ConfirmBooingSheetWidgetState
                        
                           String? deviceToken = ref.read(deviceTokenProvider);
                           ref.read(isLoadingProvider.notifier).state = true;
+                          String crrentDate= DateTime.now().toIso8601String();
                           Map<String, dynamic> payload = {
                             "user_email": widget.email,
                             "username": widget.name,
@@ -1092,7 +1075,7 @@ class _ConfirmBooingSheetWidgetState
                               "car_id": selectedCarData.id,
                             "notes": widget.additionalNoes,
                             if (deviceToken != null) "fcm_token": deviceToken,
-                            "user_date": DateTime.now().toIso8601String(),
+                            "user_date":crrentDate,
                             "device_id":ref.read(deviceUDIDProvider)
                           };
                           await ref

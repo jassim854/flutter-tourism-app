@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tourism_app/model/network_model/user_booked_model.dart';
 import 'package:flutter_tourism_app/network/api_service.dart';
+import 'package:flutter_tourism_app/provider/book_provider.dart';
 import 'package:flutter_tourism_app/provider/booking_provider.dart';
 import 'package:flutter_tourism_app/provider/genearl_providers.dart';
 import 'package:flutter_tourism_app/provider/home_detail_provider.dart';
@@ -16,7 +18,7 @@ import 'package:flutter_tourism_app/view/home_/home_detail_view.dart';
 import 'package:flutter_tourism_app/widgets/cache_network_image_widget.dart';
 import 'package:flutter_tourism_app/widgets/custom_appbar_widget.dart';
 import 'package:intl/intl.dart';
-
+import 'package:timezone/timezone.dart' as tz;
 class BookingDetailView extends ConsumerStatefulWidget {
   final String id;
   static const routeName = "/detailBookingView";
@@ -78,7 +80,18 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
   int caluateTourCost(double amount, int hour) {
     return amount.toInt() * hour;
   }
+Future<DateTime> getCurrentTimeInUAE(DateTime currentTime) async {
+  final uaeTimeZone = tz.getLocation('Asia/Dubai');
 
+  final now = tz.TZDateTime.now(uaeTimeZone);
+  // Adjust the hour to be in 12-hour format
+  // int hour = now.hour % 12;
+  // hour = hour == 0 ? 12 : hour; // Handle midnight (0 hour)
+  
+  // // Determine AM/PM
+  // String period = now.hour < 12 ? 'AM' : 'PM';
+  return now;
+}
   @override
   Widget build(BuildContext context) {
     UserBookedModel? data = ref.watch(userDetailProvider);
@@ -289,12 +302,24 @@ class _DetailBookingViewState extends ConsumerState<BookingDetailView> {
                                           .withOpacity(0.60)),
                                 ),
                                 8.height(),
-                                Text(
-                                    'Created at: ${DateFormat("dd/MM/yyyy").format(data.booking!.userDate!)} ${DateFormat("hh:mm a").format(data.booking!.userDate!)} ',
-                                    style: AppTypography.paragraph14MD.copyWith(
-                                        fontSize: 15,
-                                        color: AppColor.textSubTitleColor
-                                            .withOpacity(0.60)))
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                        'Created at: ${DateFormat("dd/MM/yyyy").format(data.booking!.userDate!)} ${DateFormat("hh:mm a").format(data.booking!.userDate!)}',
+                                        style: AppTypography.paragraph14MD.copyWith(
+                                            fontSize: 15,
+                                            color: AppColor.textSubTitleColor
+                                                .withOpacity(0.60))),
+                                                              FutureBuilder(future:getCurrentTimeInUAE(ref.watch(selectedFromTimeProvider)??DateTime.now()) , builder: (context, snapshot) {
+                                                                return   Text(" UAE GMT+0${snapshot.data?.timeZoneOffset.inHours}" , style: AppTypography.paragraph12SM.copyWith(
+                                                                  fontSize: 10,
+                                         
+                                            color: AppColor.textBlackColor
+                                                .withOpacity(0.90)),);
+                                                              },),
+                                  ],
+                                )
                               ],
                             )
                         ],
@@ -314,7 +339,7 @@ class PaymentWidget extends StatelessWidget {
     required this.tourAmount,
     required this.carAmount,
     required this.currency,
-  }) : totalAmount = carAmount ?? 0 + tourAmount;
+  }) : totalAmount = (carAmount != null ? (carAmount + tourAmount) : tourAmount);
 
   final int tourAmount;
   final int? carAmount;
